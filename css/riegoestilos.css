@@ -1,0 +1,192 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 02-mar-2015, 21:03:45
+    Author     : Uselinux
+*/
+
+/* Resetear pagina */
+*{
+  margin:0px;
+  padding:0px;
+}
+
+body {
+  	font: 75% "Trebuchet MS", sans-serif;
+	margin: 50px;
+	}
+	.demoHeaders {
+		margin-top: 2em;
+	}
+	#dialog-link {
+		padding: .4em 1em .4em 20px;
+		text-decoration: none;
+		position: relative;
+	}
+	#dialog-link span.ui-icon {
+		margin: 0 5px 0 0;
+		position: absolute;
+		left: .2em;
+		top: 50%;
+		margin-top: -8px;
+	}
+	#icons {
+		margin: 0;
+		padding: 0;
+	}
+	#icons li {
+		margin: 2px;
+		position: relative;
+		padding: 4px 0;
+		cursor: pointer;
+		float: left;
+		list-style: none;
+	}
+	#icons span.ui-icon {
+		float: left;
+		margin: 0 4px;
+	}
+	.fakewindowcontain .ui-widget-overlay {
+		position: absolute;
+	}
+	select {
+		width: 200px;
+}
+/*
+Div generales de página
+*/
+
+div#contenedor{
+    margin: auto;
+    margin-top:15px;
+    width: 1000px;
+    height: 720px;
+    //-moz-border-radius:50px;
+    //-webkit-border-radius:50px;
+    box-shadow: 2px 5px 8px;
+}
+
+div#cabecera{
+    margin: auto;
+    //margin-left :10px;
+    width: 1000px;
+    height: 82px;
+    background-color: #3A72A5;
+}
+
+div#imgcabecera {
+    margin-left: 4px;
+    height: 100%;
+    /* Safari, Opera, and Chrome */
+    display:-webkit-box;
+    //-webkit-box-pack:center;
+    -webkit-box-align:center;
+    /* Firefox */
+    display:-moz-box;
+    //-moz-box-pack:center;
+    -moz-box-align:center;
+    /* Internet Explorer 10 */
+    display:-ms-flexbox;
+    //-ms-flex-pack:center;
+    -ms-flex-align:center;
+ }
+
+div#cuerpo{
+    margin: auto;
+    margin-top: 0;
+    //background-color: red;
+    with:730px;
+    height: 600px;
+}
+
+div#menuleft{
+    float:left;
+    /*background-color: green; */
+    margin: auto;
+    margin-top : 0px;
+    margin-left:0px;
+    width : 240px;
+    height: 560px;
+    font-size :13px;
+    //-moz-border-radius:20px;
+    //-webkit-border-radius:20px;
+    box-shadow: 0px 5px 8px;
+}
+
+div#menuleft pos{
+    color :#eb8f00;
+    //font-style: italic;
+}
+div#menuleft npos{
+    color :#1c94c4;
+}
+
+div#imput{
+    float:right;
+    /*background-color: yellow; */
+    margin:auto;
+    margin-top: 0px;
+    margin-right: 0px;
+    width: 730px;
+    height: 200px;
+}
+div#imputlogin{
+    float:left;
+    /*background-color: yellow; */
+    margin:auto;
+    margin-top: 0px;
+    margin-right: 0px;
+    width: 220x;
+    height: 400px;
+    //-moz-border-radius:20px;
+    //-webkit-border-radius:20px;
+    box-shadow: 0px 5px 8px;
+    font-size :13px;
+    font-weight: bold; 
+}
+
+div#imputlogin p{
+    /* Configuracion texto div */
+    color :#1c94c4;
+}
+div#divriegotec{
+    margin-bottom: 0px;
+    margin-left: 30px;
+}
+
+div#output{
+    float: right;
+    /*background-color: yellowgreen;  */ 
+    margin: auto;
+    margin-top:  5px;
+    margin-right: 0px;
+    width: 730px;
+    height: 410px;
+}
+div#output p{
+    /* Configuracion texto div */
+    color :#1c94c4;
+    font-size :11px;
+    font-weight: bold; 
+}
+
+div#piegrafica {
+    margin-left: 10px;
+}
+
+
+div#pie{
+    width: available;
+    height: available;
+    padding:10px;
+    //background-color: greenyellow;
+    margin: auto;
+    margin-top:5px;
+    margin-bottom: 0px;
+}
+
+
+/* Fin de regiones generales */
