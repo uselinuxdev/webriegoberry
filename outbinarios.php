@@ -109,8 +109,8 @@ function nombrebits($dbhandle, $idparametro, $tbits)
         //echo $vdesde;
         $vhasta = date("Y-m-d H:i:s", strtotime('+1 hours', strtotime($vdesde)));
         // Usar vista unión parametros_server y lectura_parametros
-        $sql = "SELECT NOMBREP,PREFIJO,WORDVALOR,HORA FROM vgrafica ";
-        $sqlexp = "SELECT NOMBREP AS PARAMETRO,WORDVALOR AS VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sql = "SELECT NOMBREP,PREFIJO,REVERSE(WORDVALOR) as WORDVALOR,HORA FROM vgrafica ";
+        $sqlexp = "SELECT NOMBREP AS PARAMETRO,REVERSE(WORDVALOR) AS VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
         $sql.="WHERE idparametro = ".$vparam;
         $sqlexp.="WHERE idparametro = ".$vparam;
         $sql.=" AND flectura >= '".date($vdesde)."'";
