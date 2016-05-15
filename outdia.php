@@ -78,7 +78,7 @@ function selectmes(&$vdesde,&$vhasta,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA,ESTLINK,FLECTURA FROM vgrafica_dias ";
+    $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect ="SELECT NOMBREP AS PARAMETRO,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
@@ -90,7 +90,7 @@ function selectmes(&$vdesde,&$vhasta,$expexcel = 0) {
     if(date('n') == $vmes) {
         $sselect .=" union ";
         if ($expexcel == 0) {
-            $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,FLECTURA FROM vgrafica_horas "; 
+            $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas "; 
         }else {
             $sselect .=" SELECT NOMBREP AS PARAMETRO,SUM(VALOR) AS VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas "; 
         }
