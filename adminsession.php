@@ -31,6 +31,7 @@ function checkuserdb($vuser,$vpass)
     $_SESSION['dbuser'] = 'riegosql';
     $_SESSION['dbpass'] = 'riegoprod15';
     $_SESSION['dbname'] = 'riegosolar';
+    $_SESSION['minsesion'] = 0;
     //Variable de sesion de selección de tabs
     $_SESSION['stabindex'] = 0;
     $cndb=mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 

@@ -48,7 +48,7 @@ and open the template in the editor.
                         <?php
                             echo $_SESSION['textsesion'];
                             if (CheckLogin() == true)
-                            {
+                            {  
                                 header("Location: riegohoras.php");
                             }
                         ?>
