@@ -42,21 +42,25 @@ function checkuserdb($vuser,$vpass)
     $vpass=md5($vpass); // Encrypted Password
     
     // Comprobar la tabla de usuarios.
-    $sql = "select idinstalacion,cif,password from instalacion";
-    $sql.= " where cif ='".$vuser."'";
+    $sql = "select idusuario,usuario,nivel from usuarios";
+    $sql.= " where usuario ='".$vuser."'";
     $sql.= " and password ='".$vpass."'";
     //echo $sql;
     // Execute the query, or else return the error message.
     $consulta = mysql_query($sql);
     if (mysql_num_rows($consulta)) {
+        // Datos de la primera fila
+        $row = mysql_fetch_array($consulta);
         // Variable de tiempo de sesion.
         $_SESSION['tlogon'] = time();
         $_SESSION['minsesion'] = 10;
-        $_SESSION['usuario'] = $vuser;
+        $_SESSION['usuario'] = $row['usuario'];
+        $_SESSION['nivel'] = $row['nivel'];
         $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['tlogon'];
         return 1;
     }else {
         $_SESSION['textsesion'] = 'Los datos introducidos no corresponden con ninguna instalación.';
+        //$_SESSION['textsesion'] = $sql;
         return -1;
     }
     

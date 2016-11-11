@@ -13,10 +13,7 @@ and open the template in the editor.
         <?php
         // Controlar que exista sesion iniciada
         require('adminsession.php');
-        //$vuser = addslashes(strip_tags($_GET["usuario"])); 
-        $vuser = 'admin';
-        $vpassmd5 = md5('Riegosolar77'); 
-        if (checkuserdb($vuser,$vpassmd5) == -1)
+        if (CheckLogin() == false)
         {
             header("Location: login.php");
         }
@@ -33,8 +30,7 @@ and open the template in the editor.
            <div id="cuerpo">
                <div id="menuleft">
                    <?php
-                        echo $_SESSION['dbuser'];
-                        echo $_SESSION['textsesion'];
+                        echo 'El nivel del usuario es:'.$_SESSION['nivel'];
                         include 'menugrafica.php';
                    ?>
                        

@@ -18,20 +18,23 @@ Php es llamado desde la web corporativa pasandole 2 parámetros:
     <body>
         <?php
         // Pruebas
-        echo 'La password viene en Code64:'.addslashes(strip_tags($_GET["pass"]));
-        echo 'La password viene en decode Code64:'.base64_decode(addslashes(strip_tags($_GET["pass"])));
-        echo 'El usuario es:'.$vuser;
+        //echo 'La password viene en Code64:'.addslashes(strip_tags($_GET["pass"]));
         IF (checkuserdb($vuser, base64_decode($vpass)) == 1)
         {
-            echo 'checkuserdb ==1';
-            if (CheckLogin() == true)
+            //echo 'Validación checkuserbd ==1.';
+            if (CheckLogin())
             {
-              echo 'CheckLogin OK';
-              // header("Location: riegoresumen.php"); 
+                //echo 'Validación check login correcta.';
+                header("Location: riegoresumen.php"); 
+            } else {
+                // Mandar a login si no se han podido obtener los datos con get
+                header("Location: login.php");               
             }
+        } else {
+            // Mandar a login si no se han podido obtener los datos con get
+            header("Location: login.php");
         }
-        // Mandar a login si no se han podido obtener los datos con get
-        header("Location: login.php");
+
         ?>
     </body>
 </html>
