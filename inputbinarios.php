@@ -17,6 +17,7 @@ $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM p
 $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
 $sql.=" and server_instalacion.estado = 1 " ;
 $sql.=" and parametros_server.tipo like'%B%' and parametros_server.lectura ='M' and parametros_server.estado > 0" ;
+$sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
 $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 //$sql.=" and parametros_server.tipo='C' and parametros_server.lectura ='M' and parametros_server.estado=1 " ;
 

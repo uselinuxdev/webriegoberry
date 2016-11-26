@@ -20,6 +20,7 @@ $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM p
 $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
 $sql.=" and server_instalacion.estado = 1 " ;
 $sql.=" and parametros_server.tipo in('H','HF') and parametros_server.lectura ='H' and parametros_server.estado > 0 " ;
+$sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
 $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 
 // Quitar este if cuando este en producción

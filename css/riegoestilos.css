@@ -64,14 +64,14 @@ div#contenedor{
     margin-top:15px;
     width: 1000px;
     height: 720px;
-    //-moz-border-radius:50px;
-    //-webkit-border-radius:50px;
+/*    -moz-border-radius:50px;
+    -webkit-border-radius:50px; */
     box-shadow: 2px 5px 8px;
 }
 
 div#cabecera{
     margin: auto;
-    //margin-left :10px;
+    /*margin-left :10px;*/
     width: 1000px;
     height: 82px;
     background-color: #3A72A5;
@@ -82,48 +82,95 @@ div#imgcabecera {
     height: 100%;
     /* Safari, Opera, and Chrome */
     display:-webkit-box;
-    //-webkit-box-pack:center;
+    /*-webkit-box-pack:center;*/
     -webkit-box-align:center;
     /* Firefox */
     display:-moz-box;
-    //-moz-box-pack:center;
+    /*-moz-box-pack:center; */
     -moz-box-align:center;
     /* Internet Explorer 10 */
     display:-ms-flexbox;
-    //-ms-flex-pack:center;
+    /*-ms-flex-pack:center; */
     -ms-flex-align:center;
  }
 
 div#cuerpo{
     margin: auto;
     margin-top: 0;
-    //background-color: red;
+/*    background-color: red;*/
     with:730px;
     height: 600px;
+    /* Estilos de hoja resumen */
 }
 
 div#menuleft{
     float:left;
-    /*background-color: green; */
+    /*background-color: green;*/ 
     margin: auto;
     margin-top : 0px;
     margin-left:0px;
     width : 240px;
     height: 560px;
     font-size :13px;
-    //-moz-border-radius:20px;
-    //-webkit-border-radius:20px;
+/*    -moz-border-radius:20px;
+    -webkit-border-radius:20px; */
     box-shadow: 0px 5px 8px;
 }
 
 div#menuleft pos{
     color :#eb8f00;
-    //font-style: italic;
+    /*font-style: italic; */
 }
 div#menuleft npos{
     color :#1c94c4;
 }
+/* Estilo pagina resumen */
+div#resumenleft{
+    float:left;
+    margin:auto;
+    margin-top: 0px;
+    margin-right: 0px;
+    width: 300x;
+    /*background-color: red;*/
+}
+div#resumenright{
+    float:right;
+    margin:auto;
+    margin-top: 0px;
+    margin-right: 0px;
+    width: 430px;
+    /*background-color: green;*/
+}
+div.background {
+     float:left;
+     width: 100%;
+     margin:auto;
+     margin-top: 10px;
+     margin-left: 10px;
+     background: rgba(0, 97, 255, 0.3);
+     -moz-border-radius:10px;
+     -webkit-border-radius:10px;
+ }
+ div.background p {
+     margin: 10px;
+     font-weight: bold;
+     color: white;
+ }
 
+ div.front {
+     margin: 5px;
+     background:#FFF;
+ }
+/* Estilo de tabla */
+table.db-tbresumen { 
+    border-right:0px; border-bottom:0px;
+}
+table.db-tbresumen th{
+    background:#eee; padding:1px; border-left:0px; border-top:0px; 
+}
+table.db-tbresumen td{
+    padding:2px; border-left:0px; border-top:0px;
+}
 div#imput{
     float:right;
     /*background-color: yellow; */
@@ -141,8 +188,8 @@ div#imputlogin{
     margin-right: 0px;
     width: 220x;
     height: 400px;
-    //-moz-border-radius:20px;
-    //-webkit-border-radius:20px;
+    /*-moz-border-radius:20px;
+    //-webkit-border-radius:20px; */
     box-shadow: 0px 5px 8px;
     font-size :13px;
     font-weight: bold; 
@@ -182,11 +229,10 @@ div#pie{
     width: available;
     height: available;
     padding:10px;
-    //background-color: greenyellow;
+    /*background-color: greenyellow;*/
     margin: auto;
     margin-top:5px;
     margin-bottom: 0px;
 }
-
 
 /* Fin de regiones generales */
