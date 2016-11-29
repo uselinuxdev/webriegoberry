@@ -31,6 +31,9 @@ class riegoresumenClass
     {
         // La funcion controla posibles valores: -1 no definido, 0 estimado, > 0 cargar valor.
         // Dependiendo del parametro el filtro de fechas sería diario, mensual o anual.
+        $ssql ="SELECT idparametro,parametro,lectura,prefijonum,posdecimal "
+                . "FROM parametros_server "
+                . "WHERE idparametro=".$this->aparam[0]['idparametroa'];
         return 0;
     }
     private function datosgraf()
