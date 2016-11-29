@@ -110,7 +110,7 @@ div#menuleft{
     margin-top : 0px;
     margin-left:0px;
     width : 240px;
-    height: 560px;
+    height: 600px;
     font-size :13px;
 /*    -moz-border-radius:20px;
     -webkit-border-radius:20px; */
@@ -131,7 +131,7 @@ div#resumenleft{
     margin-top: 0px;
     margin-right: 0px;
     width: 300x;
-    /*background-color: red;*/
+/*    background-color: red;*/
 }
 div#resumenright{
     float:right;
@@ -139,7 +139,7 @@ div#resumenright{
     margin-top: 0px;
     margin-right: 0px;
     width: 430px;
-    /*background-color: green;*/
+/*    background-color: green;*/
 }
 div.background {
      float:left;

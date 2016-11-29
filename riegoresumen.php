@@ -10,6 +10,8 @@ and open the template in the editor.
         <title></title>
         <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="./css/riegoestilos.css">
+        <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
+        <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
         <?php
         // Controlar que exista sesion iniciada
         require('adminsession.php');
@@ -18,6 +20,19 @@ and open the template in the editor.
             header("Location: login.php");
         }
         $_SESSION['pag'] = "riegoresumen.php";
+        // Incluir php de gráficas.
+        include("fusioncharts/fusioncharts.php");
+        $hostdb = $_SESSION['serverdb'];  // MySQl host
+        $userdb = $_SESSION['dbuser'];  // MySQL username
+        $passdb = $_SESSION['dbpass'];  // MySQL password
+        $namedb = $_SESSION['dbname'];  // MySQL database name
+
+       // Establish a connection to the database
+       $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+
+        if ($dbhandle->connect_error) {
+           exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
+        }
         ?>
     </head>
     <body>
@@ -53,29 +68,33 @@ and open the template in the editor.
                      </div>
                      <div id="resumenactual">
                          <?php
-                             include 'resumenficha.php';
+                             include 'resumenprod.php';
                          ?>
                      </div>  
                </div>
                <div id="resumenright">
                     <div id="resumengrafica1">
                         <?php
-                            include 'ejemplojava.html';
+                           include 'resumengrafica1.php';
                         ?>
                     </div> 
                      <div id="resumengrafica2">
                         <?php
-                            include 'resumengrafica1.php';
+                            include 'resumengrafica2.php';
                         ?>
                     </div>
                      <div id="resumengrafica3">
                         <?php
-                           // include 'ejemplojava.html';
+                           include 'resumengrafica3.php';
                         ?>
                     </div>                      
                </div>
 
             <div id="pie">
+                <?php             
+                    // Close the database connection
+                    $dbhandle->close();
+                ?>
             </div>
             </div> <!-- Fin del contendor principal -->
        </div>
