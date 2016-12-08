@@ -13,6 +13,8 @@ and open the template in the editor.
         <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
         <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
         <?php
+        // Crear clase de para llamada a funciones genericas
+        require("riegoresumenClass.php");
         // Controlar que exista sesion iniciada
         require('adminsession.php');
         if (CheckLogin() == false)
@@ -27,8 +29,12 @@ and open the template in the editor.
         $passdb = $_SESSION['dbpass'];  // MySQL password
         $namedb = $_SESSION['dbname'];  // MySQL database name
 
-       // Establish a connection to the database
-       $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+        // Establish a connection to the database
+        $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+        if (!$dbhandle->set_charset("utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", $mysqli->error);
+            exit();
+        }
 
         if ($dbhandle->connect_error) {
            exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
@@ -63,12 +69,13 @@ and open the template in the editor.
                      </div>
                       <div id="resumenmapa">
                          <?php
-                             include 'resumenficha.php';
+                             //include 'resumenficha.php';
                          ?>
+                         <img src="imagenes/instalacion.jpg" alt="Install" height="200" width="240"/>
                      </div>
                      <div id="resumenactual">
                          <?php
-                             include 'resumenprod.php';
+                           //  include 'resumenprod.php';
                          ?>
                      </div>  
                </div>

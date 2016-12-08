@@ -6,12 +6,6 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <?php
-            //Primero hacemos las conexiones
-            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-        ?>
         <meta charset="UTF-8">
         <title></title>
     </head>
@@ -24,8 +18,9 @@ and open the template in the editor.
                 $sql = "select titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador "
                         . "from instalacion "
                         . "where estado = 1";
-                $result = mysql_query($sql) or die('Error al leer los datos de la instalación !');
-                $row = mysql_fetch_row($result);
+                // Execute the query, or else return the error message.
+                $result = $dbhandle->query($sql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+                $row = mysqli_fetch_array($result);
                 echo '<table cellpadding="0" cellspacing="0" class="db-tbresumen">';
                     echo '<tr>';
                     echo '<td align="right"><strong>','Titular:','</strong></td>';

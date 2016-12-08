@@ -1,96 +1,177 @@
 <?php
 
 /* Include the `fusioncharts.php` file that contains functions	to embed the charts. */
-
-   // Incluir php clase controladora
-    include("riegoresumenClass.php");
-   
     // Pinar bonito
-    function datachart1($row) {
+    function configchar1($arraya,$arrayb,$arrayc) {
+        // Pitar x en valores instantaneos.
+        $vlabelstep = 12;
+        $subtext = "";
+        $arrCat = array();
+        $dataseriesa = array();
+        $dataseriesb = array();
+        $dataseriesc = array();
+        // Controlar los parámetros a tratar
+        if(!empty($arraya)) {
+            $subtext .= $arraya[0]['NOMBREP'];
+            $dataseriesa = datachart1($arraya);
+            if(empty($arrCat))
+            {
+                $arrCat = categorychart1($arraya);
+            }
+        }
+        if(!empty($arrayb)) {
+            $subtext .= " vs ".$arrayb[0]['NOMBREP'];
+            $dataseriesb = datachart1($arrayb);
+            // Cargar categorias del primer array
+            if(empty($arrCat))
+            {
+                $arrCat = categorychart1($arrayb);
+            }
+        }
+        if(!empty($arrayc)) {
+            $subtext .= " vs ".$arrayc[0]['NOMBREP'];
+            // Cargar categorias del primer array
+            $dataseriesc = datachart1($arrayc);
+            if(empty($arrCat))
+            {
+                $arrCat = categorychart1($arrayc);
+            }
+        }
+        // Configuración chart
+        $arrData = array(
+                    "chart" => array(
+                            "caption" => "Hoy ".$arraya[0]['PREFIJO']."",
+                            "subCaption"  => "".$subtext."",
+                            "captionFontSize"  => "14",
+                            "subcaptionFontSize"  => "14",		
+                            "subcaptionFontBold"  => "0",
+                            "paletteColors"  => "#0075c2,#1aaf5d",
+                            "bgcolor"  => "#ffffff",
+                            "showBorder"  => "0",
+                            "showShadow"  => "0",
+                            "showCanvasBorder"  => "0",
+                            "usePlotGradientColor"  => "0",
+                            "legendBorderAlpha"  => "0",
+                            "legendShadow"  => "0",
+                            "showAxisLines"=> "0",
+                            "showAlternateHGridColor"  => "0",
+                            "divlineThickness"  => "1",
+                            "divLineIsDashed" => "1",
+                            "divLineDashLen"  => "1",
+                            "xAxisName"  => "Hora",
+                            "showValues"  => "0",
+                            "linePosition" => "0",
+                            )
+	);
+        // Añadir categorias
+        $arrData["categories"]=array(array("category"=>$arrCat));
+        // añadir las series
+        $arrData["dataset"] = array(array("seriesName"=> $arraya[0]['NOMBREP'], "data"=>$dataseriesa),array("seriesName"=> $arrayb[0]['NOMBREP'], "data"=>$dataseriesb),array("seriesName"=> $arrayc[0]['NOMBREP'], "data"=>$dataseriesc));
+        // Retornar variable JSON
+
+        //print_r($arrCat);
+        return $arrData;
+    }
+    function categorychart1($array) {
         $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
-        $adata = array(
-           "label" => $row["dia"],
-           "value" => $row["intvalor"]
-        );
-        return $adata;
+        // Categorias. Valores X de la gráfica
+        $arrCat = array();
+        // Recorrer todas las filas del arraya
+        $longitud = count($array);
+        for($i=0; $i<$longitud; $i++)
+	{
+            array_push($arrCat, array(
+                    "label" => $array[$i]["HORA"]
+                    )
+            );
+        }
+        return $arrCat;
+    }
+    
+    function datachart1($array)
+    {
+        // Categorias. Valores Y de la gráfica
+        $myCalc = new riegoresumenClass();
+        $adat = array();
+        // Recorrer todas las filas del arraya
+        $longitud = count($array);
+        for($i=0; $i<$longitud; $i++)
+	{
+          // Calculo valor
+            $vvalor = $myCalc->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+            array_push($adat, array(
+                    "value" => $vvalor
+                    )
+            );     
+        }
+        return $adat;
     }
 ?>
 
 <html>
    <head>
   	<title></title>
+        <?php
+            $myClass = new riegoresumenClass();
+            $myClass->cargarClase('resumengrafica1'); 
+            $aparam = $myClass->verParam();
+            // Cargar los difrirentes Arrays A,B y C.
+            $param = $aparam[0]['idparametroa'];
+            switch ($param) {
+                case -1:
+                    // Parametro no definido
+                    break;
+                case 0:
+                    // Cargar datos estimados
+                    break;
+                default:
+                    // Cargar los datos del parametro
+                    $arraya = $myClass->loadarrayparam($param); 
+            }
+            $param = $aparam[0]['idparametrob'];
+            switch ($param) {
+                case -1:
+                    // Parametro no definido
+                    break;
+                case 0:
+                    // Cargar datos estimados
+                    break;
+                default:
+                    // Cargar los datos del parametro
+                    $arrayb = $myClass->loadarrayparam($param);
+            }
+            $param = $aparam[0]['idparametroc'];
+            switch ($param) {
+                case -1:
+                    // Parametro no definido
+                    break;
+                case 0:
+                    // Cargar datos estimados
+                    break;
+                default:
+                    // Cargar los datos del parametro
+                    $arrayc = $myClass->loadarrayparam($param);
+            }
+        
+        
+        ?>
+        
   </head>
 
    <body>
   	<?php
-        $myClass = new riegoresumenClass();
-        $myClass->cargarClase('resumengrafica1'); 
-        $name=$myClass->verClase(); //to retrieve from database. 
-        echo $name;
-     	$strQuery = "SELECT dia,intvalor FROM grafica_dias where intvalor > 0 and idparametro=140 limit 10";
+        // The `$arrData` array holds the chart attributes and data
+        $arrChart1 = configchar1($arraya,$arrayb,$arrayc);
+       //print_r($arrChart1);
 
-     	// Execute the query, or else return the error message.
-     	$result = $dbhandle->query($strQuery) or exit("Error code ({$dbhandle->errno}): {$dbhandle->error}");
+        /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
+        $valoresjson1 = json_encode($arrChart1);
+        //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)
+        $columnChart1 = new FusionCharts("msline", "Grafica1" , 430, 200, "chart-grafica1", "json", $valoresjson1);
 
-     	// If the query returns a valid response, prepare the JSON string
-        if ($result) {
-            $fila1 = mysqli_fetch_array($result);
-            $vvalor = "Titulo1";
-            //$vprefijo = $fila1["PREFIJO"];
-            //$ilink = $fila1["ESTLINK"];
-            $vtxtpie= "Descargar.";
-            //$vvalor.=" / ".$vprefijo;
-            // The `$arrData` array holds the chart attributes and data
-            $arrData = array(
-                "chart" => array(
-                  "caption" => "".$vvalor."",
-                  //"paletteColors" => "#0075c2",
-                  //"numberprefix" => "".$vprefijo."",
-                  "bgColor" => "#ffffff",
-                  "borderAlpha"=> "20",
-                  "canvasBorderAlpha"=> "0",
-                  "usePlotGradientColor"=> "0",
-                  "plotBorderAlpha"=> "10",
-                  "showXAxisLine"=> "1",
-                  "xAxisLineColor" => "#999999",
-                  "showValues" => "0",
-                  "divlineColor" => "#999999",
-                  "divLineIsDashed" => "1",
-                  "showAlternateHGridColor" => "0",
-                  //"showexportdatamenuitem" => "1"
-                  /*  "caption" => "".$vvalor."",
-                    "subcaption"=> "",
-                    "yaxisname" => "",
-                    "numberprefix" => "".$vprefijo."",
-                    "bgcolor"=> "FFFFFF",
-                    "useroundedges" => "1",
-                    "showborder"=> "0" */
-                  )
-               );
-            $arrData["data"] = array();
-            // Valores de primera fila.
-            $adet = datachart1($fila1);
-            array_push($arrData["data"], $adet);
-            // Resto de filas en array
-            while($row = mysqli_fetch_array($result)) {
-                $adet = datachart1($row);
-                array_push($arrData["data"], $adet);
-            }
-            /*--------------------------------------------------------------------------------------------------------------*/
-            /*--------------------------------------------------------------------------------------------------------------*/
-            
-            /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
-            $jsonEncodedData = json_encode($arrData);
-
-            /*Create an object for the column chart using the FusionCharts PHP class constructor. Syntax for the constructor is ` FusionCharts("type of chart", "unique chart id", width of the chart, height of the chart, "div id to render the chart", "data format", "data source")`. Because we are using JSON data to render the chart, the data format will be `json`. The variable `$jsonEncodeData` holds all the JSON data for the chart, and will be passed as the value for the data source parameter of the constructor.*/
-
-            //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)
-            $columnChart1 = new FusionCharts("column3d", "Grafica1" , 430, 200, "chart-grafica1", "json", $jsonEncodedData);
-
-            // Render the chart
-            $columnChart1->render();
-
-        }
+        // Render the chart
+        $columnChart1->render();
+        
   	?>
 
   	<div id="chart-grafica1"><!-- Grafica Nº1 --></div>
