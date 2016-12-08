@@ -1,10 +1,8 @@
 <?php
-
 /* Include the `fusioncharts.php` file that contains functions	to embed the charts. */
     // Pinar bonito
     function configchar1($arraya,$arrayb,$arrayc) {
         // Pitar x en valores instantaneos.
-        $vlabelstep = 12;
         $subtext = "";
         $arrCat = array();
         $dataseriesa = array();
@@ -68,7 +66,6 @@
         // añadir las series
         $arrData["dataset"] = array(array("seriesName"=> $arraya[0]['NOMBREP'], "data"=>$dataseriesa),array("seriesName"=> $arrayb[0]['NOMBREP'], "data"=>$dataseriesb),array("seriesName"=> $arrayc[0]['NOMBREP'], "data"=>$dataseriesc));
         // Retornar variable JSON
-
         //print_r($arrCat);
         return $arrData;
     }
@@ -112,9 +109,9 @@
    <head>
   	<title></title>
         <?php
-            $myClass = new riegoresumenClass();
-            $myClass->cargarClase('resumengrafica1'); 
-            $aparam = $myClass->verParam();
+            $myClass1 = new riegoresumenClass();
+            $myClass1->cargarClase('resumengrafica1'); 
+            $aparam = $myClass1->verParam();
             // Cargar los difrirentes Arrays A,B y C.
             $param = $aparam[0]['idparametroa'];
             switch ($param) {
@@ -126,7 +123,7 @@
                     break;
                 default:
                     // Cargar los datos del parametro
-                    $arraya = $myClass->loadarrayparam($param); 
+                    $arraya1 = $myClass1->loadarrayparam($param); 
             }
             $param = $aparam[0]['idparametrob'];
             switch ($param) {
@@ -138,7 +135,7 @@
                     break;
                 default:
                     // Cargar los datos del parametro
-                    $arrayb = $myClass->loadarrayparam($param);
+                    $arrayb1 = $myClass1->loadarrayparam($param);
             }
             $param = $aparam[0]['idparametroc'];
             switch ($param) {
@@ -150,7 +147,7 @@
                     break;
                 default:
                     // Cargar los datos del parametro
-                    $arrayc = $myClass->loadarrayparam($param);
+                    $arrayc1 = $myClass1->loadarrayparam($param);
             }
         
         
@@ -161,14 +158,12 @@
    <body>
   	<?php
         // The `$arrData` array holds the chart attributes and data
-        $arrChart1 = configchar1($arraya,$arrayb,$arrayc);
+        $arrChart1 = configchar1($arraya1,$arrayb1,$arrayc1);
        //print_r($arrChart1);
-
         /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
         $valoresjson1 = json_encode($arrChart1);
         //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)
         $columnChart1 = new FusionCharts("msline", "Grafica1" , 430, 200, "chart-grafica1", "json", $valoresjson1);
-
         // Render the chart
         $columnChart1->render();
         

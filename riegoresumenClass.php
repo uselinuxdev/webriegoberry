@@ -62,6 +62,7 @@ class riegoresumenClass
             $sselect.= $sdate;
         }
         // Tengo la select cargar el array en un Fetch assoc
+        //echo $sselect;
         //return $sselect;
         $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
         $result = $link->query($sselect);
@@ -78,8 +79,8 @@ class riegoresumenClass
         switch ($this->aparam[0]['tipolectura']) {
         case 2:
             // Fecha del mes actual
-            $vmes = date('m');
-            $vyear = date('Y');
+            $vmes = date('m',strtotime($vfecha));
+            $vyear = date('Y',strtotime($vfecha));
             // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
             $vfecha = "01-".$vmes."-".$vyear;
             $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
@@ -87,7 +88,7 @@ class riegoresumenClass
             break;
         case 3:
             // Ejecicio actual
-            $vyear = date('Y');
+            $vyear = date('Y',strtotime($vfecha));
             // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
             $vfecha = "01-01-".$vyear;
             //echo $vfecha;

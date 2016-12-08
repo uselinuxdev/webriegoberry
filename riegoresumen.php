@@ -82,7 +82,7 @@ and open the template in the editor.
                <div id="resumenright">
                     <div id="resumengrafica1">
                         <?php
-                           include 'resumengrafica1.php';
+                          include 'resumengrafica1.php';
                         ?>
                     </div> 
                      <div id="resumengrafica2">
