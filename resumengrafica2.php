@@ -126,6 +126,7 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
@@ -138,6 +139,7 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
@@ -150,13 +152,12 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
                     $arrayc = $myClass->loadarrayparam($param);
-            }
-        
-        
+            }       
         ?>
         
   </head>

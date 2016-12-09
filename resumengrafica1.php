@@ -120,6 +120,7 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
@@ -132,6 +133,7 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
@@ -144,6 +146,7 @@
                     break;
                 case 0:
                     // Cargar datos estimados
+                    $arraya = $myClass->loadstimate($param); 
                     break;
                 default:
                     // Cargar los datos del parametro
@@ -163,7 +166,7 @@
         /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
         $valoresjson1 = json_encode($arrChart1);
         //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)
-        $columnChart1 = new FusionCharts("msline", "Grafica1" , 430, 200, "chart-grafica1", "json", $valoresjson1);
+        $columnChart1 = new FusionCharts("msspline", "Grafica1" , 430, 200, "chart-grafica1", "json", $valoresjson1);
         // Render the chart
         $columnChart1->render();
         

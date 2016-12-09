@@ -50,10 +50,10 @@ class riegoresumenClass
             break;
         case 3:
             // Año actual
-            $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS FLECTURA,ESTLINK FROM vgrafica_dias ";
+            $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.= $sdate;
-            $sselect.=" GROUP BY idparametro,MES order by flectura,idparametro";
+            $sselect.=" GROUP BY idparametro,MES order by CAST(flectura AS SIGNED),idparametro";
             break;
         default:
             $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
@@ -62,12 +62,29 @@ class riegoresumenClass
             $sselect.= $sdate;
         }
         // Tengo la select cargar el array en un Fetch assoc
-        //echo $sselect;
+        // echo $sselect;
         //return $sselect;
         $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
         $result = $link->query($sselect);
 	return $result->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function loadstimate($param)
+    {
+        $sselect = "";
+        // Acotar fechas dependiendo campo tipolectura
+        $sdate = $this->getfecha();
+        $sselect = "select p.idparametro,'Estimación' as NOMBREP,p.prefijonum,p.posdecimal,a.valorx as HORA,a.valory as VALOR "; 
+        $sselect .=" from parametros_server p,admestimacion a ";
+        $sselect .=" where p.idparametro= ".$param; 
+        $sselect .=" and a.idparametro = p.idparametro ";
+        $sselect .=" order by CAST(a.valorx AS SIGNED)";
+        // Cargar datos estimados
+        $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        $result = $link->query($sselect);
+        //echo $sselect;
+	return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     
     private function getfecha() 
     {
