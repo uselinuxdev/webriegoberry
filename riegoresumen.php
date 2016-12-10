@@ -67,17 +67,16 @@ and open the template in the editor.
                              include 'resumenficha.php';
                          ?>
                      </div>
-                      <div id="resumenmapa">
-                         <?php
-                             //include 'resumenficha.php';
-                         ?>
-                         <img src="imagenes/instalacion.jpg" alt="Install" height="200" width="240"/>
-                     </div>
                      <div id="resumenactual">
                          <?php
-                           //  include 'resumenprod.php';
+                           include 'resumenactual.php';
                          ?>
-                     </div>  
+                     </div>
+                     <div id="resumenmapa">
+                         <?php
+                            
+                         ?>
+                     </div>
                </div>
                <div id="resumenright">
                     <div id="resumengrafica1">

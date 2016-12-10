@@ -44,7 +44,7 @@
                                 "showvalues"=> "0",
                                 "valuefontcolor"=> "074868",
                                 "plotgradientcolor"=> "",
-                                "showcanvasborder"=> "1",
+                                "showcanvasborder"=> "0",
                                 "numdivlines"=> "5",
                                 "showyaxisvalues"=> "1",
                                 "palettecolors"=> "#1790E1",

@@ -89,6 +89,33 @@
         return $arrCat;
     }
     
+    function datachart3new($array)
+    {
+        // Categorias. Valores Y de la gráfica. Pintar los 12 meses
+        $myCalc3 = new riegoresumenClass();
+        $adat = array();
+        $valor = 0;
+        // Recorrer los 12 meses
+        for ($i=1; $i<13; $i++)
+        {
+            $valor = buscarmes("HORA",$i,$array);
+        }
+        $valor = $myCalc3->posdecimal($valor,$array[0]["POSDECIMAL"]);
+        array_push($adat, array(
+                    "value" => $valor
+                    )
+        ); 
+        return $adat;
+    }
+    // Buscar valor de mes sino mes 0. Siempre array de 12
+    function buscarmes($sKey, $id, $array) {
+       foreach ($array as $key => $val) {
+               if ($val[$sKey] == $id) {
+                       return 500;
+               }
+       }
+       return 0;
+    }
     
     function datachart3($array)
     {

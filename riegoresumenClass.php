@@ -29,6 +29,36 @@ class riegoresumenClass
     {
         return $this->aparam;
     }
+    public function maxlecturap()
+    {
+        // La función obtiene la máxima lectura de los parametros de la sección
+        $amax = array();
+        $parametros = array();
+        // Recorrer array de parametros 1 fila hasta 3 parametros
+            
+        // Conexión
+        $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        // Controlar 3 array de parametros asociativo
+        array_push($parametros,$this->aparam[0]['idparametroa']);
+        array_push($parametros,$this->aparam[0]['idparametrob']);
+        array_push($parametros,$this->aparam[0]['idparametroc']);
+        for($i=0;$i<3;$i++)
+        {
+            if($parametros[$i] > 0)
+            {
+                 $sql = "select max(idlectura) AS idmax from lectura_parametros where idparametro=".$parametros[$i];
+                 $result = $link->query($sql);
+                 $max = $result->fetchAll(PDO::FETCH_ASSOC);
+                 // Si hay filas añadir al array
+                 if(count($max)>0) 
+                 {
+                     array_push($amax,$max[0]['idmax']);
+                 }   
+            }
+        }
+        // Retornar el array
+        return $amax;
+    }
     public function loadarrayparam($param) 
     {
         // La funcion carga en array de datos el parametro_server introducido.
