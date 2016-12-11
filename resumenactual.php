@@ -13,13 +13,17 @@ and open the template in the editor.
             $Classactual = new riegoresumenClass();
             $Classactual->cargarClase('resumenactual'); 
             $amax = $Classactual->maxlecturap();
+            // Cargar imagen instalación
+            $ssql ="select * from instalacion";
+            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+            $install = mysqli_fetch_array($result);
             // Cargar todos los del array
             $ssql = "select * from vgrafica where idlectura in(";
             // Realizar la carga de todos los max encontrados 1-3.
             $long = count($amax);
             for($i=0;$i<$long;$i++)
             {
-                // Controlar ,
+                // Controlar 
                 if ($i > 0){$ssql .=",";}
                 $ssql .= $amax[$i];
             }
@@ -51,7 +55,7 @@ and open the template in the editor.
                 echo '<table cellpadding="0" cellspacing="0" height="100%" class="db-tbresumen">';
                 echo '<tbody>';
                 echo '<tr><tda lign="center">';
-                echo '<img src="imagenes/1_instalacion.jpg" alt="IMGINSTALL" style="width:200px;height:112px;"/>';
+                echo '<img src="'.$install["imagen"].'" alt="IMGINSTALL" style="width:200px;height:112px;"/>';
                 echo '</td></tr>';
                 echo '</tbody>';
                 echo '</table><br/>';

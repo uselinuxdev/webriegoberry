@@ -89,49 +89,26 @@
         return $arrCat;
     }
     
-    function datachart3new($array)
+    function datachart3($array)
     {
         // Categorias. Valores Y de la gráfica. Pintar los 12 meses
         $myCalc3 = new riegoresumenClass();
         $adat = array();
         $valor = 0;
-        // Recorrer los 12 meses
-        for ($i=1; $i<13; $i++)
+        // Recorrer los 12 meses. Poner a 0. Luego localizar y actualizar si existe valor
+        for ($i=0; $i<12; $i++)
         {
-            $valor = buscarmes("HORA",$i,$array);
+            array_push($adat, array(
+                "value" => $valor
+               )
+            ); 
         }
-        $valor = $myCalc3->posdecimal($valor,$array[0]["POSDECIMAL"]);
-        array_push($adat, array(
-                    "value" => $valor
-                    )
-        ); 
-        return $adat;
-    }
-    // Buscar valor de mes sino mes 0. Siempre array de 12
-    function buscarmes($sKey, $id, $array) {
-       foreach ($array as $key => $val) {
-               if ($val[$sKey] == $id) {
-                       return 500;
-               }
-       }
-       return 0;
-    }
-    
-    function datachart3($array)
-    {
-        // Categorias. Valores Y de la gráfica
-        $myCalc3 = new riegoresumenClass();
-        $adat = array();
-        // Recorrer todas las filas del arraya
+        // Con los 12 valores pintar los que correspondan. Recorrer el array de encontrados
         $longitud = count($array);
         for($i=0; $i<$longitud; $i++)
-	{
-          // Calculo valor
-            $vvalor = $myCalc3->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            array_push($adat, array(
-                    "value" => $vvalor
-                    )
-            );     
+        {
+            $valor = $myCalc3->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+            $adat[$array[$i]["HORA"]-1]["value"] = $valor;
         }
         return $adat;
     }
