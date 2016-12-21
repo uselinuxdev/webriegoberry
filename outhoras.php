@@ -166,6 +166,9 @@ function posdecimal($valor,$posiciones) {
     // Retorna valor sin tocar o con la division
     return $valor;           
 }
+
+
+
 ?>
 
     <head>
@@ -311,9 +314,9 @@ function posdecimal($valor,$posiciones) {
 
        /*Create an object for the column chart using the FusionCharts PHP class constructor. Syntax for the constructor is ` FusionCharts("type of chart", "unique chart id", width of the chart, height of the chart, "div id to render the chart", "data format", "data source")`. Because we are using JSON data to render the chart, the data format will be `json`. The variable `$jsonEncodeData` holds all the JSON data for the chart, and will be passed as the value for the data source parameter of the constructor.*/
 
-               //$columnChart = new FusionCharts("column2D", "Grafica / Hora" , 600, 300, "graf_hora", "json", $jsonEncodedData);
-               //$columnChart = new FusionCharts("column3d", "Grafica / Hora" , 600, 300, "graf_hora", "json", $jsonEncodedData);
                $columnChart = new FusionCharts("area2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+               // Crear convinación de areas
+               //$columnChart = new FusionCharts("stackedarea2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
 
                // Render the chart
                $columnChart->render();

@@ -42,10 +42,13 @@ class riegoresumenClass
         array_push($parametros,$this->aparam[0]['idparametroa']);
         array_push($parametros,$this->aparam[0]['idparametrob']);
         array_push($parametros,$this->aparam[0]['idparametroc']);
+        
         for($i=0;$i<3;$i++)
         {
             if($parametros[$i] > 0)
             {
+                 // Acotar fechas dependiendo campo tipolectura
+                 $sdate = $this->getfecha();
                  $sql = "select max(idlectura) AS idmax from lectura_parametros where idparametro=".$parametros[$i];
                  $result = $link->query($sql);
                  $max = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -76,23 +79,24 @@ class riegoresumenClass
             $sselect .="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect .=" AND flectura > CURRENT_DATE() - INTERVAL 2 DAY";  
-            $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by flectura";
+            $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura";
             break;
         case 3:
             // Año actual
             $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.= $sdate;
-            $sselect.=" GROUP BY idparametro,MES order by CAST(flectura AS SIGNED),idparametro";
+            $sselect.=" GROUP BY idparametro,MES order by idparametro,CAST(flectura AS SIGNED)";
             break;
         default:
             $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.=" AND DATE_FORMAT(FLECTURA,'%i') = '00'";
             $sselect.= $sdate;
+            $sselect.=" order by idparametro,flectura";
         }
         // Tengo la select cargar el array en un Fetch assoc
-        // echo $sselect;
+        //echo $sselect;
         //return $sselect;
         $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
         $result = $link->query($sselect);
@@ -122,7 +126,7 @@ class riegoresumenClass
         $sqldate = "";
         $vfecha =date('Y-m-d'); 
         // Fecha pruebas /////////////////////////////////////////////////////////////////////////////////////////////// <--
-        $vfecha = "08-08-2015";
+        $vfecha = "2016-08-15";
         switch ($this->aparam[0]['tipolectura']) {
         case 2:
             // Fecha del mes actual

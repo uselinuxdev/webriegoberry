@@ -14,13 +14,14 @@ $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agost
 //hacemos la consulta de los valores que llenaran los combos
 /////////////////////////$sql = "SELECT idserver,nombreserver FROM server_instalacion WHERE estado=1 order by nombreserver";
 
-// Coger los parametros del único server que puede tener estado 1 para las gráficas.
+// Coger los parametros del único server. estado = 0 es parametro calculado y > 0 resto.20/12/2016
 
 $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM parametros_server,server_instalacion";
 $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
 $sql.=" and server_instalacion.estado = 1 " ;
-$sql.=" and parametros_server.tipo in('H','HF') and parametros_server.lectura ='H' and parametros_server.estado > 0 " ;
+$sql.=" and parametros_server.tipo in('H','HF') and parametros_server.lectura ='H' and parametros_server.estado >= 0 " ;
 $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
+$sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
 $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 
 // Quitar este if cuando este en producción
@@ -142,7 +143,7 @@ function checktab() {
                     <tbody>
                         <tr>
                             <td>
-                                <p> <label for="cbvalor">Elegir parámetro</label></p>
+                                <p> <label for="cbvalor">Elegir primer parámetro</label></p>
                                 <select name="cbvalor"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
                                     $resparametros = mysql_query($sql);
@@ -163,7 +164,9 @@ function checktab() {
                                 ?>
                                 </select>
                             </td>
-                            <td></td>
+                            <td>
+
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -190,7 +193,7 @@ function checktab() {
                     <tbody>
                         <tr>
                             <td>
-                                <p> <label for="cbvalorm">Elegir parámetro</label></p>
+                                <p> <label for="cbvalorm">Elegir primer parámetro</label></p>
                                 <select name="cbvalorm"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
                                     $resparametros = mysql_query($sql);
@@ -251,7 +254,7 @@ function checktab() {
                         <tbody>
                             <tr>
                                 <td>
-                                    <p> <label for="cbvalory">Elegir parámetro</label></p>
+                                    <p> <label for="cbvalory">Elegir primer parámetro</label></p>
                                     <select name="cbvalory"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
                                         $resparametros = mysql_query($sql);
@@ -272,7 +275,8 @@ function checktab() {
                                     ?>
                                     </select>
                                 </td>
-                                <td></td>
+                                <td>
+                                </td>
                             </tr>
                             <tr>
                                 <td>
@@ -300,7 +304,7 @@ function checktab() {
                         <tbody>
                             <tr>
                                 <td>
-                                    <p> <label for="cbvalort">Elegir parámetro</label></p>
+                                    <p> <label for="cbvalort">Elegir primer parámetro</label></p>
                                     <select name="cbvalort"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
                                         $resparametros = mysql_query($sql);
@@ -321,7 +325,8 @@ function checktab() {
                                     ?>
                                     </select>
                                 </td>
-                                <td></td>
+                                <td>
+                                </td>
                             </tr>
                             <tr>
                                 <td></td>

@@ -30,6 +30,7 @@ and open the template in the editor.
             // Cerrar in
             $ssql .= ")";
             // Cargar valores
+            //echo $ssql;
             $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
         ?>
     </head>
@@ -45,21 +46,12 @@ and open the template in the editor.
                     {
                         $vvalor = $Classactual->posdecimal($ahora["VALOR"],$ahora["POSDECIMAL"]);
                         echo '<tr>';
-                        echo '<td align="right"><strong>',$ahora["NOMBREP"].":</strong> ".'</td>';
-                        echo '<td align="left">'.number_format($vvalor,2,",",".")." ".$ahora["PREFIJO"].'</td>';
+                        echo '<td align="left"><strong>',$ahora["NOMBREP"]."</strong> ".'</td>';
+                        echo '<td align="left"><strong>: </strong>'.number_format($vvalor,2,",",".")." ".$ahora["PREFIJO"].'</td>';
                         echo '</tr>';
                     }
                 echo '</tbody>';
-                echo '</table><br/>';
-                // Tabla de imagen
-                echo '<table cellpadding="0" cellspacing="0" height="100%" class="db-tbresumen">';
-                echo '<tbody>';
-                echo '<tr><tda lign="center">';
-                echo '<img src="'.$install["imagen"].'" alt="IMGINSTALL" style="width:200px;height:112px;"/>';
-                echo '</td></tr>';
-                echo '</tbody>';
-                echo '</table><br/>';
-                
+                echo '</table>';     
             ?>
         </div>
        </div>

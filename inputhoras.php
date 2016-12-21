@@ -14,13 +14,14 @@ $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agost
 //hacemos la consulta de los valores que llenaran los combos
 /////////////////////////$sql = "SELECT idserver,nombreserver FROM server_instalacion WHERE estado=1 order by nombreserver";
 
-// Coger los parametros del único server que puede tener estado 1 para las gráficas.
+// Coger los parametros del único server. estado = 0 es parametro calculado y > 0 resto.20/12/2016
 
 $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM parametros_server,server_instalacion";
 $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
 $sql.=" and server_instalacion.estado = 1 " ;
-$sql.=" and parametros_server.tipo='H' and parametros_server.lectura ='M' and parametros_server.estado > 0 " ;
+$sql.=" and parametros_server.tipo='H' and parametros_server.lectura ='M' and parametros_server.estado >= 0 " ;
 $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
+$sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
 $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 
 // Quitar este if cuando este en producción
@@ -152,7 +153,7 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalor">Elegir parámetro</label></p>
+                            <p> <label for="cbvalor">Elegir primer parámetro</label></p>
                             <select name="cbvalor"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
@@ -202,7 +203,7 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalorm">Elegir parámetro</label></p>
+                            <p> <label for="cbvalorm">Elegir primer parámetro</label></p>
                             <select name="cbvalorm"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                                 $resparametros = mysql_query($sql);
@@ -264,7 +265,7 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalorr">Elegir parámetro</label></p>
+                            <p> <label for="cbvalorr">Elegir primer parámetro</label></p>
                             <select name="cbvalorr"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
@@ -285,7 +286,7 @@ function checktab() {
                             ?>
                             </select>
                         </td>
-                        <td>
+                       <td>
                             <p>Fecha:</p>          
                             <input type="text" name="fechar" id="fechar" value=" <?php
                             echo $vfechar;
@@ -293,7 +294,7 @@ function checktab() {
                         </td>
                     </tr>
                     <tr>
-                       <td>
+                        <td>
                             <p><label for="nhorad">Desde</label></p>
                             <select name="nhorad" id="nhorad">
                                 <option value="00"<?php if ($vhorad == '00') echo ' selected="selected"'; ?>>00</option>
@@ -349,13 +350,13 @@ function checktab() {
                                 <option value="21"<?php if ($vhorah == '21') echo ' selected="selected"'; ?>>21</option>
                                 <option value="22"<?php if ($vhorah == '22') echo ' selected="selected"'; ?>>22</option>
                                 <option value="23"<?php if ($vhorah == '23') echo ' selected="selected"'; ?>>23</option>
-                            </select> <p></p>
+                            </select> 
                         </td>
                     </tr>
                     <tr>
                         <td></td>
                         <td>
-                           <input type="submit" value="Aceptar"/>
+                             <input type="submit" value="Aceptar"/>
                         </td>
                     </tr>
                 </tbody>

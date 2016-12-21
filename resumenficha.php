@@ -15,7 +15,7 @@ and open the template in the editor.
         <div class="front">
             <?php
                 /* Pintar tabla, el diseño de la tabla esta en riegoestilos.db-tbresumen */
-                $sql = "select titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador "
+                $sql = "select titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador,imagen "
                         . "from instalacion "
                         . "where estado = 1";
                 // Execute the query, or else return the error message.
@@ -23,32 +23,35 @@ and open the template in the editor.
                 $row = mysqli_fetch_array($result);
                 echo '<table cellpadding="0" cellspacing="0" class="db-tbresumen">';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','Titular:','</strong></td>';
-                    echo '<td>',$row[0],'</td>';
+                    echo '<td align="left"><strong>','Instalación','</strong></td>';
+                    echo '<td> : ',$row[2],'</td>';
                     echo '</tr>';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','F.Arranque:','</strong></td>';
-                    echo '<td>',date("d/m/Y", strtotime($row[1])),'</td>';
+                    echo '<td align="left"><strong>','Titular','</strong></td>';
+                    echo '<td> : ',$row[0],'</td>';
                     echo '</tr>';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','Instalación:','</strong></td>';
-                    echo '<td>',$row[2],'</td>';
+                    echo '<td align="left"><strong>','F.Arranque','</strong></td>';
+                    echo '<td> : ',date("d/m/Y", strtotime($row[1])),'</td>';
                     echo '</tr>';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','Ubicación:','</strong></td>';
-                    echo '<td>',$row[3],'</td>';
-                    echo '<td align="right"><strong>','Pico:','</strong></td>';
-                    echo '<td>',$row[4],'</td>';
+                    echo '<td align="left"><strong>','Ubicación','</strong></td>';
+                    echo '<td> : ',$row[3],'</td>';
                     echo '</tr>';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','Módulos:','</strong></td>';
-                    echo '<td>',$row[5],'</td>';
+                    echo '<td align="left"><strong>','Potencia','</strong></td>';
+                    echo '<td> : ',$row[4],'</td>';
                     echo '</tr>';
                     echo '<tr>';
-                    echo '<td align="right"><strong>','Variador:','</strong></td>';
-                    echo '<td>',$row[6],'</td>';
+                    echo '<td align="left"><strong>','Módulos','</strong></td>';
+                    echo '<td> : ',$row[5],'</td>';
                     echo '</tr>';
-                echo '</table><br />';
+                    echo '<tr>';
+                    echo '<td align="left"><strong>','Variador','</strong></td>';
+                    echo '<td> : ',$row[6],'</td>';
+                    echo '</tr>';
+                echo '</table>';
+                echo '<p><img src="'.$row[7].'" alt="IMGINSTALL" style="width:200px;height:150x;" align="middle"/> </p>';
             ?>
         </div>
       </div>

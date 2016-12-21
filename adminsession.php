@@ -42,7 +42,7 @@ function checkuserdb($vuser,$vpass)
     $vpass=md5($vpass); // Encrypted Password
     
     // Comprobar la tabla de usuarios.
-    $sql = "select idusuario,usuario,nivel from usuarios";
+    $sql = "select idusuario,usuario,nivel,idserver from usuarios";
     $sql.= " where usuario ='".$vuser."'";
     $sql.= " and password ='".$vpass."'";
     //echo $sql;
@@ -56,6 +56,7 @@ function checkuserdb($vuser,$vpass)
         $_SESSION['minsesion'] = 10;
         $_SESSION['usuario'] = $row['usuario'];
         $_SESSION['nivel'] = $row['nivel'];
+        $_SESSION['idserver'] = $row['idserver'];
         $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['tlogon'];
         return 1;
     }else {

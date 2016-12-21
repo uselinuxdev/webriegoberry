@@ -58,13 +58,13 @@ and open the template in the editor.
                <div id="resumenleft">
                     <div id="resumenprod">
                          <?php
-                             include 'resumenprod.php';
+                             include 'resumenficha.php';
                          ?>
                      </div>
 
                       <div id="resumenficha">
                          <?php
-                             include 'resumenficha.php';
+                             include 'resumenprod.php';
                          ?>
                      </div>
                      <div id="resumenactual">
@@ -74,7 +74,7 @@ and open the template in the editor.
                      </div>
                      <div id="resumenmapa">
                          <?php
-                            
+
                          ?>
                      </div>
                </div>

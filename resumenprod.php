@@ -20,6 +20,16 @@ and open the template in the editor.
                 . " and l.flectura > CURDATE();";
             $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
             $rowhoy = mysqli_fetch_array($result);
+            // Mes actual
+            $mesyear = strtotime(date("Y")."-".date("m")."-01");
+            $mesyearfin = date("Y-m-d", strtotime("+1 month", $mesyear));
+            $ssql = "select sum(intvalor) as month"
+            . " from grafica_dias"
+            . " where idparametro=".$aparam[0]['idparametroa']
+            . " and flectura >= '".$mesyear."'"
+            . " and flectura < '".$mesyearfin."'";
+            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+            $rowmonth = mysqli_fetch_array($result);
             // Cargar año actual
             $eneroyear = date("Y")."01-01";
             $ssql = "select sum(intvalor) as year"
@@ -46,25 +56,30 @@ and open the template in the editor.
                 echo '<tbody>';
                     echo '<tr>';
                     echo '<td align="right"><strong>','Hoy','</strong></td>';
+                    echo '<td align="right"><strong>','Mes actual','</strong></td>';
                     echo '<td align="right"><strong>','Año '.date("Y"),'</strong></td>';
                     echo '<td align="right"><strong>','Hasta '.date("Y"),'</strong></td>';
                     echo '</tr>';
                     echo '<tr>';
                     // Valor hoy
                     $valor = $Classresprod->posdecimal($rowhoy['hoy'],$rowhoy['posdecimal']);
-                    $valor = number_format($valor,2,",",".");
-                    echo '<td align="right">',$valor.' '.$rowhoy['unidades'],'</td>';
+                    $valor = round($valor);
+                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
+                    // Valor mes
+                    $valor = $Classresprod->posdecimal($rowmonth['month'],$rowhoy['posdecimal']);
+                    $valor = round($valor);
+                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
                     // Valor year
                     $valor = $Classresprod->posdecimal($rowyear['year'],$rowhoy['posdecimal']);
-                    $valor = number_format($valor,2,",",".");
-                    echo '<td align="right">',$valor.' '.$rowhoy['unidades'],'</td>';
+                    $valor = round($valor);
+                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
                     // Valor preyear
                     $valor = $Classresprod->posdecimal($rowpreyear['preyear'],$rowhoy['posdecimal']);
-                    $valor = number_format($valor,2,",",".");
-                    echo '<td align="right">',$valor.' '.$rowhoy['unidades'],'</td>';
+                    $valor = round($valor);
+                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
                     echo '</tr>';
                 echo '</tbody>';
-                echo '</table><br />';
+                echo '</table>';
             ?>
         </div>
        </div>
