@@ -34,9 +34,9 @@ if ($dbhandle->connect_error) {
 include("fusioncharts/fusioncharts.php");
 
 // Funciones de diferentes select
-function selectdia($expexcel = 0) {
+function selectdia($vparam,$expexcel = 0) {
     $vtiposalida = 1; 
-    $_SESSION['vparam'] = $_POST['cbvalor'];
+    $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     $vfecha =date('Y-m-d',strtotime($_POST['fhasta'])); 
     //echo $_POST['fhasta'];
@@ -50,20 +50,20 @@ function selectdia($expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
    // echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H:%I') AS HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
     return $sselect;
 }
 
-function selectmes($expexcel = 0) {
+function selectmes($vparam,$expexcel = 0) {
     $vtiposalida = 2; 
-    $_SESSION['vparam'] = $_POST['cbvalorm'];
+    $_SESSION['vparam'] = $vparam;
     $vmes = $_POST['cbmes'];
     $vyear = $_POST['cbyear'];
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
@@ -80,15 +80,15 @@ function selectmes($expexcel = 0) {
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
     return $sselect;
 }
 
-function selectyear($expexcel = 0) {
+function selectyear($vparam,$expexcel = 0) {
     $vtiposalida=3;
-    $_SESSION['vparam'] = $_POST['cbvalory'];
+    $_SESSION['vparam'] = $vparam;
     $vyear = $_POST['cbyear'];
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     $vfecha = "01-01-".$vyear;
@@ -101,15 +101,15 @@ function selectyear($expexcel = 0) {
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
     return $sselect;
 }
 
-function selectall($expexcel = 0) {
+function selectall($vparam,$expexcel = 0) {
     $vtiposalida=4;
-    $_SESSION['vparam'] = $_POST['cbvalort'];
+    $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     // Usar vista unión parametros_server y lectura_parametros
     $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,YEAR as HORA FROM vgrafica ";
@@ -117,13 +117,13 @@ function selectall($expexcel = 0) {
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,YEAR,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$vparam.")";
     return $sselect;
 }
 
-function selectrango($expexcel = 0) {
+function selectrango($vparam,$expexcel = 0) {
     $vtiposalida = 5; 
-    $_SESSION['vparam'] = $_POST['cbvalorr'];
+    $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     $vfecha =date('Y-m-d',strtotime($_POST['fechar'])); 
     //echo $_POST['fhasta'];
@@ -146,7 +146,7 @@ function selectrango($expexcel = 0) {
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura > '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
     return $sselect;
@@ -167,7 +167,239 @@ function posdecimal($valor,$posiciones) {
     return $valor;           
 }
 
+function getsql($valor,$vtiposalida,$expexcel = 0)
+{
+    switch ($vtiposalida) {
+    case 1:
+        return selectdia($valor,$expexcel);
+        break;
+    case 2:
+        return selectmes($valor,$expexcel);
+        break;
+    case 3:
+        return selectyear($valor,$expexcel);
+        break;
+    case 4:
+        return selectall($valor,$expexcel);
+        break;
+    case 5:
+        return selectrango($valor,$expexcel); 
+        break;
+    }
+}
 
+// Funciones multiseries
+function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
+{
+    // Recorrer el array de todos los parametros
+    $adata= array();
+    $adet= array();
+    $acat= array();
+    // Cargar datos en array
+    $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+    $sql = getsql($arrayp[0],$vtiposalida,0);
+    $result = $link->query($sql);
+    $adet = $result->fetchAll(PDO::FETCH_ASSOC);
+    $vprefijo = $adet[0]["PREFIJO"];
+    $adata = chart($vlabelstep,$vprefijo,$textox);
+    // Las categorias
+    $acat = categorychart($adet,$vtiposalida);
+    $adet = datachart($adet);
+    // Crear el array general adata+acat+adet
+    array_push($adata,$acat,$adet);
+    $adata["categories"]=array(array("category"=>$acat));
+    // Pruebas de series
+    $arrDat1 = array();
+    
+    array_push($arrDat1,["value"=> "5854"]);
+    array_push($arrDat1,["value"=> "4171"]);
+    array_push($arrDat1,["value"=> "1375"]);
+    array_push($arrDat1,["value"=> "1875"]);
+    array_push($arrDat1,["value"=> "2246"]);
+    array_push($arrDat1,["value"=> "2696"]);
+
+    $arrDat2 = array();
+    
+    array_push($arrDat2,["value"=> "3242"]);
+    array_push($arrDat2,["value"=> "3171"]);
+    array_push($arrDat2,["value"=> "700"]);
+    array_push($arrDat2,["value"=> "1287"]);
+    array_push($arrDat2,["value"=> "1856"]);
+    array_push($arrDat2,["value"=> "1126"]);
+    
+    
+    $arrDat3 = array();
+    
+    array_push($arrDat3,["value"=> "1126"]);
+    array_push($arrDat3,["value"=> "987"]);
+    array_push($arrDat3,["value"=> "1610"]);
+    array_push($arrDat3,["value"=> "903"]);
+    array_push($arrDat3,["value"=> "928"]);
+    array_push($arrDat3,["value"=> "1000"]);
+    $adata["dataset"] = array(array("seriesName"=> "Actual Revenue",  "renderAs"=>"area", "data"=>$arrDat1), array("seriesName"=> "Projected Revenue",  "renderAs"=>"line", "data"=>$arrDat2),array("seriesName"=> "Profit",  "renderAs"=>"area", "data"=>$arrDat3));
+    //print_r($adata);
+    // Recorrer el resto del array
+    $longitud = count($arrayp);
+    $sexcel = $arrayp[0];
+    for($i=1; $i<$longitud; $i++)
+    {
+        $sql = getsql($arrayp[i],$vtiposalida,0);
+        $result = $link->query($sql);
+	$adet = $result->fetchAll(PDO::FETCH_ASSOC);
+        $adet = datachart($adet);
+        $adata["dataset"]=array("seriesname"=>"Revenue","renderas"=>"Area","data"=>$adet);
+        // Control select excel.
+        $sexcel .= ','.$arrayp[i];
+    }
+    //$adata["dataset"]=array seriesname"=>"Revenue","renderas"=>"Area","data"=>$adet);
+   // print_r($adata);
+   // print_r($acat);
+    //print_r($adet);
+    // Retornar el excel
+    $sqlexp = getsql($sexcel,$vtiposalida,1);
+    // Guardar SQL en $_POST para realizar el export
+    $_SESSION['ssql'] = $sqlexp;
+
+    return $adata;
+}
+
+function chart($vlabelstep,$vprefijo,$textox)
+{
+      $arrData = [
+        "chart" => [
+            "caption"=> "Harry's SuperMart",
+            "subCaption"=> "Sales analysis of last year",
+            "xAxisname"=> "Month",
+            "yAxisName"=> "Revenues (In USD)",
+            "numberPrefix"=> "$",
+            "legendItemFontColor"=> "#666666",
+            "theme"=> "zune"
+            ]
+          ];
+//    $arrData = array(
+//                   "chart" => array(
+//                        // Labelstep cada cuanto pinta la barra de abajo
+//                        "palette"=> "2",
+//                        "caption"=>"Sales",
+//                        "subcaption"=> "March 2006",
+//                        "showvalues"=> "0",
+//                        "divlinedecimalprecision"=> "1",
+//                        "limitsdecimalprecision"=> "1",
+//                        "pyaxisname"=> "Amount",
+//                        "syaxisname"=> "Quantity",
+//                       "numbersuffix"=>  "".$vprefijo."",
+//                        "formatnumberscale"=> "0",
+//                        "areaovercolumns"=> "0",
+//                        "legendiconscale"=> "4",
+//                        "showborder"=> "0" ,                           
+                    //   "labelStep" => "".$vlabelstep."",
+//                       "showvalues"=>  "0",
+//                       "xaxisname"=>  $textox,
+//                       "yaxisvaluespadding"=> "10",
+//                       "canvasborderalpha"=>  "0",
+//                       "canvasbgalpha"=>  "0",
+//                       "numvdivlines"=>  "3",
+//                       "plotgradientcolor"=>  "0000FF",
+//                       "drawanchors"=>  "1",
+//                       "plotfillangle"=>  "90",
+//                       "plotfillalpha"=>  "63",
+//                       "vdivlinealpha"=>  "22",
+//                       "vdivlinecolor"=>  "6281B5",
+//                       "bgcolor"=>  "ABCAD3,B3CCE1",
+//                       "showplotborder"=>  "0",
+//                       "bordercolor"=>  "9DBCCC",
+//                       "borderalpha"=>  "100",
+//                       "canvasbgratio"=>  "0",
+//                       "basefontcolor"=>  "37444A",
+//                       "tooltipbgcolor"=>  "37444A",
+//                       "tooltipbordercolor"=>  "37444A",
+//                       "tooltipcolor"=>  "FFFFFF",
+//                       "basefontsize"=>  "8",
+//                       "outcnvbasefontsize"=>  "11",
+//                       "animation"=>  "1",
+//                       "palettecolors"=>  "0080C0",
+//                       "showtooltip"=>  "1",
+//                       "showborder"=>  "0"
+//                     )
+//                  );
+    //var_dump($arrData);
+    return $arrData;
+}
+
+function categorychart($array,$vtiposalida) {
+    // Categorias. Valores X de la gráfica
+    $arrCat = array();
+    array_push($arrCat,["label"=> "A"]);
+    array_push($arrCat,["label"=> "B"]);
+    array_push($arrCat,["label"=> "C"]);
+    array_push($arrCat,["label"=> "D"]);
+    array_push($arrCat,["label"=> "E"]);
+    array_push($arrCat,["label"=> "F"]);
+    // Recorrer todas las filas del arraya
+//    $longitud = count($array);
+//    for($i=0; $i<$longitud; $i++)
+//    {
+//        if ($vtiposalida ==3){
+//           $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
+//        }
+//        array_push($arrCat, array(
+//                "label" => $array[$i]["HORA"]
+//                )
+//        );
+//    }
+    //var_dump($arrCat);
+    return $arrCat;
+}
+
+function datachart($array)
+{
+    // Datos. Valores Y de la gráfica. Varias series
+    $arrDat1 = array();
+    
+    array_push($arrDat1,["value"=> "5854"]);
+    array_push($arrDat1,["value"=> "4171"]);
+    array_push($arrDat1,["value"=> "1375"]);
+    array_push($arrDat1,["value"=> "1875"]);
+    array_push($arrDat1,["value"=> "2246"]);
+    array_push($arrDat1,["value"=> "2696"]);
+
+    $arrDat2 = array();
+    
+    array_push($arrDat2,["value"=> "3242"]);
+    array_push($arrDat2,["value"=> "3171"]);
+    array_push($arrDat2,["value"=> "700"]);
+    array_push($arrDat2,["value"=> "1287"]);
+    array_push($arrDat2,["value"=> "1856"]);
+    array_push($arrDat2,["value"=> "1126"]);
+    
+    
+    $arrDat3 = array();
+    
+    array_push($arrDat3,["value"=> "1126"]);
+    array_push($arrDat3,["value"=> "987"]);
+    array_push($arrDat3,["value"=> "1610"]);
+    array_push($arrDat3,["value"=> "903"]);
+    array_push($arrDat3,["value"=> "928"]);
+    array_push($arrDat3,["value"=> "1000"]);
+    // Poner en array la serie y el tipo de renderizado
+//    $vvalor = substr($array[0]["NOMBREP"],0,20);
+//    array_push($arrDat, array("seriesname" => "".$vvalor."" ,));
+//    array_push($arrDat, array("renderas" => "Area" ,));
+    // Recorrer todas las filas del arraya
+//    $longitud = count($array);
+//    for($i=0; $i<$longitud; $i++)
+//	{
+//          // Calculo valor
+//            $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+//            array_push($arrrDat, array("value" => $vvalor)); 
+//            
+//                
+//   
+    $arrDat =array();
+    array_push($arrDat,$arrDat1,$arrDat2,$arrDat3);
+    //var_dump ($arrDat);
+    return $arrDat;
+}
 
 ?>
 
@@ -178,157 +410,71 @@ function posdecimal($valor,$posiciones) {
     </head>
     <body>
         <?php
-            if (!empty($_POST['cbvalor'])) {
-                $sql = selectdia();
-                $sqlexp = selectdia(1);
-                $vtiposalida = 1;
-                $vlabelstep = 12;
-                $textox = "Horas";
-                $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
-                $_SESSION['escsv'] = 1;
-                //echo $sql;
-            }
-            if (!empty($_POST['cbvalorm'])) {
-                $sql = selectmes();
-                $sqlexp = selectmes(1);
-                $vtiposalida = 2;
-                $vlabelstep = 288;
-                $textox = "Días";
-                $_SESSION['escsv'] = 1;
-                //$vtxtpie= 'Informe del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
-                //echo $sql;
-            }
-            if (!empty($_POST['cbvalory'])) {
-                $sql = selectyear();
-                $sqlexp = selectyear(1);
-                $vtiposalida = 3;
-                $vlabelstep = 1;
-                $textox = "Meses";
-                $_SESSION['escsv'] = 1;
-                //$vtxtpie= 'Informe del ejercicio '.$_POST['cbyear'].'.';
-                //echo 'Combo año:'.$_POST['cbvalory'];
-                //echo $sql;
-            }
-            if (!empty($_POST['cbvalort'])) {
-                $sql = selectall();
-                $sqlexp = selectall(1);
-                $vtiposalida = 4;
-                $vlabelstep = 1;
-                $textox = "Ejercicio";
-                $_SESSION['escsv'] = 1;
-                //echo 'Combo total:'.$_POST['cbvalort'];
-                //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
-                //echo $sql;
-            }
-            if (!empty($_POST['cbvalorr'])) {
-                $sql = selectrango();
-                $sqlexp = selectrango(1);
-                $vtiposalida = 5;
-                $vlabelstep = 12;
-                $textox = "Horas";
-                $_SESSION['escsv'] = 1;
-                //echo 'Combo total:'.$_POST['cbvalort'];
-                //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
-                //echo $sql;
-            }
-            // Usar la select de sesión para mostar o no botón.
-            $_SESSION['ssql'] = "0";
-            // Execute the query, or else return the error message.
-            $result = $dbhandle->query($sql) or exit("Código de error ({$dbhandle->errno}): {$dbhandle->error}");
+        if (!empty($_POST['cbvalor'])) {
+            $vtiposalida = 1;
+            $vlabelstep = 12;
+            $textox = "Horas";
+            $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
+            $_SESSION['escsv'] = 1;
+            //echo $sql;
+        }
+        if (!empty($_POST['cbvalorm'])) {
+            $vtiposalida = 2;
+            $vlabelstep = 288;
+            $textox = "Días";
+            $_SESSION['escsv'] = 1;
+            //$vtxtpie= 'Informe del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
+            //echo $sql;
+        }
+        if (!empty($_POST['cbvalory'])) {
+            $vtiposalida = 3;
+            $vlabelstep = 1;
+            $textox = "Meses";
+            $_SESSION['escsv'] = 1;
+            //$vtxtpie= 'Informe del ejercicio '.$_POST['cbyear'].'.';
+            //echo 'Combo año:'.$_POST['cbvalory'];
+            //echo $sql;
+        }
+        if (!empty($_POST['cbvalort'])) {
+            $vtiposalida = 4;
+            $vlabelstep = 1;
+            $textox = "Ejercicio";
+            $_SESSION['escsv'] = 1;
+            //echo 'Combo total:'.$_POST['cbvalort'];
+            //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
+            //echo $sql;
+        }
+        if (!empty($_POST['cbvalorr'])) {
+            $vtiposalida = 5;
+            $vlabelstep = 12;
+            $textox = "Horas";
+            $_SESSION['escsv'] = 1;
+            //echo 'Combo total:'.$_POST['cbvalort'];
+            //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
+            //echo $sql;
+        }
+        // Hacer la llamada general
+        $arrData = configchar($_POST['cbvalor'],$vlabelstep,$textox,$vtiposalida);
+        var_dump($arrData);
+        // Usar la select de sesión para mostar o no botón.
+        $jsonEncodedData = json_encode($arrData);
+        //echo $jsonEncodedData;
+        /*Create an object for the column chart using the FusionCharts PHP class constructor. Syntax for the constructor is ` FusionCharts("type of chart", "unique chart id", width of the chart, height of the chart, "div id to render the chart", "data format", "data source")`. Because we are using JSON data to render the chart, the data format will be `json`. The variable `$jsonEncodeData` holds all the JSON data for the chart, and will be passed as the value for the data source parameter of the constructor.*/
 
-            // If the query returns a valid response, prepare the JSON string
-            if ($result) {
-               // Guardar SQL en $_POST para realizar el export
-               $_SESSION['ssql'] = $sqlexp;
-               
-               $fila1 = mysqli_fetch_array($result);
-               $vvalor = substr($fila1["NOMBREP"],0,20);
-               $vprefijo = $fila1["PREFIJO"];
-               $vtxtpie= "Descargar.";
-               //$vvalor.=" / ".$vprefijo;
-               // The `$arrData` array holds the chart attributes and data
-               $arrData = array(
-                   "chart" => array(
-                       // Labelstep cada cuanto pinta la barra de abajo
-                       "labelStep" => "".$vlabelstep."",
-                       "showvalues"=>  "0",
-                       "caption" => "".$vvalor." en (".$vprefijo.")",
-                       //"yaxisname"=>  "".$vvalor." en (".$vprefijo.")",
-                       "xaxisname"=>  $textox,
-                       "yaxisvaluespadding"=> "10",
-                       "canvasborderalpha"=>  "0",
-                       "canvasbgalpha"=>  "0",
-                       "numvdivlines"=>  "3",
-                       "plotgradientcolor"=>  "0000FF",
-                       "drawanchors"=>  "1",
-                       "plotfillangle"=>  "90",
-                       "plotfillalpha"=>  "63",
-                       "vdivlinealpha"=>  "22",
-                       "vdivlinecolor"=>  "6281B5",
-                       "bgcolor"=>  "ABCAD3,B3CCE1",
-                       "showplotborder"=>  "0",
-                       "numbersuffix"=>  "".$vprefijo."",
-                       "bordercolor"=>  "9DBCCC",
-                       "borderalpha"=>  "100",
-                       "canvasbgratio"=>  "0",
-                       "basefontcolor"=>  "37444A",
-                       "tooltipbgcolor"=>  "37444A",
-                       "tooltipbordercolor"=>  "37444A",
-                       "tooltipcolor"=>  "FFFFFF",
-                       "basefontsize"=>  "8",
-                       "outcnvbasefontsize"=>  "11",
-                       "animation"=>  "1",
-                       "palettecolors"=>  "0080C0",
-                       "showtooltip"=>  "1",
-                       "showborder"=>  "0"
-                     )
-                  );
+        //$columnChart = new FusionCharts("area2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+        // Crear convinación de areas
+        $columnChart = new FusionCharts("mscombi2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
 
-               $arrData["data"] = array();
-               // Valores de primera fila.
-               // Pintar nombre de meses.
-               if ($vtiposalida ==3){
-                  $fila1["HORA"] = $ameses[$fila1["HORA"] - 1];
-               }
-               array_push($arrData["data"], array(
-                     "label" => $fila1["HORA"],
-                     "value" => posdecimal($fila1["VALOR"],$fila1["POSDECIMAL"])
-                     )
-                  );
-               // Resto de filas en array
-               while($row = mysqli_fetch_array($result)) {
-                  // Pintar nombre de meses.
-                  if ($vtiposalida ==3){
-                    $row["HORA"] = $ameses[$row["HORA"] - 1];
-                  }      
-                  array_push($arrData["data"], array(
-                     "label" => $row["HORA"],
-                     "value" => posdecimal($row["VALOR"],$row["POSDECIMAL"])
-                     )
-                  );
-               }
+        // Render the chart
+        $columnChart->render();
 
-               /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
-
-               $jsonEncodedData = json_encode($arrData);
-
-       /*Create an object for the column chart using the FusionCharts PHP class constructor. Syntax for the constructor is ` FusionCharts("type of chart", "unique chart id", width of the chart, height of the chart, "div id to render the chart", "data format", "data source")`. Because we are using JSON data to render the chart, the data format will be `json`. The variable `$jsonEncodeData` holds all the JSON data for the chart, and will be passed as the value for the data source parameter of the constructor.*/
-
-               $columnChart = new FusionCharts("area2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
-               // Crear convinación de areas
-               //$columnChart = new FusionCharts("stackedarea2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
-
-               // Render the chart
-               $columnChart->render();
-
-               // Close the database connection
-               $dbhandle->close();
-            }
+        // Close the database connection
+        $dbhandle->close();
       ?>
       <div id="graf_hora"><!-- Fusion Charts will render here--></div>
       <div id="piegrafica">
         <p><?php
-            if (!empty($vvalor)) {
+            if (!empty($arrData)) {
                echo $vtxtpie.' ';
             }else{
                exit("Realice la selección de datos.");     
