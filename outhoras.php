@@ -204,68 +204,47 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
     $result = $link->query($sql);
     
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
-    $vprefijo = $afilas[0]["PREFIJO"];
     // General chart
-    $adata = chart($vlabelstep,$vprefijo,$textox);
+    $adata = chart($vlabelstep,$textox);
     $adet = datachart($afilas);
     
-    // Recorrer detalles
-    $longitud = count($afilas);
-    for($i=0; $i<$longitud; $i++)
-    {
-        array_push($acat, array(
-        "label" => $afilas[$i]["HORA"]
-        )
-        );
-    }
-//    // Las categorias
-//    $acat = categorychart($adet,$vtiposalida);
+    // Las categorias
+    $acat = categorychart($afilas,$vtiposalida);
 
-//    // Crear el array general adata+acat+adet
-//    $adata["categories"]=array(array("category"=>$acat));
-// 
-//    
-//    // Crear Array dataset
-//    $adata["dataset"] = [[$adet]];
-    // Añadir resto de series
-
-    //$adata["dataset"] = [["seriesName"=> "Actual Revenue",  "renderAs"=>"area", "data"=>$arrDat1], ["seriesName"=> "Projected Revenue",  "renderAs"=>"line", "data"=>$arrDat2],["seriesName"=> "Profit",  "renderAs"=>"area", "data"=>$arrDat3]];
-
+    $adata["categories"]=[["category"=>$acat]];
+    // creating dataset object
+    $adata["dataset"] = [$adet];
     // Recorrer el resto del array
-//    $longitud = count($arrayp);
-//    $sexcel = $arrayp[0];
-//    for($i=1; $i<$longitud; $i++)
-//    {
-//        $sql = getsql($arrayp[i],$vtiposalida,0);
-//        $result = $link->query($sql);
-//	$adet = $result->fetchAll(PDO::FETCH_ASSOC);
-//        $adet = datachart($adet);
-//        array_push($adata["dataset"],$adet);
-//        // Control select excel.
-//        $sexcel .= ','.$arrayp[i];
-//    }
-    //$adata["dataset"]=array seriesname"=>"Revenue","renderas"=>"Area","data"=>$adet);
+    $longitud = count($arrayp);
+    $sexcel = $arrayp[0];
+    for($i=1; $i<$longitud; $i++)
+    {
+        $sql = getsql($arrayp[$i],$vtiposalida,0);
+        $result = $link->query($sql);
+        $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
+        $adet = datachart($afilas);
+        // ERROR???
+        array_push($adata["dataset"],$adet);
+        // Control select excel.
+        $sexcel .= ','.$arrayp[$i];
+    }
     // Retornar el excel
     $sqlexp = getsql($sexcel,$vtiposalida,1);
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
     
     //var_dump($adata);
-    $adata["categories"]=[["category"=>$acat]];
-    // creating dataset object
-    $adata["dataset"] = [$adet];
     return $adata;
 }
 
-function chart($vlabelstep,$vprefijo,$textox)
+function chart($vlabelstep,$textox)
 {
     $arrData = [
                 "chart" => [
                     // Labelstep cada cuanto pinta la barra de abajo  
                     "labelStep" => "".$vlabelstep."",
                     "showvalues"=>  "0",
-                    "xaxisname"=>  $textox,
-                    "numberPrefix"=> "".$vprefijo."",
+                    "xaxisname"=>  "".$textox."",
                     "yaxisvaluespadding"=> "10",
                     "canvasborderalpha"=>  "0",
                     "canvasbgalpha"=>  "0",
@@ -288,7 +267,7 @@ function chart($vlabelstep,$vprefijo,$textox)
                     "basefontsize"=>  "8",
                     "outcnvbasefontsize"=>  "11",
                     "animation"=>  "1",
-                    "palettecolors"=>  "0080C0",
+                   // "palettecolors"=>  "0080C0",
                     "showtooltip"=>  "1",
                     "showborder"=>  "0"
                   ]
@@ -319,7 +298,7 @@ function datachart($array)
     $arrDat = array();
     $afilas = array();
     // Poner en array la serie y el tipo de renderizado
-    $vserie = substr($array[0]["NOMBREP"],0,20);
+    $vserie = substr($array[0]["NOMBREP"],0,20)." ".$array[0]["PREFIJO"];
    //  Recorrer todas las filas del arraya
     $longitud = count($array);
     for($i=0; $i<$longitud; $i++)
@@ -387,7 +366,7 @@ function datachart($array)
         }
         // Hacer la llamada general
         $arrData = configchar($_POST['cbvalor'],$vlabelstep,$textox,$vtiposalida);
-        var_dump($arrData);
+        //var_dump($arrData);
         // Usar la select de sesión para mostar o no botón.
         $jsonEncodedData = json_encode($arrData);
         //echo $jsonEncodedData;

@@ -153,8 +153,8 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalor">Elegir primer parámetro</label></p>
-                            <select name="cbvalor"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                            <p> <label for="cbvalor">Elegir parámetros</label></p>
+                            <select name="cbvalor[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
                             echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -203,7 +203,7 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalorm">Elegir primer parámetro</label></p>
+                            <p> <label for="cbvalorm">Elegir parámetros</label></p>
                             <select name="cbvalorm"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                                 $resparametros = mysql_query($sql);
@@ -265,7 +265,7 @@ function checktab() {
                 <tbody>
                     <tr>
                         <td>
-                            <p> <label for="cbvalorr">Elegir primer parámetro</label></p>
+                            <p> <label for="cbvalorr">Elegir parámetros</label></p>
                             <select name="cbvalorr"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);

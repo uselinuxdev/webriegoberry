@@ -21,17 +21,16 @@ and open the template in the editor.
             $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
             $rowhoy = mysqli_fetch_array($result);
             // Mes actual
-            $mesyear = strtotime(date("Y")."-".date("m")."-01");
-            $mesyearfin = date("Y-m-d", strtotime("+1 month", $mesyear));
+            $mesyear = date("Y")."-".date("m")."-01";
             $ssql = "select sum(intvalor) as month"
             . " from grafica_dias"
             . " where idparametro=".$aparam[0]['idparametroa']
-            . " and flectura >= '".$mesyear."'"
-            . " and flectura < '".$mesyearfin."'";
+            . " and flectura >= '".$mesyear."'";
+            //echo $ssql;
             $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
             $rowmonth = mysqli_fetch_array($result);
             // Cargar año actual
-            $eneroyear = date("Y")."01-01";
+            $eneroyear = date("Y")."-01-01";
             $ssql = "select sum(intvalor) as year"
                 . " from grafica_dias"
                 . " where idparametro=".$aparam[0]['idparametroa']
