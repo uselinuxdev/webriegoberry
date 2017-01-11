@@ -50,7 +50,7 @@ function selectdia($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
    // echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H:%I') AS HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
@@ -193,135 +193,106 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
 {
     // Recorrer el array de todos los parametros
     $adata= array();
-    $adet= array();
     $acat= array();
+    $adet= array();
+    
+    $afilas = array();
+    
     // Cargar datos en array
     $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
     $sql = getsql($arrayp[0],$vtiposalida,0);
     $result = $link->query($sql);
-    $adet = $result->fetchAll(PDO::FETCH_ASSOC);
-    $vprefijo = $adet[0]["PREFIJO"];
+    
+    $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
+    $vprefijo = $afilas[0]["PREFIJO"];
+    // General chart
     $adata = chart($vlabelstep,$vprefijo,$textox);
-    // Las categorias
-    $acat = categorychart($adet,$vtiposalida);
-    $adet = datachart($adet);
-    // Crear el array general adata+acat+adet
-    array_push($adata,$acat,$adet);
-    $adata["categories"]=array(array("category"=>$acat));
-    // Pruebas de series
-    $arrDat1 = array();
+    $adet = datachart($afilas);
     
-    array_push($arrDat1,["value"=> "5854"]);
-    array_push($arrDat1,["value"=> "4171"]);
-    array_push($arrDat1,["value"=> "1375"]);
-    array_push($arrDat1,["value"=> "1875"]);
-    array_push($arrDat1,["value"=> "2246"]);
-    array_push($arrDat1,["value"=> "2696"]);
-
-    $arrDat2 = array();
-    
-    array_push($arrDat2,["value"=> "3242"]);
-    array_push($arrDat2,["value"=> "3171"]);
-    array_push($arrDat2,["value"=> "700"]);
-    array_push($arrDat2,["value"=> "1287"]);
-    array_push($arrDat2,["value"=> "1856"]);
-    array_push($arrDat2,["value"=> "1126"]);
-    
-    
-    $arrDat3 = array();
-    
-    array_push($arrDat3,["value"=> "1126"]);
-    array_push($arrDat3,["value"=> "987"]);
-    array_push($arrDat3,["value"=> "1610"]);
-    array_push($arrDat3,["value"=> "903"]);
-    array_push($arrDat3,["value"=> "928"]);
-    array_push($arrDat3,["value"=> "1000"]);
-    $adata["dataset"] = array(array("seriesName"=> "Actual Revenue",  "renderAs"=>"area", "data"=>$arrDat1), array("seriesName"=> "Projected Revenue",  "renderAs"=>"line", "data"=>$arrDat2),array("seriesName"=> "Profit",  "renderAs"=>"area", "data"=>$arrDat3));
-    //print_r($adata);
-    // Recorrer el resto del array
-    $longitud = count($arrayp);
-    $sexcel = $arrayp[0];
-    for($i=1; $i<$longitud; $i++)
+    // Recorrer detalles
+    $longitud = count($afilas);
+    for($i=0; $i<$longitud; $i++)
     {
-        $sql = getsql($arrayp[i],$vtiposalida,0);
-        $result = $link->query($sql);
-	$adet = $result->fetchAll(PDO::FETCH_ASSOC);
-        $adet = datachart($adet);
-        $adata["dataset"]=array("seriesname"=>"Revenue","renderas"=>"Area","data"=>$adet);
-        // Control select excel.
-        $sexcel .= ','.$arrayp[i];
+        array_push($acat, array(
+        "label" => $afilas[$i]["HORA"]
+        )
+        );
     }
+//    // Las categorias
+//    $acat = categorychart($adet,$vtiposalida);
+
+//    // Crear el array general adata+acat+adet
+//    $adata["categories"]=array(array("category"=>$acat));
+// 
+//    
+//    // Crear Array dataset
+//    $adata["dataset"] = [[$adet]];
+    // Añadir resto de series
+
+    //$adata["dataset"] = [["seriesName"=> "Actual Revenue",  "renderAs"=>"area", "data"=>$arrDat1], ["seriesName"=> "Projected Revenue",  "renderAs"=>"line", "data"=>$arrDat2],["seriesName"=> "Profit",  "renderAs"=>"area", "data"=>$arrDat3]];
+
+    // Recorrer el resto del array
+//    $longitud = count($arrayp);
+//    $sexcel = $arrayp[0];
+//    for($i=1; $i<$longitud; $i++)
+//    {
+//        $sql = getsql($arrayp[i],$vtiposalida,0);
+//        $result = $link->query($sql);
+//	$adet = $result->fetchAll(PDO::FETCH_ASSOC);
+//        $adet = datachart($adet);
+//        array_push($adata["dataset"],$adet);
+//        // Control select excel.
+//        $sexcel .= ','.$arrayp[i];
+//    }
     //$adata["dataset"]=array seriesname"=>"Revenue","renderas"=>"Area","data"=>$adet);
-   // print_r($adata);
-   // print_r($acat);
-    //print_r($adet);
     // Retornar el excel
     $sqlexp = getsql($sexcel,$vtiposalida,1);
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
-
+    
+    //var_dump($adata);
+    $adata["categories"]=[["category"=>$acat]];
+    // creating dataset object
+    $adata["dataset"] = [$adet];
     return $adata;
 }
 
 function chart($vlabelstep,$vprefijo,$textox)
 {
-      $arrData = [
-        "chart" => [
-            "caption"=> "Harry's SuperMart",
-            "subCaption"=> "Sales analysis of last year",
-            "xAxisname"=> "Month",
-            "yAxisName"=> "Revenues (In USD)",
-            "numberPrefix"=> "$",
-            "legendItemFontColor"=> "#666666",
-            "theme"=> "zune"
-            ]
-          ];
-//    $arrData = array(
-//                   "chart" => array(
-//                        // Labelstep cada cuanto pinta la barra de abajo
-//                        "palette"=> "2",
-//                        "caption"=>"Sales",
-//                        "subcaption"=> "March 2006",
-//                        "showvalues"=> "0",
-//                        "divlinedecimalprecision"=> "1",
-//                        "limitsdecimalprecision"=> "1",
-//                        "pyaxisname"=> "Amount",
-//                        "syaxisname"=> "Quantity",
-//                       "numbersuffix"=>  "".$vprefijo."",
-//                        "formatnumberscale"=> "0",
-//                        "areaovercolumns"=> "0",
-//                        "legendiconscale"=> "4",
-//                        "showborder"=> "0" ,                           
-                    //   "labelStep" => "".$vlabelstep."",
-//                       "showvalues"=>  "0",
-//                       "xaxisname"=>  $textox,
-//                       "yaxisvaluespadding"=> "10",
-//                       "canvasborderalpha"=>  "0",
-//                       "canvasbgalpha"=>  "0",
-//                       "numvdivlines"=>  "3",
-//                       "plotgradientcolor"=>  "0000FF",
-//                       "drawanchors"=>  "1",
-//                       "plotfillangle"=>  "90",
-//                       "plotfillalpha"=>  "63",
-//                       "vdivlinealpha"=>  "22",
-//                       "vdivlinecolor"=>  "6281B5",
-//                       "bgcolor"=>  "ABCAD3,B3CCE1",
-//                       "showplotborder"=>  "0",
-//                       "bordercolor"=>  "9DBCCC",
-//                       "borderalpha"=>  "100",
-//                       "canvasbgratio"=>  "0",
-//                       "basefontcolor"=>  "37444A",
-//                       "tooltipbgcolor"=>  "37444A",
-//                       "tooltipbordercolor"=>  "37444A",
-//                       "tooltipcolor"=>  "FFFFFF",
-//                       "basefontsize"=>  "8",
-//                       "outcnvbasefontsize"=>  "11",
-//                       "animation"=>  "1",
-//                       "palettecolors"=>  "0080C0",
-//                       "showtooltip"=>  "1",
-//                       "showborder"=>  "0"
-//                     )
-//                  );
+    $arrData = [
+                "chart" => [
+                    // Labelstep cada cuanto pinta la barra de abajo  
+                    "labelStep" => "".$vlabelstep."",
+                    "showvalues"=>  "0",
+                    "xaxisname"=>  $textox,
+                    "numberPrefix"=> "".$vprefijo."",
+                    "yaxisvaluespadding"=> "10",
+                    "canvasborderalpha"=>  "0",
+                    "canvasbgalpha"=>  "0",
+                    "numvdivlines"=>  "3",
+                    "plotgradientcolor"=>  "0000FF",
+                    "drawanchors"=>  "1",
+                    "plotfillangle"=>  "90",
+                    "plotfillalpha"=>  "63",
+                    "vdivlinealpha"=>  "22",
+                    "vdivlinecolor"=>  "6281B5",
+                    "bgcolor"=>  "ABCAD3,B3CCE1",
+                    "showplotborder"=>  "0",
+                    "bordercolor"=>  "9DBCCC",
+                    "borderalpha"=>  "100",
+                    "canvasbgratio"=>  "0",
+                    "basefontcolor"=>  "37444A",
+                    "tooltipbgcolor"=>  "37444A",
+                    "tooltipbordercolor"=>  "37444A",
+                    "tooltipcolor"=>  "FFFFFF",
+                    "basefontsize"=>  "8",
+                    "outcnvbasefontsize"=>  "11",
+                    "animation"=>  "1",
+                    "palettecolors"=>  "0080C0",
+                    "showtooltip"=>  "1",
+                    "showborder"=>  "0"
+                  ]
+               ];
     //var_dump($arrData);
     return $arrData;
 }
@@ -329,24 +300,15 @@ function chart($vlabelstep,$vprefijo,$textox)
 function categorychart($array,$vtiposalida) {
     // Categorias. Valores X de la gráfica
     $arrCat = array();
-    array_push($arrCat,["label"=> "A"]);
-    array_push($arrCat,["label"=> "B"]);
-    array_push($arrCat,["label"=> "C"]);
-    array_push($arrCat,["label"=> "D"]);
-    array_push($arrCat,["label"=> "E"]);
-    array_push($arrCat,["label"=> "F"]);
     // Recorrer todas las filas del arraya
-//    $longitud = count($array);
-//    for($i=0; $i<$longitud; $i++)
-//    {
-//        if ($vtiposalida ==3){
-//           $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
-//        }
-//        array_push($arrCat, array(
-//                "label" => $array[$i]["HORA"]
-//                )
-//        );
-//    }
+    $longitud = count($array);
+    for($i=0; $i<$longitud; $i++)
+    {
+        if ($vtiposalida ==3){
+           $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
+        }
+        array_push($arrCat, array("label" => $array[$i]["HORA"]));
+    }
     //var_dump($arrCat);
     return $arrCat;
 }
@@ -354,49 +316,19 @@ function categorychart($array,$vtiposalida) {
 function datachart($array)
 {
     // Datos. Valores Y de la gráfica. Varias series
-    $arrDat1 = array();
-    
-    array_push($arrDat1,["value"=> "5854"]);
-    array_push($arrDat1,["value"=> "4171"]);
-    array_push($arrDat1,["value"=> "1375"]);
-    array_push($arrDat1,["value"=> "1875"]);
-    array_push($arrDat1,["value"=> "2246"]);
-    array_push($arrDat1,["value"=> "2696"]);
-
-    $arrDat2 = array();
-    
-    array_push($arrDat2,["value"=> "3242"]);
-    array_push($arrDat2,["value"=> "3171"]);
-    array_push($arrDat2,["value"=> "700"]);
-    array_push($arrDat2,["value"=> "1287"]);
-    array_push($arrDat2,["value"=> "1856"]);
-    array_push($arrDat2,["value"=> "1126"]);
-    
-    
-    $arrDat3 = array();
-    
-    array_push($arrDat3,["value"=> "1126"]);
-    array_push($arrDat3,["value"=> "987"]);
-    array_push($arrDat3,["value"=> "1610"]);
-    array_push($arrDat3,["value"=> "903"]);
-    array_push($arrDat3,["value"=> "928"]);
-    array_push($arrDat3,["value"=> "1000"]);
+    $arrDat = array();
+    $afilas = array();
     // Poner en array la serie y el tipo de renderizado
-//    $vvalor = substr($array[0]["NOMBREP"],0,20);
-//    array_push($arrDat, array("seriesname" => "".$vvalor."" ,));
-//    array_push($arrDat, array("renderas" => "Area" ,));
-    // Recorrer todas las filas del arraya
-//    $longitud = count($array);
-//    for($i=0; $i<$longitud; $i++)
-//	{
-//          // Calculo valor
-//            $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-//            array_push($arrrDat, array("value" => $vvalor)); 
-//            
-//                
-//   
-    $arrDat =array();
-    array_push($arrDat,$arrDat1,$arrDat2,$arrDat3);
+    $vserie = substr($array[0]["NOMBREP"],0,20);
+   //  Recorrer todas las filas del arraya
+    $longitud = count($array);
+    for($i=0; $i<$longitud; $i++)
+	{
+          // Calculo valor
+            $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+            array_push($afilas, array("value" => $vvalor)); 
+        }  
+    $arrDat = ["seriesName"=> "".$vserie."",  "renderAs"=>"area", "data"=>$afilas];
     //var_dump ($arrDat);
     return $arrDat;
 }
