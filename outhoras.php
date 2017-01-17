@@ -40,10 +40,6 @@ function selectdia($vparam,$expexcel = 0) {
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     $vfecha =date('Y-m-d',strtotime($_POST['fhasta'])); 
     //echo $_POST['fhasta'];
-    //echo $vfecha;
-    //$vhora = $_POST['nhora'].':00:00';
-    //echo $vhora;
-    //$vfecha .= ' '.$vhora;
     $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
     //echo $vdesde;
     $vhasta = date("Y-m-d H:i:s", strtotime('+1 days',strtotime($vfecha)));
@@ -327,6 +323,7 @@ function datachart($array)
             $textox = "Horas";
             $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
             $_SESSION['escsv'] = 1;
+            $arrData = configchar($_POST['cbvalor'],$vlabelstep,$textox,$vtiposalida);
             //echo $sql;
         }
         if (!empty($_POST['cbvalorm'])) {
@@ -334,6 +331,7 @@ function datachart($array)
             $vlabelstep = 288;
             $textox = "Días";
             $_SESSION['escsv'] = 1;
+            $arrData = configchar($_POST['cbvalorm'],$vlabelstep,$textox,$vtiposalida);
             //$vtxtpie= 'Informe del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
             //echo $sql;
         }
@@ -342,6 +340,7 @@ function datachart($array)
             $vlabelstep = 1;
             $textox = "Meses";
             $_SESSION['escsv'] = 1;
+            $arrData = configchar($_POST['cbvalory'],$vlabelstep,$textox,$vtiposalida);
             //$vtxtpie= 'Informe del ejercicio '.$_POST['cbyear'].'.';
             //echo 'Combo año:'.$_POST['cbvalory'];
             //echo $sql;
@@ -351,6 +350,7 @@ function datachart($array)
             $vlabelstep = 1;
             $textox = "Ejercicio";
             $_SESSION['escsv'] = 1;
+            $arrData = configchar($_POST['cbvalort'],$vlabelstep,$textox,$vtiposalida);
             //echo 'Combo total:'.$_POST['cbvalort'];
             //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
             //echo $sql;
@@ -360,12 +360,11 @@ function datachart($array)
             $vlabelstep = 12;
             $textox = "Horas";
             $_SESSION['escsv'] = 1;
+            $arrData = configchar($_POST['cbvalorr'],$vlabelstep,$textox,$vtiposalida);
             //echo 'Combo total:'.$_POST['cbvalort'];
             //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
             //echo $sql;
         }
-        // Hacer la llamada general
-        $arrData = configchar($_POST['cbvalor'],$vlabelstep,$textox,$vtiposalida);
         //var_dump($arrData);
         // Usar la select de sesión para mostar o no botón.
         $jsonEncodedData = json_encode($arrData);
@@ -374,8 +373,8 @@ function datachart($array)
 
         //$columnChart = new FusionCharts("area2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
         // Crear convinación de areas
-        $columnChart = new FusionCharts("mscombi2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
-
+        //$columnChart = new FusionCharts("mscombi2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+        $columnChart = new FusionCharts("stackedarea2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
         // Render the chart
         $columnChart->render();
 
