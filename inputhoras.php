@@ -99,46 +99,54 @@ function checktab() {
         ?>
         <meta charset="UTF-8">
         <title>Grafica de parámetros de la instalación por horas.</title>
-          <link href="css/jquery-ui.css" rel="stylesheet">
-            <script src="java/jquery.js">
-            </script>
-            <script src="java/jquery-ui.js"></script>
-            <script>
-                $.datepicker.regional['es'] = {
-                closeText: 'Cerrar',
-                prevText: '<Ant',
-                nextText: 'Sig>',
-                currentText: 'Hoy',
-                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
-                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-                dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
-                dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
-                weekHeader: 'Sm',
-                dateFormat: 'yy-mm-dd',
-                firstDay: 1,
-                isRTL: false,
-                showMonthAfterYear: false,
-                yearSuffix: ''
-                };
-                $.datepicker.setDefaults($.datepicker.regional['es']);
-                //Meter punteros a los diferentes fecha
-                $(function () {
+        <link href="css/jquery-ui.css" rel="stylesheet">
+        <link href="css/jq-styles.css" rel="stylesheet" type="text/css">
+        <script src="java/jquery.js"></script>
+        <script src="java/jquery-ui.js"></script>
+        <script src="java/jquery.multi-select.js"></script>
+
+        <script>
+            $.datepicker.regional['es'] = {
+            closeText: 'Cerrar',
+            prevText: '<Ant',
+            nextText: 'Sig>',
+            currentText: 'Hoy',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+            weekHeader: 'Sm',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+            };
+            $.datepicker.setDefaults($.datepicker.regional['es']);
+            //Meter punteros a los diferentes fecha
+            $(function () {
                 $("#fhasta").datepicker({
-                changeMonth: true,
-                changeYear: true
+                    changeMonth: true,
+                    changeYear: true
+                });
+                // Controlar si hay un post para asignar valor
+                $( "#fhasta" ).datepicker("setDate", new Date("<?php echo $vfecha ?>"));
+
+                $("#fechar").datepicker({
+                    changeMonth: true,
+                    changeYear: true
                 });
                 // Controlar si hay un post para asignar valor
                 $( "#fhasta" ).datepicker("setDate", new Date("<?php echo $vfecha ?>"));
                 
-                $("#fechar").datepicker({
-                changeMonth: true,
-                changeYear: true
-                });
-                // Controlar si hay un post para asignar valor
-                $( "#fhasta" ).datepicker("setDate", new Date("<?php echo $vfecha ?>"));
-                });
-            </script>
+                // Combo checkbox
+                $('#cbvalor').multiSelect();
+                $('#cbvalorm').multiSelect();
+                $('#cbvalorr').multiSelect();
+            });
+        </script>
+        
     </head>
     <body>  
         <div id="periodos">
@@ -154,7 +162,7 @@ function checktab() {
                     <tr>
                         <td>
                             <p> <label for="cbvalor">Elegir parámetros</label></p>
-                            <select name="cbvalor[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                            <select id="cbvalor" name="cbvalor[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
                             echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -163,6 +171,7 @@ function checktab() {
                             $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                             //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
                             $vcombo = "<option value=".$id;
+                            // Controlar array
                             if($_POST['cbvalor']==$id) {
                                 $vcombo = $vcombo. " SELECTED ";
                             }
@@ -204,7 +213,7 @@ function checktab() {
                     <tr>
                         <td>
                             <p> <label for="cbvalorm">Elegir parámetros</label></p>
-                            <select name="cbvalorm[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                            <select id="cbvalorm" name="cbvalorm[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                                 $resparametros = mysql_query($sql);
                                 echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -266,7 +275,7 @@ function checktab() {
                     <tr>
                         <td>
                             <p> <label for="cbvalorr">Elegir parámetros</label></p>
-                            <select name="cbvalorr[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                            <select id="cbvalorr" name="cbvalorr[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
                             echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 

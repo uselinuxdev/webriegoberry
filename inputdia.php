@@ -95,11 +95,12 @@ function checktab() {
         ?>
         <meta charset="UTF-8">
         <title>Grafica de parámetros de la instalación por horas.</title>
-          <link href="css/jquery-ui.css" rel="stylesheet">
-            <script src="java/jquery.js">
-            </script>
-            <script src="java/jquery-ui.js"></script>
-            <script>
+        <link href="css/jquery-ui.css" rel="stylesheet">
+        <link href="css/jq-styles.css" rel="stylesheet" type="text/css">
+        <script src="java/jquery.js"></script>
+        <script src="java/jquery-ui.js"></script>
+        <script src="java/jquery.multi-select.js"></script>
+        <script>
                 $.datepicker.regional['es'] = {
                 closeText: 'Cerrar',
                 prevText: '<Ant',
@@ -120,12 +121,17 @@ function checktab() {
                 $.datepicker.setDefaults($.datepicker.regional['es']);
                 //Meter punteros a los diferentes fecha
                 $(function () {
-                $("#fhasta").datepicker({
-                changeMonth: true,
-                changeYear: true
-                });
-                // Controlar si hay un post para asignar valor
-                $( "#fhasta" ).datepicker("setDate", new Date("<?php echo $vfecha ?>"));
+                    $("#fhasta").datepicker({
+                    changeMonth: true,
+                    changeYear: true
+                    });
+                    // Controlar si hay un post para asignar valor
+                    $( "#fhasta" ).datepicker("setDate", new Date("<?php echo $vfecha ?>"));
+                    // Combo checkbox
+                    $('#cbvalor').multiSelect();
+                    $('#cbvalorm').multiSelect();
+                    $('#cbvalory').multiSelect();
+                    $('#cbvalort').multiSelect();
                 });
             </script>
     </head>
@@ -144,7 +150,7 @@ function checktab() {
                         <tr>
                             <td>
                                 <p> <label for="cbvalor">Elegir primer parámetro</label></p>
-                                <select name="cbvalor[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                                <select name="cbvalor[]" multiple id="cbvalor"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
                                     $resparametros = mysql_query($sql);
                                     echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -194,7 +200,7 @@ function checktab() {
                         <tr>
                             <td>
                                 <p> <label for="cbvalorm">Elegir primer parámetro</label></p>
-                                <select name="cbvalorm[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                                <select name="cbvalorm[]" multiple id="cbvalorm"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
                                     $resparametros = mysql_query($sql);
                                     echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -255,7 +261,7 @@ function checktab() {
                             <tr>
                                 <td>
                                     <p> <label for="cbvalory">Elegir primer parámetro</label></p>
-                                    <select name="cbvalory[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                                    <select name="cbvalory[]" multiple id="cbvalory"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
                                         $resparametros = mysql_query($sql);
                                         echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
@@ -274,7 +280,6 @@ function checktab() {
                                         mysql_free_result($resparametros);
                                     ?>
                                     </select>
-                                    <input type="checkbox" name="checksumay" value="1"> Sumar valores <br>
                                 </td>
                                 <td>
                                 </td>
@@ -306,7 +311,7 @@ function checktab() {
                             <tr>
                                 <td>
                                     <p> <label for="cbvalort">Elegir primer parámetro</label></p>
-                                    <select name="cbvalort[]" multiple size="2"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
+                                    <select name="cbvalort[]" multiple id="cbvalort"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
                                         $resparametros = mysql_query($sql);
                                         echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 

@@ -159,17 +159,17 @@ function posdecimal($valor,$posiciones) {
     return $valor;           
 }
 
-function getsql($valor,$vtiposalida,$expexcel = 0)
+function getsql($valor,$vtiposalida,&$vdesde,&$vhasta,$expexcel = 0)
 {
     switch ($vtiposalida) {
     case 1:
-        return selectdia($valor,$expexcel);
+        return selectdia($valor,$vdesde,$vhasta,$expexcel);
         break;
     case 2:
-        return selectmes($valor,$expexcel);
+        return selectmes($valor,$vdesde,$vhasta,$expexcel);
         break;
     case 3:
-        return selectyear($valor,$expexcel);
+        return selectyear($valor,$vdesde,$vhasta,$expexcel);
         break;
     case 4:
         return selectall($valor,$expexcel);
@@ -186,16 +186,20 @@ function configchar($arrayp,$vtiposalida)
     
     $afilas = array();
     
+    // Variables desde, hasta para subinforme
+    $vdesde = date("Y-m-d");
+    $vhasta = date("Y-m-d");
+    
     // Cargar datos en array
     $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
-    $sql = getsql($arrayp[0],$vtiposalida,0);
+    $sql = getsql($arrayp[0],$vtiposalida,$vdesde,$vhasta,0);
     //echo $sql;
     $result = $link->query($sql);
     
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     // General chart
     $adata = chart();
-    $adet = datachart($afilas);
+    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
     
     // Las categorias
     $acat = categorychart($afilas,$vtiposalida);
@@ -208,17 +212,17 @@ function configchar($arrayp,$vtiposalida)
     $sexcel = $arrayp[0];
     for($i=1; $i<$longitud; $i++)
     {
-        $sql = getsql($arrayp[$i],$vtiposalida,0);
+        $sql = getsql($arrayp[$i],$vtiposalida,$vdesde,$vhasta,0);
         $result = $link->query($sql);
         $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
-        $adet = datachart($afilas);
+        $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
         // ERROR???
         array_push($adata["dataset"],$adet);
         // Control select excel.
         $sexcel .= ','.$arrayp[$i];
     }
     // Retornar el excel
-    $sqlexp = getsql($sexcel,$vtiposalida,1);
+    $sqlexp = getsql($arrayp[0],$vtiposalida,$vdesde,$vhasta,0);
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
     
@@ -259,12 +263,7 @@ function categorychart($array,$vtiposalida) {
         if ($vtiposalida ==3){
            $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
         }
-        // Control de link de sectores
-        $vlink = "";
-        if($ilink == 1) {      
-            $vlink = "P-detailsPopUp,width=700,height=400,toolbar=no,scrollbars=no,resizable=no-sectoresdown.php?gdesde=".$vdesde."&ghasta=".$vhasta."&gtiposalida=".$vtiposalida."&gcolumna=".$array[$i]["HORA"];
-        }
-        array_push($arrCat, array("label" => $array[$i]["HORA"],"link" => $vlink));
+        array_push($arrCat, array("label" => $array[$i]["HORA"]));
     }
     //var_dump($arrCat);
     return $arrCat;
@@ -291,7 +290,7 @@ function datachartold($row,$ilink,$vtiposalida,$vdesde,$vhasta) {
     return $adata;
 }
 
-function datachart($array,$ilink,$vtiposalida,$vdesde,$vhasta)
+function datachart($array,$vdesde,$vhasta,$vtiposalida)
 {
     // Datos. Valores Y de la gráfica. Varias series
     $arrDat = array();
@@ -303,9 +302,14 @@ function datachart($array,$ilink,$vtiposalida,$vdesde,$vhasta)
     $longitud = count($array);
     for($i=0; $i<$longitud; $i++)
 	{
+            // Control de link de sectores
+            $vlink = "";
+            if($array[$i]["ESTLINK"] == 1) {      
+                $vlink = "P-detailsPopUp,width=700,height=400,toolbar=no,scrollbars=no,resizable=no-sectoresdown.php?gdesde=".$vdesde."&ghasta=".$vhasta."&gtiposalida=".$vtiposalida."&gcolumna=".$array[$i]["HORA"];
+            }
             // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            array_push($afilas, array("value" => $vvalor)); 
+            array_push($afilas, array("value" => $vvalor, "link" => $vlink)); 
         }  
     $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas];
     //var_dump ($arrDat);
@@ -323,9 +327,6 @@ function datachart($array,$ilink,$vtiposalida,$vdesde,$vhasta)
     </head>
     <body>
         <?php
-        // Variables desde, hasta para subinforme
-        $vdesde = date("Y-m-d");
-        $vhasta = date("Y-m-d");
         if (!empty($_POST['cbvalor'])) {
             $vtiposalida = 1;
             $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
