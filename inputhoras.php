@@ -167,17 +167,17 @@ function checktab() {
                             $resparametros= mysql_query($sql);
                             echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
                             while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
-                            $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
-                            $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
-                            //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
-                            $vcombo = "<option value=".$id;
-                            // Controlar array
-                            if($_POST['cbvalor']==$id) {
-                                $vcombo = $vcombo. " SELECTED ";
-                            }
-                            $vcombo = $vcombo.">";
-                            $vcombo = $vcombo.$vparametro."</option>"; 
-                            echo $vcombo;
+                                $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
+                                $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
+                                //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+                                $vcombo = "<option value=".$id;
+                                // Controlar array
+                                if(in_array($id,$_POST['cbvalor'])) {
+                                    $vcombo = $vcombo. " SELECTED ";
+                                }
+                                $vcombo = $vcombo.">";
+                                $vcombo = $vcombo.$vparametro."</option>"; 
+                                echo $vcombo;
                             } //Cerramos el ciclo 
                             mysql_free_result($resparametros);
                             ?>
@@ -216,18 +216,17 @@ function checktab() {
                             <select id="cbvalorm" name="cbvalorm[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                                 $resparametros = mysql_query($sql);
-                                echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
                                 while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                     $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                     $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                     //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
                                     $vcombo = "<option value=".$id;
-                                    if($_POST['cbvalorm']==$id) {
+                                    if(in_array($id,$_POST['cbvalorm'])) {
                                         $vcombo = $vcombo. " SELECTED ";
                                     }
-                                $vcombo = $vcombo.">";
-                                $vcombo = $vcombo.$vparametro."</option>"; 
-                                echo $vcombo;
+                                    $vcombo = $vcombo.">";
+                                    $vcombo = $vcombo.$vparametro."</option>"; 
+                                    echo $vcombo;
                                 } //Cerramos el ciclo 
                                 mysql_free_result($resparametros);
                             ?>
@@ -278,18 +277,17 @@ function checktab() {
                             <select id="cbvalorr" name="cbvalorr[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
-                            echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
                             while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
-                            $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
-                            $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
-                            //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
-                            $vcombo = "<option value=".$id;
-                            if($_POST['cbvalorr']==$id) {
-                                $vcombo = $vcombo. " SELECTED ";
-                            }
-                            $vcombo = $vcombo.">";
-                            $vcombo = $vcombo.$vparametro."</option>"; 
-                            echo $vcombo;
+                                $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
+                                $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
+                                //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+                                $vcombo = "<option value=".$id;
+                                if(in_array($id,$_POST['cbvalorr'])) {
+                                    $vcombo = $vcombo. " SELECTED ";
+                                }
+                                $vcombo = $vcombo.">";
+                                $vcombo = $vcombo.$vparametro."</option>"; 
+                                echo $vcombo;
                             } //Cerramos el ciclo 
                             mysql_free_result($resparametros);
                             ?>

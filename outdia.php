@@ -15,14 +15,12 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
 // Definir el titulo para la exportacion
 $_SESSION['expnombre'] = 'exphoras';
 
-// Array de meses.
-$ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
-
 // Establish a connection to the database
 $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
 
 // Array de meses.
 $vtiposalida = 0; // 1 dia,2 mes, 3 año, 4 total.
+$ilink = 0;
 $vdesde = date("Y-m-d H:i:s");
 $vhasta = date("Y-m-d H:i:s");
 
@@ -139,7 +137,7 @@ function selectall($vparam,$expexcel = 0) {
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHAPOSDECIMAL FROM vgrafica_dias ";
     }
-    $sselect.="WHERE idparametro = ".$_SESSION['vparam'];
+    $sselect.="WHERE idparametro in (".$_SESSION['vparam'].")";
     $sselect.=" GROUP BY YEAR order by flectura,idparametro";
     return $sselect;
 }
@@ -177,7 +175,7 @@ function getsql($valor,$vtiposalida,&$vdesde,&$vhasta,$expexcel = 0)
     }
 }
 // Funciones multiseries
-function configchar($arrayp,$vtiposalida)
+function configchar($arrayp,$vtiposalida,&$ilink)
 {
     // Recorrer el array de todos los parametros
     $adata= array();
@@ -199,7 +197,7 @@ function configchar($arrayp,$vtiposalida)
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     // General chart
     $adata = chart();
-    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
+    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida,$ilink);
     
     // Las categorias
     $acat = categorychart($afilas,$vtiposalida);
@@ -222,7 +220,9 @@ function configchar($arrayp,$vtiposalida)
         $sexcel .= ','.$arrayp[$i];
     }
     // Retornar el excel
-    $sqlexp = getsql($arrayp[0],$vtiposalida,$vdesde,$vhasta,0);
+    $sqlexp = getsql($sexcel,$vtiposalida,$vdesde,$vhasta,0);
+    // Añadir todos los parametros del array
+    
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
     
@@ -236,6 +236,7 @@ function chart()
                 "chart" => [
                  // Labelstep cada cuanto pinta la barra de abajo  
                   //  "caption" => "".$textox."",
+                 // "palettecolors"=>  "0080C0",  // Colores de la grafica
                     "bgColor" => "#ffffff",
                     "borderAlpha"=> "20",
                     "canvasBorderAlpha"=> "0",
@@ -256,6 +257,8 @@ function chart()
 function categorychart($array,$vtiposalida) {
     // Categorias. Valores X de la gráfica
     $arrCat = array();
+    // Array de meses.
+    $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
     // Recorrer todas las filas del arraya
     $longitud = count($array);
     for($i=0; $i<$longitud; $i++)
@@ -263,34 +266,13 @@ function categorychart($array,$vtiposalida) {
         if ($vtiposalida ==3){
            $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
         }
-        array_push($arrCat, array("label" => $array[$i]["HORA"]));
+        array_push($arrCat, array("label" => "".$array[$i]["HORA"].""));
     }
-    //var_dump($arrCat);
+    //var_dump($ameses);
     return $arrCat;
 }
 
-// Procesa los valores y retorna array de valores para el chart
-function datachartold($row,$ilink,$vtiposalida,$vdesde,$vhasta) {
-    $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
-    $vlabel = "";
-    if ($vtiposalida == 3) {
-         $vlabel = $ameses[intval($row["HORA"])-1];
-    }else {
-        $vlabel = $row["HORA"];
-    }
-    $vlink = "";
-    if($ilink == 1) {      
-        $vlink = "P-detailsPopUp,width=700,height=400,toolbar=no,scrollbars=no,resizable=no-sectoresdown.php?gdesde=".$vdesde."&ghasta=".$vhasta."&gtiposalida=".$vtiposalida."&gcolumna=".$vlabel;
-    }
-    $adata = array(
-       "label" => $vlabel,
-       "value" => posdecimal($row["VALOR"],$row["POSDECIMAL"]), // <-- Se hace la resta con el valor anterior.
-       "link" => $vlink
-    );
-    return $adata;
-}
-
-function datachart($array,$vdesde,$vhasta,$vtiposalida)
+function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
 {
     // Datos. Valores Y de la gráfica. Varias series
     $arrDat = array();
@@ -304,12 +286,14 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida)
 	{
             // Control de link de sectores
             $vlink = "";
-            if($array[$i]["ESTLINK"] == 1) {      
+            if($array[$i]["ESTLINK"] == 1) {
+                $ilink = 1;
                 $vlink = "P-detailsPopUp,width=700,height=400,toolbar=no,scrollbars=no,resizable=no-sectoresdown.php?gdesde=".$vdesde."&ghasta=".$vhasta."&gtiposalida=".$vtiposalida."&gcolumna=".$array[$i]["HORA"];
-            }
+            }   
             // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            array_push($afilas, array("value" => $vvalor, "link" => $vlink)); 
+            //array_push($afilas, array("value" => $vvalor,"color" => "#C92300", "link" => $vlink));
+            array_push($afilas, array("value" => $vvalor, "link" => $vlink));
         }  
     $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas];
     //var_dump ($arrDat);
@@ -331,20 +315,20 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida)
             $vtiposalida = 1;
             $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
             $_SESSION['escsv'] = 1;
-            $arrData = configchar($_POST['cbvalor'],$vtiposalida);
+            $arrData = configchar($_POST['cbvalor'],$vtiposalida,$ilink);
             //echo $sql;
         }
         if (!empty($_POST['cbvalorm'])) {
             $vtiposalida = 2;
             $_SESSION['escsv'] = 1;
-            $arrData = configchar($_POST['cbvalorm'],$vtiposalida);
+            $arrData = configchar($_POST['cbvalorm'],$vtiposalida,$ilink);
             //$vtxtpie= 'Diferencia del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
             //echo $sql;
         }
         if (!empty($_POST['cbvalory'])) {
             $vtiposalida = 3;
             $_SESSION['escsv'] = 1;
-            $arrData = configchar($_POST['cbvalory'],$vtiposalida);
+            $arrData = configchar($_POST['cbvalory'],$vtiposalida,$ilink);
             //$vtxtpie= 'Diferencia meses del ejercicio '.$_POST['cbyear'].'.';
             //echo 'Combo año:'.$_POST['cbvalory'];
             //echo $sql;
@@ -352,9 +336,9 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida)
         if (!empty($_POST['cbvalort'])) {
             $vtiposalida = 4;
             $_SESSION['escsv'] = 1;
-            $arrData = configchar($_POST['cbvalort'],$vtiposalida);
+            $arrData = configchar($_POST['cbvalort'],$vtiposalida,$ilink);
             //echo 'Combo total:'.$_POST['cbvalort'];
-            //$vtxtpie= 'Diferencia entre ejercicios. Código de parámetro:'.$_POST['cbvalort'].'.';
+            //$vtxtpie= 'Diferencia entre ejercicios. Código de parámetro:'.printr($_POST['cbvalort']).'.';
             //echo $sql;
         }
             
@@ -376,11 +360,10 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida)
       <div id="t_dia"> </div>
       <div id="piegrafica">
             <p>  <?php
-              if (!empty($vvalor)) {
-                  echo $vtxtpie.' ';
-                  if($ilink == 1) {      
-                    echo 'Pinche sobre el valor para ver su grafíca detallada.';
-                  }
+              if (!empty($arrData)) {
+                if ($ilink == 1) {
+                    echo $vtxtpie.' '.'Pinche sobre el valor para ver su grafíca detallada.';
+                }
               }else {
                   exit("Realice la selección de datos.");
               }

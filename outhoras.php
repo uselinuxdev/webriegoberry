@@ -263,7 +263,7 @@ function chart($vlabelstep,$textox)
                     "basefontsize"=>  "8",
                     "outcnvbasefontsize"=>  "11",
                     "animation"=>  "1",
-                   // "palettecolors"=>  "0080C0",
+                   // "palettecolors"=>  "0080C0",   //<--- Colores de la grafica
                     "showtooltip"=>  "1",
                     "showborder"=>  "0"
                   ]

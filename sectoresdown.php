@@ -41,13 +41,14 @@ function selectdia() {
     $vdesde = $_GET['gdesde'];
     $vhasta = $_GET['ghasta'];
     $gcolumna = $_GET['gcolumna'];
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,HORA,ESTLINK FROM vgrafica_horas ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,HORA FROM vgrafica_horas ";
     $sselect.=" WHERE flectura >= '".$vdesde."'";
     $sselect.=" AND flectura < '".$vhasta."'";
     $sselect.=" AND HORA = '".$gcolumna."'";
     $sselect.=" AND estlink = 2";
     $sselect.=" AND VALOR > 0";
     $sselect.=" order by NOMBREP";
+    //echo $sselect;
     return $sselect;
 }
 
@@ -56,45 +57,43 @@ function selectmes() {
     $vdesde = $_GET['gdesde'];
     $vhasta = $_GET['ghasta'];
     $gcolumna = $_GET['gcolumna'];
-    $sselect .=" SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') as flectura FROM vgrafica_horas "; 
+    $sselect .=" SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA FROM vgrafica_dias "; 
     $sselect.="WHERE estlink = 2";
     $sselect.=" AND DIA = '".$gcolumna."'";
     $sselect .=" AND flectura >= '".$vdesde."'";
     $sselect .=" AND flectura < '".$vhasta."'";
     $sselect.=" AND VALOR > 0";
-    $sselect .=" group by idparametro,DIA order by NOMBREP";
+    $sselect .=" group by NOMBREP,PREFIJO,POSDECIMAL,DIA order by NOMBREP";
     //echo $sselect;
     return $sselect;
 }
 
 function selectyear() {
     // Array de meses.
-    $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
-
     // Localizar Nº de mes base 0 a base 1 (Enero 1, Febrero 2).
     $vdesde = $_GET['gdesde'];
-    $vhasta = $_GET['ghasta'];
+    $vyear=substr($vdesde, 0, 4);
     $gcolumna = $_GET['gcolumna'];
-    $nmes = array_search($gcolumna, $ameses);
-    $nmes = $nmes+1;
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
+    $vfecha = "01-".$gcolumna."-".$vyear;
+    $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
+    $vhasta = date("Y-m-d H:i:s", strtotime('+1 month',strtotime($vfecha)));
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA FROM vgrafica_dias ";
     $sselect.="WHERE estlink = 2";
-    $sselect.=" AND flectura >= '".$vdesde."'";
-    $sselect.=" AND flectura < '".$vhasta."'";
-    $sselect.=" AND MES = '".$nmes."'";
+    $sselect .=" AND flectura >= '".$vdesde."'";
+    $sselect .=" AND flectura < '".$vhasta."'";
     $sselect.=" AND VALOR > 0";
-    $sselect.=" GROUP BY idparametro,MES order by NOMBREP";
+    $sselect.=" GROUP BY NOMBREP,PREFIJO,POSDECIMAL,MES order by NOMBREP";
     return $sselect;
 }
 
 function selectall() {
     // Usar vista unión parametros_server y lectura_parametros
     $gcolumna = $_GET['gcolumna'];
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,YEAR AS HORA,ESTLINK FROM vgrafica_dias ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,YEAR AS HORA FROM vgrafica_dias ";
     $sselect.="WHERE estlink = 2";
     $sselect.=" AND YEAR = '".$gcolumna."'";
     $sselect.=" AND VALOR > 0";
-    $sselect.=" GROUP BY idparametro,YEAR order by NOMBREP";
+    $sselect.=" GROUP BY NOMBREP,PREFIJO,POSDECIMAL,YEAR order by NOMBREP";
     return $sselect;
 }
 
