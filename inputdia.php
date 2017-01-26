@@ -168,6 +168,10 @@ function checktab() {
                                     mysql_free_result($resparametros);
                                 ?>
                                 </select>
+                                <label><input type="checkbox" name="ckgroup" value="checked" 
+                                <?php
+                                    echo $_POST['ckgroup'];
+                                ?>/>Agrupar valores</label>
                             </td>
                             <td>
 
@@ -217,6 +221,10 @@ function checktab() {
                                     mysql_free_result($resparametros);
                                 ?>
                                 </select>
+                                <label><input type="checkbox" name="ckgroupm" value="checked" 
+                                <?php
+                                    echo $_POST['ckgroupm'];
+                                ?>/>Agrupar valores</label>
                             </td>
                             <td>
                             </td>
@@ -277,6 +285,10 @@ function checktab() {
                                         mysql_free_result($resparametros);
                                     ?>
                                     </select>
+                                    <label><input type="checkbox" name="ckgroupy" value="checked" 
+                                    <?php
+                                        echo $_POST['ckgroupy'];
+                                    ?>/>Agrupar valores</label>
                                 </td>
                                 <td>
                                 </td>
@@ -326,6 +338,10 @@ function checktab() {
                                         mysql_free_result($resparametros);
                                     ?>
                                     </select>
+                                    <label><input type="checkbox" name="ckgroupt" value="checked" 
+                                    <?php
+                                        echo $_POST['ckgroupt'];
+                                    ?>/>Agrupar valores</label>
                                 </td>
                                 <td>
                                 </td>

@@ -165,7 +165,7 @@ function checktab() {
                             <select id="cbvalor" name="cbvalor[]" multiple> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <?php
                             $resparametros= mysql_query($sql);
-                            echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
+                            //echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
                             while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                 $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                 $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
@@ -182,6 +182,10 @@ function checktab() {
                             mysql_free_result($resparametros);
                             ?>
                             </select>
+                            <label><input type="checkbox" name="ckgroup" value="checked" 
+                            <?php
+                                echo $_POST['ckgroup'];
+                            ?>/>Agrupar valores</label>
                         </td>
                         <td>
                         </td>
@@ -231,6 +235,10 @@ function checktab() {
                                 mysql_free_result($resparametros);
                             ?>
                             </select>
+                            <label><input type="checkbox" name="ckgroupm" value="checked" 
+                            <?php
+                                echo $_POST['ckgroupm'];
+                            ?>/>Agrupar valores</label>
                         </td>
                         <td>
                         </td>
@@ -292,6 +300,10 @@ function checktab() {
                             mysql_free_result($resparametros);
                             ?>
                             </select>
+                            <label><input type="checkbox" name="ckgroupr" value="checked" 
+                            <?php
+                                echo $_POST['ckgroupr'];
+                            ?>/>Agrupar valores</label>
                         </td>
                        <td>
                             <p>Fecha:</p>          

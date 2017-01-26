@@ -23,6 +23,7 @@ $vtiposalida = 0; // 1 dia,2 mes, 3 año, 4 total.
 $ilink = 0;
 $vdesde = date("Y-m-d H:i:s");
 $vhasta = date("Y-m-d H:i:s");
+$vgroup = "checked";
 
 $sqlexp = $sql;
 
@@ -54,10 +55,10 @@ function selectdia($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT IDLECTURA,IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,ESTLINK FROM vgrafica_horas ";
+    $sselect = "SELECT IDLECTURA,IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,ESTLINK FROM vgrafica_horas ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -79,10 +80,10 @@ function selectmes($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
+    $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect ="SELECT NOMBREP AS PARAMETRO,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
+        $sselect ="SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect .=" AND flectura >= '".date($vdesde)."'";
@@ -91,9 +92,9 @@ function selectmes($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     if(date('n') == $vmes) {
         $sselect .=" union ";
         if ($expexcel == 0) {
-            $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas "; 
+            $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas "; 
         }else {
-            $sselect .=" SELECT NOMBREP AS PARAMETRO,SUM(VALOR) AS VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas "; 
+            $sselect .=" SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas "; 
         }
         $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
         $sselect .=" AND flectura > CURRENT_DATE() - INTERVAL 2 DAY";  
@@ -115,10 +116,10 @@ function selectyear($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
     $vhasta = date("Y-m-d H:i:s", strtotime('+1 year',strtotime($vfecha)));
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,SUM(VALOR) AS VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -132,10 +133,10 @@ function selectall($vparam,$expexcel = 0) {
     $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,YEAR AS HORA,ESTLINK FROM vgrafica_dias ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,YEAR AS HORA,ESTLINK FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHAPOSDECIMAL FROM vgrafica_dias ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHAPOSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in (".$_SESSION['vparam'].")";
     $sselect.=" GROUP BY YEAR order by flectura,idparametro";
@@ -292,8 +293,8 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
             }   
             // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            //array_push($afilas, array("value" => $vvalor,"color" => "#C92300", "link" => $vlink));
-            array_push($afilas, array("value" => $vvalor, "link" => $vlink));
+            array_push($afilas, array("value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
+           // array_push($afilas, array("value" => $vvalor, "link" => $vlink));
         }  
     $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas];
     //var_dump ($arrDat);
@@ -315,12 +316,14 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
             $vtiposalida = 1;
             $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroup'];
             $arrData = configchar($_POST['cbvalor'],$vtiposalida,$ilink);
             //echo $sql;
         }
         if (!empty($_POST['cbvalorm'])) {
             $vtiposalida = 2;
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupm'];
             $arrData = configchar($_POST['cbvalorm'],$vtiposalida,$ilink);
             //$vtxtpie= 'Diferencia del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
             //echo $sql;
@@ -328,6 +331,7 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
         if (!empty($_POST['cbvalory'])) {
             $vtiposalida = 3;
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupy'];
             $arrData = configchar($_POST['cbvalory'],$vtiposalida,$ilink);
             //$vtxtpie= 'Diferencia meses del ejercicio '.$_POST['cbyear'].'.';
             //echo 'Combo año:'.$_POST['cbvalory'];
@@ -336,6 +340,7 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
         if (!empty($_POST['cbvalort'])) {
             $vtiposalida = 4;
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupt'];
             $arrData = configchar($_POST['cbvalort'],$vtiposalida,$ilink);
             //echo 'Combo total:'.$_POST['cbvalort'];
             //$vtxtpie= 'Diferencia entre ejercicios. Código de parámetro:'.printr($_POST['cbvalort']).'.';
@@ -348,8 +353,12 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
         /*Create an object for the column chart using the FusionCharts PHP class constructor. Syntax for the constructor is ` FusionCharts("type of chart", "unique chart id", width of the chart, height of the chart, "div id to render the chart", "data format", "data source")`. Because we are using JSON data to render the chart, the data format will be `json`. The variable `$jsonEncodeData` holds all the JSON data for the chart, and will be passed as the value for the data source parameter of the constructor.*/
 
         //$columnChart = new FusionCharts("column2D", "Grafica / Hora" , 600, 300, "graf_hora", "json", $jsonEncodedData);
-        //$columnChart = new FusionCharts("mscolumn3d", "Grafica / Hora" , 700, 300, "t_dia", "json", $jsonEncodedData);
-        $columnChart = new FusionCharts("stackedcolumn3dline", "Grafica / Hora" , 700, 300, "t_dia", "json", $jsonEncodedData);
+        // Controlar la agrupación de datos
+        if ($vgroup == 'checked'){
+            $columnChart = new FusionCharts("stackedcolumn3dline", "Grafica / Hora" , 700, 300, "t_dia", "json", $jsonEncodedData);
+        }else{
+            $columnChart = new FusionCharts("mscolumn3d", "Grafica / Hora" , 700, 300, "t_dia", "json", $jsonEncodedData);
+        }
 
         // Render the chart
         $columnChart->render();

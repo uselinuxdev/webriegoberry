@@ -22,7 +22,7 @@ $_SESSION['expnombre'] = 'expinstantaneos';
 $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
 $vtiposalida = 0; // 1 dia,2 mes, 3 año, 4 total.
 $vlabelstep = 12;
-
+$vgroup = "checked";
 $sqlexp = $sql;
 
 /*Render an error message, to avoid abrupt failure, if the database connection parameters are incorrect */
@@ -46,10 +46,10 @@ function selectdia($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
    // echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
     $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -71,10 +71,10 @@ function selectmes($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA  FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA  FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
     $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -92,10 +92,10 @@ function selectyear($vparam,$expexcel = 0) {
     $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
     $vhasta = date("Y-m-d H:i:s", strtotime('+1 year',strtotime($vfecha)));
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,MES as HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,MES as HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
     $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -108,10 +108,10 @@ function selectall($vparam,$expexcel = 0) {
     $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,YEAR as HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,YEAR as HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,YEAR,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,YEAR,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
     $sselect.="WHERE idparametro in (".$vparam.")";
     return $sselect;
@@ -137,10 +137,10 @@ function selectrango($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,COLOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
     }
     $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura > '".date($vdesde)."'";
@@ -238,34 +238,45 @@ function chart($vlabelstep,$textox)
     $arrData = [
                 "chart" => [
                     // Labelstep cada cuanto pinta la barra de abajo  
+//                    "labelStep" => "".$vlabelstep."",
+//                    "showvalues"=>  "0",
+//                    "xaxisname"=>  "".$textox."",
+//                    "yaxisvaluespadding"=> "10",
+//                    //"canvasborderalpha"=>  "0",
+//                   // "canvasbgalpha"=>  "0",
+//                    "numvdivlines"=>  "3",
+//                    //"plotgradientcolor"=>  "0000FF",
+//                    "drawanchors"=>  "1",
+//                    //"plotfillangle"=>  "90",
+//                    //"plotfillalpha"=>  "63",
+//                   // "vdivlinealpha"=>  "22",
+//                    //"vdivlinecolor"=>  "6281B5",
+//                    //"bgcolor"=>  "ABCAD3,B3CCE1",
+//                    "showplotborder"=>  "0",
+//                   // "bordercolor"=>  "9DBCCC",
+//                   // "borderalpha"=>  "100",
+//                  //  "canvasbgratio"=>  "0",
+//                   // "basefontcolor"=>  "37444A",
+//                   //// "tooltipbgcolor"=>  "37444A",
+//                   // "tooltipbordercolor"=>  "37444A",
+//                   // "tooltipcolor"=>  "FFFFFF",
+//                    "basefontsize"=>  "8",
+//                    "outcnvbasefontsize"=>  "11",
+//                    "animation"=>  "1",
+//                   // "palettecolors"=>  "#FD9927,#FECE2F,#9DCD3F,#CECD42,#64D3D1",   //<--- Colores de la grafica
+//                    "showtooltip"=>  "1",
+//                    "showborder"=>  "0"
                     "labelStep" => "".$vlabelstep."",
-                    "showvalues"=>  "0",
                     "xaxisname"=>  "".$textox."",
-                    "yaxisvaluespadding"=> "10",
-                    "canvasborderalpha"=>  "0",
-                    "canvasbgalpha"=>  "0",
-                    "numvdivlines"=>  "3",
-                    "plotgradientcolor"=>  "0000FF",
-                    "drawanchors"=>  "1",
-                    "plotfillangle"=>  "90",
-                    "plotfillalpha"=>  "63",
-                    "vdivlinealpha"=>  "22",
-                    "vdivlinecolor"=>  "6281B5",
-                    "bgcolor"=>  "ABCAD3,B3CCE1",
-                    "showplotborder"=>  "0",
-                    "bordercolor"=>  "9DBCCC",
-                    "borderalpha"=>  "100",
-                    "canvasbgratio"=>  "0",
-                    "basefontcolor"=>  "37444A",
-                    "tooltipbgcolor"=>  "37444A",
-                    "tooltipbordercolor"=>  "37444A",
-                    "tooltipcolor"=>  "FFFFFF",
-                    "basefontsize"=>  "8",
-                    "outcnvbasefontsize"=>  "11",
-                    "animation"=>  "1",
-                   // "palettecolors"=>  "0080C0",   //<--- Colores de la grafica
-                    "showtooltip"=>  "1",
-                    "showborder"=>  "0"
+                    "plotgradientcolor"=> "",
+                    "bgcolor"=> "FFFFFF",
+                    "showalternatehgridcolor"=> "0",
+                    "showplotborder"=> "0",
+                    "showvalues"=> "0",
+                    "divlinecolor"=> "CCCCCC",
+                    "showcanvasborder"=> "0",
+                    "canvasborderalpha"=>"0",
+                    "showborder"=> "0"
                   ]
                ];
     //var_dump($arrData);
@@ -302,8 +313,10 @@ function datachart($array)
           // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
             array_push($afilas, array("value" => $vvalor)); 
+            //array_push($afilas, array("value" => $vvalor,"color" => "".$array[$i]["COLOR"].""));
         }  
-    $arrDat = ["seriesName"=> "".$vserie."",  "renderAs"=>"area", "data"=>$afilas];
+    $arrDat = ["seriesName"=> "".$vserie."",  "renderAs"=>"area", "data"=>$afilas,"color" => "".$array[0]["COLOR"].""];
+    //$arrDat = ["seriesName"=> "".$vserie."",  "renderAs"=>"area", "data"=>$afilas];
     //var_dump ($arrDat);
     return $arrDat;
 }
@@ -323,6 +336,7 @@ function datachart($array)
             $textox = "Horas";
             $vtxtpie= 'Fecha de informe:'.$_POST['fhasta'].'.';
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroup'];
             $arrData = configchar($_POST['cbvalor'],$vlabelstep,$textox,$vtiposalida);
             //echo $sql;
         }
@@ -331,6 +345,7 @@ function datachart($array)
             $vlabelstep = 288;
             $textox = "Días";
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupm'];
             $arrData = configchar($_POST['cbvalorm'],$vlabelstep,$textox,$vtiposalida);
             //$vtxtpie= 'Informe del mes de '.$ameses[$_POST['cbmes']-1].' de '.$_POST['cbyear'].'.';
             //echo $sql;
@@ -340,6 +355,7 @@ function datachart($array)
             $vlabelstep = 1;
             $textox = "Meses";
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupy'];
             $arrData = configchar($_POST['cbvalory'],$vlabelstep,$textox,$vtiposalida);
             //$vtxtpie= 'Informe del ejercicio '.$_POST['cbyear'].'.';
             //echo 'Combo año:'.$_POST['cbvalory'];
@@ -350,6 +366,7 @@ function datachart($array)
             $vlabelstep = 1;
             $textox = "Ejercicio";
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupt'];
             $arrData = configchar($_POST['cbvalort'],$vlabelstep,$textox,$vtiposalida);
             //echo 'Combo total:'.$_POST['cbvalort'];
             //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
@@ -360,6 +377,7 @@ function datachart($array)
             $vlabelstep = 12;
             $textox = "Horas";
             $_SESSION['escsv'] = 1;
+            $vgroup = $_POST['ckgroupr'];
             $arrData = configchar($_POST['cbvalorr'],$vlabelstep,$textox,$vtiposalida);
             //echo 'Combo total:'.$_POST['cbvalort'];
             //$vtxtpie= 'Informe acumulado total por ejercicio. Código de parámetro:'.$_POST['cbvalort'].'.';
@@ -373,8 +391,12 @@ function datachart($array)
 
         //$columnChart = new FusionCharts("area2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
         // Crear convinación de areas
-        //$columnChart = new FusionCharts("mscombi2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
-        $columnChart = new FusionCharts("stackedarea2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+        // Controlar la agrupación de datos
+        if ($vgroup == 'checked'){
+            $columnChart = new FusionCharts("stackedarea2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+        }else{
+            $columnChart = new FusionCharts("mscombi2d", "Grafica / Hora" , 700, 300, "graf_hora", "json", $jsonEncodedData);
+        }
         // Render the chart
         $columnChart->render();
 
