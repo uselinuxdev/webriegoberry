@@ -25,6 +25,7 @@ and open the template in the editor.
             {
                 // Controlar 
                 if ($i > 0){$ssql .=",";}
+                if (empty($amax[$i])) {$amax[$i] = 0;}
                 $ssql .= $amax[$i];
             }
             // Cerrar in
