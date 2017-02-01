@@ -181,6 +181,16 @@ div#imput{
     width: 730px;
     height: 200px;
 }
+
+div#admright{
+    float:right;
+    /*background-color: yellow; */
+    margin:auto;
+    margin-top: 0px;
+    margin-right: 0px;
+    width: 730px;
+    height: 600px;
+}
 div#imputlogin{
     float:left;
     /*background-color: yellow; */

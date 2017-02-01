@@ -21,22 +21,27 @@ and open the template in the editor.
         ?>
     </head>
     <body>
-       <div id="contenedor">
-           <div id="cabecera">
-                <div id="imgcabecera">
-                    <img src="imagenes/RIEGOSOLAR_Blanco.png" alt="Logo"/>
+        <div id="contenedor">
+            <div id="cabecera">
+                 <div id="imgcabecera">
+                     <img src="imagenes/RIEGOSOLAR_Blanco.png" alt="Logo"/>
+                 </div>
+            </div>
+            <div id="cuerpo">
+                <div id="menuleft">
+                    <?php
+                         //echo 'El nivel del usuario es:'.$_SESSION['nivel'];
+                         include 'menugrafica.php';
+                    ?>    
                 </div>
-           </div>
-           <div id="cuerpo">
-               <div id="menuleft">
-                   <?php
-                        //echo 'El nivel del usuario es:'.$_SESSION['nivel'];
-                        include 'menugrafica.php';
-                   ?>    
-               </div>
- 
-           <div id="pie">
-           </div>
-       </div> <!-- Fin del contendor principal -->
+                <div id="admright">
+                    <?php
+                        include 'admright.php';
+                    ?>
+                </div>
+            <div id="pie">
+            </div>
+            </div> <!-- Fin del contendor principal -->
+        </div>
     </body>
 </html>

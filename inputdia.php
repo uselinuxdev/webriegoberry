@@ -360,7 +360,6 @@ function checktab() {
                     </table>
                 </form>
         </div>
-
         </div>
         <script>
             // Cargar tabs de jquery

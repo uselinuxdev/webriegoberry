@@ -267,7 +267,7 @@ function categorychart($array,$vtiposalida) {
         if ($vtiposalida ==3){
            $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
         }
-        array_push($arrCat, array("label" => "".$array[$i]["HORA"].""));
+        array_push($arrCat, array("label" => "".$array[$i]["HORA"]));
     }
     //var_dump($ameses);
     return $arrCat;
@@ -296,7 +296,7 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
             array_push($afilas, array("value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
            // array_push($afilas, array("value" => $vvalor, "link" => $vlink));
         }  
-    $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas];
+    $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas,"color" => "".$array[0]["COLOR"].""];
     //var_dump ($arrDat);
     return $arrDat;
 }
