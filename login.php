@@ -6,6 +6,8 @@ and open the template in the editor.
 -->
 <html>
     <link rel="stylesheet" type="text/css" href="css/riegoestilos.css">
+    <!-- Meta para que IE se comporte como crome -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <?php
     require('adminsession.php');
     // creamos la sesion y comprobamos si el user ha dado al boton del form.

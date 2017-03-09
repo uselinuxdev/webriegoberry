@@ -7,6 +7,8 @@ and open the template in the editor.
 <html>
     <head>
         <meta charset="UTF-8">
+        <!-- Meta para que IE se comporte como crome -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title></title>
         <link rel="stylesheet" type="text/css" href="css/riegoestilos.css">
         <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">

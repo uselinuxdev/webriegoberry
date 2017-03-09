@@ -7,6 +7,8 @@ and open the template in the editor.
 <html>
     <head>
         <meta charset="UTF-8">
+        <!-- Meta para que IE se comporte como crome -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title></title>
         <?php
             $Classresprod = new riegoresumenClass();

@@ -21,6 +21,7 @@ and open the template in the editor.
                 // Execute the query, or else return the error message.
                 $result = $dbhandle->query($sql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
                 $row = mysqli_fetch_array($result);
+                echo '<p><img src="'.$row[7].'" alt="IMGINSTALL" style="width:235px;" align="middle"/> </p>';
                 echo '<table cellpadding="0" cellspacing="0" class="db-tbresumen">';
                     echo '<tr>';
                     echo '<td align="left"><strong>','Instalación','</strong></td>';
@@ -51,7 +52,6 @@ and open the template in the editor.
                     echo '<td> : ',$row[6],'</td>';
                     echo '</tr>';
                 echo '</table>';
-                echo '<p><img src="'.$row[7].'" alt="IMGINSTALL" style="width:200px;height:150x;" align="middle"/> </p>';
             ?>
         </div>
       </div>

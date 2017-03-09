@@ -7,11 +7,12 @@ and open the template in the editor.
 <html>
     <head>
         <meta charset="UTF-8">
+        <!-- Meta para que IE se comporte como crome -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title></title>
         <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="./css/riegoestilos.css">
         <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
-        <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
         <?php
         // Crear clase de para llamada a funciones genericas
         require("riegoresumenClass.php");
@@ -72,11 +73,6 @@ and open the template in the editor.
                            include 'resumenactual.php';
                          ?>
                      </div>
-                     <div id="resumenmapa">
-                         <?php
-
-                         ?>
-                     </div>
                </div>
                <div id="resumenright">
                     <div id="resumengrafica1">
@@ -95,14 +91,13 @@ and open the template in the editor.
                         ?>
                     </div>                      
                </div>
-
+            </div> <!-- Fin del contendor principal -->
             <div id="pie">
                 <?php             
                     // Close the database connection
                     $dbhandle->close();
                 ?>
             </div>
-            </div> <!-- Fin del contendor principal -->
        </div>
     </body>
 </html>
