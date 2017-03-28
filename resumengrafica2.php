@@ -14,16 +14,16 @@
             $dataseriesa = datachart2($arraya);
             if(empty($arrCat))
             {
-                $arrMed = mediachart2($arraya);
+                $arrCat = categorychart2($arraya);
             }
-        }
+        }     
         if(!empty($arrayb)) {
             $subtext .= " vs ".$arrayb[0]['NOMBREP'];
             $dataseriesb = datachart2($arrayb);
             // Cargar categorias del primer array
             if(empty($arrCat))
             {
-                $arrMed = mediachart2($arrayb);
+                $arrCat = categorychart2($arrayb);
             }
         }
         if(!empty($arrayc)) {
@@ -32,13 +32,13 @@
             $dataseriesc = datachart2($arrayc);
             if(empty($arrCat))
             {
-                $arrMed = mediachart2($arrayc);
+                $arrCat = categorychart2($arrayc);
             }
         }
         // Configuración chart
         $arrData = array(
                     "chart" => array(
-                                "caption"=> "".$arraya[0]['NOMBREP']." mes actual",
+                                "caption"=> "".$subtext." mes actual",
                                 "yaxisname"=> "".$arraya[0]['PREFIJO']."",
                                 "rotatevalues"=> "0",
                                 "showvalues"=> "0",
@@ -47,7 +47,6 @@
                                 "showcanvasborder"=> "0",
                                 "numdivlines"=> "5",
                                 "showyaxisvalues"=> "1",
-                                "palettecolors"=> "#1790E1",
                                 "canvasborderthickness"=> "1",
                                 "canvasbordercolor"=> "#074868",
                                 "canvasborderalpha"=> "30",
@@ -59,13 +58,29 @@
                             )
 	);
         // añadir las series
+        $arrData["categories"]=array(array("category"=>$arrCat));
+        // añadir valores
         $arrData["dataset"] = array(array("seriesName"=> $arraya[0]['NOMBREP'], "data"=>$dataseriesa),array("seriesName"=> $arrayb[0]['NOMBREP'], "data"=>$dataseriesb),array("seriesName"=> $arrayc[0]['NOMBREP'], "data"=>$dataseriesc));
-        // Añadir media
-       /// $arrData["trendlines"]=array(array("line"=>$arrMed));
-        // Retornar variable JSON
-        //print_r($arrData);
+
         return $arrData;
     }
+    function categorychart2($array) {
+        $arrCat = array();
+        // Recorrer todas las filas del arraya
+        $longitud = count($array);
+        for($i=0; $i<$longitud; $i++)
+        {
+            $vlabel = $array[$i]["HORA"];
+            array_push($arrCat, array(
+                    "label" => $vlabel,
+                    "color" => "".$array[$i]["COLOR"].""
+                    )
+            ); 
+        }
+        //print_r($arrCat);
+        return $arrCat;
+    }
+    
     function mediachart2($array) {
         // Media de la grafica
 
@@ -103,7 +118,8 @@
             $vvalor = $myCalc2->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
             array_push($adat, array(
                     "label" => $array[$i]["HORA"],
-                    "value" => $vvalor
+                    "value" => $vvalor,
+                    "color" => "".$array[$i]["COLOR"].""
                     )
             );     
         }
@@ -170,7 +186,7 @@
         /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
         $valoresjson2 = json_encode($arrChart2);
         //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)
-        $columnChart2 = new FusionCharts("column2d", "Grafica2" , 430, 200, "chart-grafica2", "json", $valoresjson2);
+        $columnChart2 = new FusionCharts("mscolumn2d", "Grafica2" , 430, 200, "chart-grafica2", "json", $valoresjson2);
         // Render the chart
         $columnChart2->render();
         

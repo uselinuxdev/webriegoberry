@@ -15,7 +15,7 @@ and open the template in the editor.
             $Classresprod->cargarClase('resumenprod'); 
             $aparam = $Classresprod->verParam();
             // Cargar los datos de hoy ,año y hasta año.
-            $ssql = "select Coalesce(max(l.intvalor)-min(l.intvalor),0) AS hoy,p.prefijonum As unidades,p.posdecimal As posdecimal" 
+            $ssql = "select Coalesce(max(l.intvalor)-min(l.intvalor),0) AS hoy,p.parametro,p.prefijonum As unidades,p.posdecimal As posdecimal" 
                 . " from lectura_parametros l,parametros_server p"
                 . " where l.idparametro = ".$aparam[0]['idparametroa']
                 . " and l.idparametro = p.idparametro"
@@ -50,7 +50,7 @@ and open the template in the editor.
     </head>
     <body>
         <div class="background">
-            <p> Resumen Producción </p>
+            <p> Resumen Producción: <?php echo substr($rowhoy['parametro'],0,20); ?> </p>
         <div class="front">
             <?php
                 echo '<table cellpadding="0" cellspacing="5" height="100%" class="db-tbresumen">';

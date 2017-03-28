@@ -43,7 +43,6 @@
                             "captionFontSize"  => "14",
                             "subcaptionFontSize"  => "14",		
                             "subcaptionFontBold"  => "0",
-                            "paletteColors"  => "#0075c2,#1aaf5d",
                             "bgcolor"  => "#ffffff",
                             "showBorder"  => "0",
                             "showShadow"  => "0",
@@ -78,7 +77,8 @@
         for($i=0; $i<$longitud; $i++)
 	{
             array_push($arrCat, array(
-                    "label" => $array[$i]["HORA"]
+                    "label" => $array[$i]["HORA"],
+                    "color" => "".$array[$i]["COLOR"].""
                     )
             );
         }
@@ -97,7 +97,8 @@
           // Calculo valor
             $vvalor = $myCalc->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
             array_push($adat, array(
-                    "value" => $vvalor
+                    "value" => $vvalor,
+                    "color" => "".$array[$i]["COLOR"].""
                     )
             );     
         }

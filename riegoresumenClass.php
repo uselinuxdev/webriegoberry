@@ -72,24 +72,24 @@ class riegoresumenClass
         switch ($this->aparam[0]['tipolectura']) {
         case 2:
             // Mes actual. Coger los 2 días últimos calculados
-            $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
+            $sselect ="SELECT IDPARAMETRO,NOMBREP,COLOR,PREFIJO,POSDECIMAL,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.= $sdate;
             $sselect .=" union ";
-            $sselect .="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas ";
+            $sselect .="SELECT IDPARAMETRO,NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect .=" AND flectura > CURRENT_DATE() - INTERVAL 2 DAY";  
             $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura";
             break;
         case 3:
             // Año actual
-            $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
+            $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.= $sdate;
             $sselect.=" GROUP BY idparametro,MES order by idparametro,CAST(flectura AS SIGNED)";
             break;
         default:
-            $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
+            $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA FROM vgrafica ";
             $sselect.="WHERE idparametro = ".$param;
             $sselect.=" AND DATE_FORMAT(FLECTURA,'%i') = '00'";
             $sselect.= $sdate;

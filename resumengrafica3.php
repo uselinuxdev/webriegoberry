@@ -80,7 +80,8 @@
         {
             $vlabel = $ameses[$i];
             array_push($arrCat, array(
-                    "label" => $vlabel
+                    "label" => $vlabel,
+                    "color" => "".$array[$i]["COLOR"].""
                     )
             ); 
         }
@@ -98,7 +99,8 @@
         for ($i=0; $i<12; $i++)
         {
             array_push($adat, array(
-                "value" => $valor
+                "value" => $valor,
+                "color" => "".$array[$i]["COLOR"].""
                )
             ); 
         }
