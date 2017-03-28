@@ -46,7 +46,6 @@
                                 "subcaptionFontBold"=> "0",
                                 "yAxisName"=> "".$arraya[0]['PREFIJO']."",
                                 "showValues"=> "0",
-                                "paletteColors"=> "#ffab3d,#76c66f",
                                 "bgColor"=> "#ffffff",
                                 "showBorder"=> "0",
                                 "showShadow"=> "0",

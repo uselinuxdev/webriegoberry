@@ -20,12 +20,19 @@ and open the template in the editor.
               <li><a href="#form_install">Instalación</a></li>
               <li><a href="#form_param">Parametros</a></li>
               <li><a href="#form_resum">Resumen</a></li>
+              <li><a href="#form_zigbee">Zigbee</a></li>
         </ul>
         <div id="form_install"> 
         </div>
         <div id="form_param">
         </div>
         <div id="form_resum"> 
+        </div>
+        <div id="form_zigbee"> 
+            <?php
+                include 'adminrightnode.php';
+            ?>
+        </div>
         </div>
         <script>
             // Cargar tabs de jquery
