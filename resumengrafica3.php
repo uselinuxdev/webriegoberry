@@ -79,10 +79,14 @@
         for($i=0; $i<12; $i++)
         {
             $vlabel = $ameses[$i];
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             array_push($arrCat, array(
-                    "label" => $vlabel,
-                    "color" => "".$array[$i]["COLOR"].""
-                    )
+                    "label" => $vlabel,$scolor)
             ); 
         }
         //print_r($arrCat);
@@ -98,10 +102,14 @@
         // Recorrer los 12 meses. Poner a 0. Luego localizar y actualizar si existe valor
         for ($i=0; $i<12; $i++)
         {
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             array_push($adat, array(
-                "value" => $valor,
-                "color" => "".$array[$i]["COLOR"].""
-               )
+                "value" => $valor,$scolor)
             ); 
         }
         // Con los 12 valores pintar los que correspondan. Recorrer el array de encontrados

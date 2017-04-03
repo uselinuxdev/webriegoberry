@@ -53,8 +53,7 @@
                                 "basefontcolor"=> "#074868",
                                 "divlinecolor"=> "#074868",
                                 "divlinealpha"=> "10",
-                                "divlinedashed"=> "0",
-                                "theme"=> "zune"
+                                "divlinedashed"=> "0"
                             )
 	);
         // añadir las series
@@ -70,11 +69,15 @@
         $longitud = count($array);
         for($i=0; $i<$longitud; $i++)
         {
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             $vlabel = $array[$i]["HORA"];
             array_push($arrCat, array(
-                    "label" => $vlabel,
-                    "color" => "".$array[$i]["COLOR"].""
-                    )
+                    "label" => $vlabel,$scolor )
             ); 
         }
         //print_r($arrCat);
@@ -116,11 +119,14 @@
 	{
           // Calculo valor
             $vvalor = $myCalc2->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             array_push($adat, array(
-                    "label" => $array[$i]["HORA"],
-                    "value" => $vvalor,
-                    "color" => "".$array[$i]["COLOR"].""
-                    )
+                    "value" => $vvalor,$scolor)
             );     
         }
         return $adat;
@@ -182,7 +188,7 @@
   	<?php
         // The `$arrData` array holds the chart attributes and data
         $arrChart2 = configchar2($arraya,$arrayb,$arrayc);
-       //print_r($arrChart1);
+       //print_r($arrChart2);
         /*JSON Encode the data to retrieve the string containing the JSON representation of the data in the array. */
         $valoresjson2 = json_encode($arrChart2);
         //$columnChart = new FusionCharts(Tipo Chart,Ide java chart,width, heigth, div, "tipo", datos)

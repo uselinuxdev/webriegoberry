@@ -76,9 +76,14 @@
         $longitud = count($array);
         for($i=0; $i<$longitud; $i++)
 	{
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             array_push($arrCat, array(
-                    "label" => $array[$i]["HORA"],
-                    "color" => "".$array[$i]["COLOR"].""
+                    "label" => $array[$i]["HORA"],$scolor
                     )
             );
         }
@@ -96,10 +101,14 @@
 	{
           // Calculo valor
             $vvalor = $myCalc->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
+            // Control de color.
+            $scolor = "";
+            if(isset($array[$i]["COLOR"])) 
+            {
+              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+            }
             array_push($adat, array(
-                    "value" => $vvalor,
-                    "color" => "".$array[$i]["COLOR"].""
-                    )
+                    "value" => $vvalor,$scolor)
             );     
         }
         return $adat;
