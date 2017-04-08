@@ -11,6 +11,8 @@ and open the template in the editor.
         <link rel="stylesheet" type="text/css" href="./css/riegoestilos.css">
         <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
         <?php
+        // Clases que controlan la lógica
+        require("ZigbeeClass.php");
         // Controlar que exista sesion iniciada
         require('adminsession.php');
         if (CheckLogin() == false)

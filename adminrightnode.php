@@ -10,6 +10,11 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
     <head>
         <meta charset="UTF-8">
         <style>
+        input[type=text] {
+            width: 100%;
+            margin: 0px 0;
+            border: none;
+        }
         div#tnode {
             background-color: white;
         }
@@ -29,10 +34,20 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         tr:hover{background-color:#f5f5f5}
         </style>
         <title></title>
+        <!Funciones post>
+        <?php
+        // Control post
+        if(isset($_POST['update_nodo']))
+        {
+            $ClassZigbee = new ZigbeeClass();
+            $ClassZigbee->updatenodes('resumenprod'); 
+        }
+        ?>
     </head>
     <body>
         <div id="tnode" style="overflow-x:auto;" >
-        <h4 style="color:#3A72A5;">Administración nodos</h4>  
+        <h4 style="color:#3A72A5;">Administración nodos</h4>
+        <form name="nodos" method="post">
         <table id="tnodos" >
         <thead>
            <tr>
@@ -42,7 +57,6 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
              <th>Id nodo</th>
              <th>D.padre</th>
              <th>Tipo</th>
-             <th>Alta</th>
              <th>Estado</th>
            </tr>
         </thead
@@ -51,18 +65,16 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            $result = mysql_query("SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,falta,fmodif,fbaja FROM nodos");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
-           <input type="hidden" name="idnodo" value="<?php echo $row['idnodo'];?>">
+           <input type="hidden" name="idnodo[]" value="<?php echo $row['idnodo'];?>">
            <tr>
-              <td contenteditable='true'> <input type="text" name="nombre_nodo" value="<?php echo $row['nombre_nodo'];?>"></td>
-              <td contenteditable='true'><?php echo $row['source_addr']; ?></td>  
-              <td contenteditable='true'><?php echo $row['source_addr_long']; ?></td>
-              <td contenteditable='true'><?php echo $row['node_identifier']; ?></td>
-              <td contenteditable='true'><?php echo $row['parent_address']; ?></td>
-              <td contenteditable='true'><?php echo $row['device_type']; ?></td>
-               <!--<td contenteditable='true'> echo $row['estado']; </td>-->
-              <td><?php echo date("Y-m-d", strtotime($row['falta'])); ?></td>     
+              <td><input type="text" name="nombre_nodo[]" size="35" value="<?php echo $row['nombre_nodo'];?>" required="required" /> </td>
+              <td><input type="text" name="source_addr[]" value="<?php echo $row['source_addr'];?>" required="required" /> </td>
+              <td><input type="text" name="source_addr_long[]" value="<?php echo $row['source_addr_long'];?>" required="required" /> </td>
+              <td><input type="text" name="node_identifier[]" value="<?php echo $row['node_identifier'];?>" required="required" /> </td>
+              <td><input type="text" name="parent_address[]" value="<?php echo $row['parent_address'];?>" required="required" /> </td>
+              <td><input type="text" name="device_type[]" value="<?php echo $row['device_type'];?>" required="required" /> </td>
               <td colspan='2'>
-                <select name = "Estado" style="width: 7em;">
+                <select name = "estado[]" style="width: 7em;">
                     <option value="1" <?php if($row['estado'] == 1) {echo " SELECTED ";} echo">"; ?>Activado</option>
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>Reescanear</option>
                 </select>
@@ -73,6 +85,9 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            ?>
         </tbody>
         </table>
+        <input type="submit" name="update_nodo" value="Actualizar" />
+        </form>
+        
         <h4 style="color:#3A72A5;">Administración sectores</h4>  
         <table id="tsectores" >
         <thead>
