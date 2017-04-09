@@ -89,6 +89,7 @@ function checktab() {
     if (!empty($_POST['cbvalorr'])) {
         $_SESSION['stabindex'] = 2;
     }
+        
 }
 ?>
 <html>

@@ -126,7 +126,7 @@ class riegoresumenClass
         $sqldate = "";
         $vfecha =date('Y-m-d'); 
         // Fecha pruebas /////////////////////////////////////////////////////////////////////////////////////////////// <--
-        $vfecha = "2016-08-15";
+        //$vfecha = "2016-08-15";
         switch ($this->aparam[0]['tipolectura']) {
         case 2:
             // Fecha del mes actual
