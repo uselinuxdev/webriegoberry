@@ -27,6 +27,11 @@ class ZigbeeClass {
                 echo $mysqli->host_info."\n";
                 return -1;
             }
+            // Importante juego de caracteres
+            if (!mysqli_set_charset($mysqli, "utf8")) {
+                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+                exit();
+            }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE nodos SET nombre_nodo = ?, 
                 source_addr = ?, 

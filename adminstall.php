@@ -11,8 +11,6 @@ and open the template in the editor.
         <link rel="stylesheet" type="text/css" href="./css/riegoestilos.css">
         <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
         <?php
-        // Clases que controlan la lógica
-        require("ZigbeeClass.php");
         // Controlar que exista sesion iniciada
         require('adminsession.php');
         if (CheckLogin() == false)
@@ -34,7 +32,7 @@ and open the template in the editor.
                     <?php
                          //echo 'El nivel del usuario es:'.$_SESSION['nivel'];
                          include 'menugrafica.php';
-                    ?>    
+                    ?>
                 </div>
                 <div id="admright">
                     <?php

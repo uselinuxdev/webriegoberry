@@ -39,6 +39,9 @@ function checktab() {
               <li><a href="#form_zigbee">Zigbee</a></li>
         </ul>
         <div id="form_install"> 
+            <?php
+                include 'adminrightinstall.php';
+            ?>
         </div>
         <div id="form_param">
         </div>

@@ -36,6 +36,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <title></title>
         <!Funciones post>
         <?php
+        // Crear clase de para llamada a funciones genericas
+        require("ZigbeeClass.php");
         // Control post
         if(isset($_POST['update_nodo']))
         {
