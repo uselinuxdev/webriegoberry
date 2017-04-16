@@ -115,7 +115,7 @@ class InstallClass {
                     exit();
                 }
                 $sql = "update instalacion set imagen ='".$target_file."' where idinstalacion=".$_POST['idinstalacion'][0];
-                echo $sql;
+               // echo $sql;
                 if ($mysqli->query($sql) === TRUE) {
                     echo "El fichero ".$target_file. " se ha subido correctamente.";
                 } else {
