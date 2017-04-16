@@ -16,6 +16,12 @@ and open the template in the editor.
                 $ClassInstall = new InstallClass();
                 $ClassInstall->updateinstall(); 
             }
+            // Funcion para imagen
+            if(isset($_POST['update_imagen']))
+            {
+                $ClassInstall = new InstallClass();
+                $ClassInstall->updateimagen(); 
+            }
             // Cargar datos
             $hostdb = $_SESSION['serverdb'];  // MySQl host
             $userdb = $_SESSION['dbuser'];  // MySQL username
@@ -78,16 +84,18 @@ and open the template in the editor.
     <body>
         <div id="install">
             <h4 style="color:#3A72A5;">Administración datos instalación</h4>
-            <form name="install" method="post">
-               <?php
+            <?php
+            echo '<form action="" method="POST" enctype="multipart/form-data">';
+            echo '<img src="'.$row[8].'" alt="IMGINSTALL" style="width:400px;" align="middle"/>';
+            echo '<input type="hidden" name="idinstalacion[]" value="'.$row['idinstalacion'].'">';
+            echo '<input type="file" name="image" />';
+            echo '<input type="submit" name="update_imagen" value="Actualizar imagen"/>';
+            echo '</form>';
+            echo '<form name="install" method="post">';
                     echo '<table cellpadding="0" cellspacing="0" class="db-tbresumen">';
                     echo '<tr>';
                     echo '<input type="hidden" name="idinstalacion[]" value="'.$row['idinstalacion'].'">';
-                    echo '<img src="'.$row[8].'" alt="IMGINSTALL" style="width:400px;" align="middle"/>';
                     echo '</tr>';
-                    echo '<tr><td><td>';
-                    echo '<p align="center"><input type="submit" name="update_imagen" value="Cambiar imagen"/> </p>';
-                    echo '</td></td></tr>';
                     echo '<tr>';
                     echo '<td align="left"><strong>','Instalación','</strong></td>';
                     echo '<td><input type="text" name="nombre[]" size="90" value="'.$row[3].'" required="required" /> </td>';
