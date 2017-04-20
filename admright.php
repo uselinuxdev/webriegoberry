@@ -44,6 +44,9 @@ function checktab() {
             ?>
         </div>
         <div id="form_param">
+            <?php
+                include 'adminrightparameter.php';
+            ?>
         </div>
         <div id="form_resum"> 
         </div>
