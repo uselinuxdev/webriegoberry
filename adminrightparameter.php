@@ -1,11 +1,4 @@
 <!DOCTYPE html>
-<?php
-//Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-
-?>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -48,6 +41,12 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         // Crear clase de para llamada a funciones genericas
         require("ParameterClass.php");
         // Control post
+        // Delete logic
+        if(isset($_POST['deletebit']))
+        {
+            $ClassParam = new ParameterClass();
+            $ClassParam->deletebit(); 
+        }
 
         ?>
     </head>
@@ -108,18 +107,24 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            <tr>
              <th>Posicion</th>
              <th>nombrebit</th>
+             <th>Borrar</th>
            </tr>
         </thead
         <tbody>
            <?php
            $result = mysql_query("SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname order by idparametro,posicion");     
            while( $row = mysql_fetch_assoc( $result ) ){
+               $iddelete = $row['idbit'];
            ?>
            <input type="hidden" name="idbit[]" value="<?php echo $row['idbit'];?>">
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <tr>
               <td><input type="number" name="posicion[]" min="0" max="31" value="<?php echo $row['posicion'];?>" required="required" /> </td>
               <td><input type="text" name="nombrebit[]" size="80" value="<?php echo $row['nombrebit'];?>" required="required" /> </td>
+              <form name="fdeletebit" method="post">
+              <input type="hidden" name="idbitdelete" value="<?php echo $row['idbit'];?>">
+              <td><input type="submit" name="deletebit" value="Borrar"/></td>
+              </form>
            </tr>
            <?php
            }

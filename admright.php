@@ -8,10 +8,10 @@ and open the template in the editor.
 // Con el objeto si existe o no en el post
 function checktab() {
     // Control de tab seleccionadas
-    if (!empty($_POST['update_nodo'])) {
-        $_SESSION['stabindex'] = 3;
+    if (!empty($_POST['update_parametros']) or !empty($_POST['update_bitname'])or !empty($_POST['deletebit'])) {
+        $_SESSION['stabindex'] = 1;
     }
-    if (!empty($_POST['update_sectores'])) {
+    if (!empty($_POST['update_nodo']) or !empty($_POST['update_sectores'])) {
         $_SESSION['stabindex'] = 3;
     }
 }

@@ -6,5 +6,8 @@
  */
 class ParameterClass {
 
-//End of class
+    public function deletebit()
+    {
+        echo $_POST['idbitdelete'];
+    }
 }
