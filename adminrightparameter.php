@@ -41,6 +41,12 @@
         // Crear clase de para llamada a funciones genericas
         require("ParameterClass.php");
         // Control post
+        // Update logic
+        if(isset($_POST['update_bitname']))
+        {
+            $ClassParam = new ParameterClass();
+            $ClassParam->updatebit(); 
+        }
         // Delete logic
         if(isset($_POST['deletebit']))
         {
@@ -52,8 +58,8 @@
     </head>
     <body>
         <h4 style="color:#3A72A5;">Administración parametros server</h4>
-        <div id="parameter" style="overflow-x:auto;" >
         <form name="fparameter" method="post">
+        <div id="parameter" style="overflow-x:auto;" >
         <table id="tparameter" >
        <thead>
            <tr>
@@ -69,7 +75,7 @@
              <th>Nivel</th>
              <th>Color</th>
            </tr>
-        </thead
+       </thead>
         <tbody>
            <?php
            $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by estado,parametro");
@@ -100,8 +106,8 @@
         </form>
         <!--Form de binarios.-->    
         <h4 style="color:#3A72A5;">Administración nombres de bits</h4>
-        <div id="bitname" style="overflow-x:auto;" >
         <form name="fbitname" method="post">
+        <div id="bitname" style="overflow-x:auto;" >
         <table id="tbitname" >
         <thead>
            <tr>
@@ -109,7 +115,7 @@
              <th>nombrebit</th>
              <th>Borrar</th>
            </tr>
-        </thead
+        </thead>
         <tbody>
            <?php
            $result = mysql_query("SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname order by idparametro,posicion");     

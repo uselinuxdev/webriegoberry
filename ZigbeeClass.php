@@ -16,22 +16,22 @@ class ZigbeeClass {
     public function updatenodes()
     {
         // Control post
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
         for($i =0;$i <count($_POST['nombre_nodo']);$i++)
         {
             $rescan = 0;
             //echo "Formulario update_nodo pulsado.".$_POST['nombre_nodo'][$i];
             //echo "Se actualizará el nodo Nº:".$_POST['idnodo'][$i]."\n";
-            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
-            if ($mysqli->connect_errno)
-            {
-                echo $mysqli->host_info."\n";
-                return -1;
-            }
-            // Importante juego de caracteres
-            if (!mysqli_set_charset($mysqli, "utf8")) {
-                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
-                exit();
-            }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE nodos SET nombre_nodo = ?, 
                 source_addr = ?, 
@@ -73,14 +73,19 @@ class ZigbeeClass {
     public function updatesectores()
     {
         // Control post
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+                // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
         for($i =0;$i <count($_POST['num_sector']);$i++)
         {
-            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
-            if ($mysqli->connect_errno)
-            {
-                echo $mysqli->host_info."\n";
-                return -1;
-            }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE sectores SET num_sector = ?, 
                 nombre_sector = ?, 
