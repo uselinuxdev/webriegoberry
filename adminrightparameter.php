@@ -53,7 +53,50 @@
             $ClassParam = new ParameterClass();
             $ClassParam->deletebit(); 
         }
-
+        // Insert si esta un parametro seleccionado en combo
+        if(isset($_POST['insert_bitname']))
+        {
+            if(!empty($_POST['cbvalorbit']))
+            {
+                $ClassParam = new ParameterClass();
+                $ClassParam->insertbit(); 
+            }else{
+                echo "Debe seleccionar algún parámetro del desplegable.";
+            }
+        }
+        // Función combo
+        function cargacombo()
+        {
+            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
+            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
+            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+            
+            $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM parametros_server,server_instalacion";
+            $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
+            $sql.=" and server_instalacion.estado = 1 " ;
+            $sql.=" and parametros_server.tipo like'%B%' and parametros_server.lectura ='M' and parametros_server.estado > 0" ;
+            $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
+            $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
+            $sql.=" order by parametros_server.estado,parametros_server.parametro ";
+            // Pintar combo
+            echo '<select name="cbvalorbit">'; 
+            $resparametros = mysql_query($sql);
+            echo "<option value=0>  Seleccionar un Parámetro  </option>"; 
+            while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
+                $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
+                //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+                $vcombo = "<option value=".$id;
+                if($_POST['cbvalorbit']==$id) {
+                    $vcombo = $vcombo. " SELECTED ";
+                }
+            $vcombo = $vcombo.">";
+            $vcombo = $vcombo.$vparametro."</option>"; 
+            echo $vcombo;
+            } //Cerramos el ciclo 
+            echo '</select>';
+            echo ' <input type="submit" name="cargabit" value="Cargar"/>';
+        }
         ?>
     </head>
     <body>
@@ -107,6 +150,8 @@
         <!--Form de binarios.-->    
         <h4 style="color:#3A72A5;">Administración nombres de bits</h4>
         <form name="fbitname" method="post">
+        <!--Cargar combo-->
+        <?php cargacombo();?>
         <div id="bitname" style="overflow-x:auto;" >
         <table id="tbitname" >
         <thead>
@@ -118,7 +163,7 @@
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname order by idparametro,posicion");     
+           $result = mysql_query("SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname where idparametro=".$_POST['cbvalorbit']." order by idparametro,posicion");     
            while( $row = mysql_fetch_assoc( $result ) ){
                $iddelete = $row['idbit'];
            ?>
@@ -139,6 +184,7 @@
         </table>
         </div>
         <input type="submit" name="update_bitname" value="Actualizar" />
+        <input type="submit" name="insert_bitname" value="Insertar" />
         </form>
     </body>
 </html>
