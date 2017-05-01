@@ -3,11 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <style>
-        input[type=text] {
-            width: 100%;
-            margin: 0px 0;
-            border: none;
-        }
         div#parameter {
             background-color: white;
             overflow: hidden;
@@ -20,14 +15,10 @@
             overflow-y: scroll;
             height: 180px;
         }
-        table {
-            border-collapse: collapse;
-            tab-size: 100%;
-            width: inherit;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
+        input[type=text] {
+            width: 100%;
+            margin: 0px 0;
+            border: none;
         }
         th {
             background-color: #3A72A5;
@@ -41,19 +32,34 @@
         // Crear clase de para llamada a funciones genericas
         require("ParameterClass.php");
         // Control post
-        // Update logic
+        // Update logic  
+        if(isset($_POST['update_parametros']))
+        {
+            $ClassParam = new ParameterClass();
+            $ClassParam->updateparameter(); 
+        }
         if(isset($_POST['update_bitname']))
         {
             $ClassParam = new ParameterClass();
             $ClassParam->updatebit(); 
         }
         // Delete logic
-        if(isset($_POST['deletebit']))
+        if(isset($_POST['delete_parametros']))
+        {
+            $ClassParam = new ParameterClass();
+            $ClassParam->deleteparameter(); 
+        }
+        if(isset($_POST['delete_bit']))
         {
             $ClassParam = new ParameterClass();
             $ClassParam->deletebit(); 
         }
         // Insert si esta un parametro seleccionado en combo
+        if(isset($_POST['insert_parametros']))
+        {
+            $ClassParam = new ParameterClass();
+            $ClassParam->insertparameter(); 
+        }
         if(isset($_POST['insert_bitname']))
         {
             if(!empty($_POST['cbvalorbit']))
@@ -104,40 +110,61 @@
         <form name="fparameter" method="post">
         <div id="parameter" style="overflow-x:auto;" >
         <table id="tparameter" >
-       <thead>
+        <thead>
            <tr>
              <th>Nombre parametro</th>
              <th>Tipo</th>
-             <th>P. Memoria</th>
+             <th>Memoria</th>
              <th>Posiciones</th>
              <th>Lectura</th>
+             <th>Color</th>
              <th>Orden</th>
              <th>Prefijo</th>
              <th>Decimales</th>
              <th>Sectores</th>
              <th>Nivel</th>
-             <th>Color</th>
+             <th>Borrar</th>
            </tr>
        </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by estado,parametro");
+           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by parametro,estado");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <input type="hidden" name="idserver[]" value="<?php echo $row['idserver'];?>">
            <tr>
-              <td><input type="text" name="parametro[]" size="35" value="<?php echo $row['parametro'];?>" required="required" /> </td>
-              <td><input type="text" name="tipo[]" value="<?php echo $row['tipo'];?>" required="required" /> </td>
+              <td><input type="text" name="parametro[]" style="width: 140px;"  value="<?php echo $row['parametro'];?>" required="required"/> </td>
+              <td>
+                <select name = "tipo[]"style="width: 120px;">
+                    <option value="I" <?php if($row['tipo'] == 'I') {echo " SELECTED ";} echo">"; ?>IMPUT</option>
+                    <option value="IB" <?php if($row['tipo'] == 'IB') {echo " SELECTED ";} echo">"; ?>IMPUT BIN</option>
+                    <option value="C" <?php if($row['tipo'] == 'C') {echo " SELECTED ";} echo">"; ?>BOBINA</option>
+                    <option value="HB" <?php if($row['tipo'] == 'HB') {echo " SELECTED ";} echo">"; ?>HOLDING BIN</option>
+                    <option value="H" <?php if($row['tipo'] == 'H') {echo " SELECTED ";} echo">"; ?>HOLDING</option>
+                    <option value="HF" <?php if($row['tipo'] == 'HF') {echo " SELECTED ";} echo">"; ?>HOLDING FLOAT</option>
+                </select>
+              </td>
               <td><input type="text" name="pmemoria[]" value="<?php echo $row['pmemoria'];?>" required="required" /> </td>
-              <td><input type="text" name="posiciones[]" value="<?php echo $row['posiciones'];?>" required="required" /> </td>
-              <td><input type="text" name="lectura[]" value="<?php echo $row['lectura'];?>" required="required" /> </td>
-              <td><input type="text" name="estado[]" value="<?php echo $row['estado'];?>" required="required" /> </td>
-              <td><input type="text" name="prefijonum[]" value="<?php echo $row['prefijonum'];?>" required="required" /> </td>
-              <td><input type="text" name="posdecimal[]" value="<?php echo $row['posdecimal'];?>" required="required" /> </td>
-              <td><input type="text" name="estlink[]" value="<?php echo $row['estlink'];?>" required="required" /> </td>
-              <td><input type="text" name="nivel[]" value="<?php echo $row['nivel'];?>" required="required" /> </td>
-              <td><input type="text" name="color[]" value="<?php echo $row['color'];?>" required="required" /> </td>
+              <td><input type="number" name="posiciones[]" min="1" max="8" value="<?php echo $row['posiciones'];?>" required="required" /> </td>
+              <td>
+                <select name = "lectura[]" style="width: 80px;">
+                    <option value="M" <?php if($row['lectura'] == 'M') {echo " SELECTED ";} echo">"; ?>MINUTO</option>
+                    <option value="H" <?php if($row['lectura'] == 'H') {echo " SELECTED ";} echo">"; ?>HORA</option>
+                    <option value="D" <?php if($row['lectura'] == 'D') {echo " SELECTED ";} echo">"; ?>DÍA</option>
+                </select>
+              </td>
+              <!--Datapiker color-->
+              <td><input type="color" name="color[]" value="<?php echo $row['color'];?>"/> </td>
+              <td><input type="number" name="estado[]" min="0" max="99" value="<?php echo $row['estado'];?>" required="required" /> </td>
+              <td><input type="text" name="prefijonum[]" value="<?php echo $row['prefijonum'];?>"/> </td>
+              <td><input type="number" name="posdecimal[]" min="0" max="6" value="<?php echo $row['posdecimal'];?>" required="required" /> </td>
+              <td><input type="number" name="estlink[]" min="0" max="9" value="<?php echo $row['estlink'];?>" required="required" /> </td>
+              <td><input type="number" name="nivel[]" min="0" max="4" value="<?php echo $row['nivel'];?>" required="required" /> </td>
+              <form name="fdeleteparam" method="post">
+              <input type="hidden" name="idparamdelete" value="<?php echo $row['idparametro'];?>"/>
+              <td><input type="submit" name="delete_parametros" value="Borrar"/></td>
+              </form>
            </tr>
            <?php
            }
@@ -146,6 +173,7 @@
         </table>
         </div>
         <input type="submit" name="update_parametros" value="Actualizar" />
+        <input type="submit" name="insert_parametros" value="Insertar" />
         </form>
         <!--Form de binarios.-->    
         <h4 style="color:#3A72A5;">Administración nombres de bits</h4>
@@ -173,8 +201,8 @@
               <td><input type="number" name="posicion[]" min="0" max="31" value="<?php echo $row['posicion'];?>" required="required" /> </td>
               <td><input type="text" name="nombrebit[]" size="80" value="<?php echo $row['nombrebit'];?>" required="required" /> </td>
               <form name="fdeletebit" method="post">
-              <input type="hidden" name="idbitdelete" value="<?php echo $row['idbit'];?>">
-              <td><input type="submit" name="deletebit" value="Borrar"/></td>
+              <input type="hidden" name="idbitdelete" value="<?php echo $row['idbit'];?>"/>
+              <td><input type="submit" name="delete_bit" value="Borrar"/></td>
               </form>
            </tr>
            <?php
