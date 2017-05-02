@@ -20,7 +20,10 @@ function checktab() {
     if (!empty($_POST['update_resumen'])or !empty($_POST['insert_resumen']) or !empty($_POST['comboestimado']) or !empty($_POST['update_estimacion']) or !empty($_POST['insert_estimacion'])) {
         $_SESSION['stabindex'] = 2;
     }
-    if (!empty($_POST['update_nodo']) or !empty($_POST['update_sectores']) or !empty($_POST['carganodo'])) {
+    if (!empty($_POST['update_nodo']) or !empty($_POST['insert_nodo']) or !empty($_POST['delete_nodo'])) {
+        $_SESSION['stabindex'] = 3;
+    }
+    if (!empty($_POST['update_sector']) or !empty($_POST['insert_sector']) or !empty($_POST['delete_sector']) or !empty($_POST['carganodo'])) {
         $_SESSION['stabindex'] = 3;
     }
 }

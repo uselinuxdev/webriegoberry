@@ -70,7 +70,65 @@ class ZigbeeClass {
             echo date('h:i:s') . "\n";
         }
     }
-    public function updatesectores()
+    public function deletenodes()
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $stmt = $mysqli->prepare("DELETE FROM nodos WHERE idnodo = ?");
+        // Vincular variables
+        if (!$stmt->bind_param("i", $_POST['idnododelete'])) {
+            echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
+            return -1;
+        }
+        // Ejecutar
+        if (!$stmt->execute()) {
+            echo "Falló la ejecución del delete: (" . $stmt->errno . ") " . $stmt->error;
+            return -1;
+        }else{
+            //echo "Se borró correctamente el ID:".$_POST['idbitdelete'];
+        }
+        $stmt->close();
+        return 0;
+    }
+    public function insertnodes()
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        
+        $sinsert = "INSERT INTO nodos(nombre_nodo,source_addr,source_addr_long,parent_address,device_type,estado) "
+                . "VALUES ('NUEVO NODO','9999','9999','9999','99',1)";
+       
+        if ($mysqli->query($sinsert) === TRUE)
+        {
+            //echo "Nuevo bitname creado.";
+        } else {
+            echo "Falló la inserción: (" . $mysqli->errno . ") " . $mysqli->error;
+        }
+        $mysqli->close();
+        return 0;
+    }
+    
+    public function updatesector()
     {
         // Control post
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -105,6 +163,64 @@ class ZigbeeClass {
             // Finalizar
             $stmt->close();
         }
+    }
+    
+    public function deletesector()
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $stmt = $mysqli->prepare("DELETE FROM sectores WHERE idsector = ?");
+        // Vincular variables
+        if (!$stmt->bind_param("i", $_POST['idsectordelete'])) {
+            echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
+            return -1;
+        }
+        // Ejecutar
+        if (!$stmt->execute()) {
+            echo "Falló la ejecución del delete: (" . $stmt->errno . ") " . $stmt->error;
+            return -1;
+        }else{
+            //echo "Se borró correctamente el ID:".$_POST['idbitdelete'];
+        }
+        $stmt->close();
+        return 0;
+    }
+    public function insertsector()
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        // Tiene que haber combo seleccionado
+        $sinsert = "INSERT INTO sectores(num_sector,nombre_sector,idnodo,num_salida) "
+                . "VALUES (0,'NUEVO SECTOR',".$_POST['cbnodos'].",0)";
+       
+        if ($mysqli->query($sinsert) === TRUE)
+        {
+            //echo "Nuevo bitname creado.";
+        } else {
+            echo "Falló la inserción: (" . $mysqli->errno . ") " . $mysqli->error;
+        }
+        $mysqli->close();
+        return 0;
     }
     // Función combo
     function cargacombonodos()

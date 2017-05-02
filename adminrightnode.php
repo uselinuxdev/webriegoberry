@@ -44,10 +44,37 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
             $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->updatenodes(); 
         }
-        if(isset($_POST['update_sectores']))
+        if(isset($_POST['insert_nodo']))
         {
             $ClassZigbee = new ZigbeeClass();
-            $ClassZigbee->updatesectores(); 
+            $ClassZigbee->insertnodes(); 
+        }
+        if(isset($_POST['delete_nodo']))
+        {
+            $ClassZigbee = new ZigbeeClass();
+            $ClassZigbee->deletenodes();
+        }
+        // Control de sectores
+        if(isset($_POST['update_sector']))
+        {
+            $ClassZigbee = new ZigbeeClass();
+            $ClassZigbee->updatesector(); 
+        }
+        if(isset($_POST['delete_sector']))
+        {
+            $ClassZigbee = new ZigbeeClass();
+            $ClassZigbee->deletesector(); 
+        }
+        // Controlar combo seleccionado
+        if(isset($_POST['insert_sector']))
+        {
+            if(!empty($_POST['cbnodos']))
+            {
+                $ClassZigbee = new ZigbeeClass();
+                $ClassZigbee->insertsector();
+            }else{
+                echo "Debe seleccionar algún nodo del desplegable.";
+            }
         }
         ?>
     </head>
@@ -65,6 +92,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
              <th>D.padre</th>
              <th>Tipo</th>
              <th>Estado</th>
+             <th>Borrar</th>
            </tr>
         </thead>
         <tbody>
@@ -80,12 +108,16 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
               <td><input type="text" name="node_identifier[]" value="<?php echo $row['node_identifier'];?>" required="required" /> </td>
               <td><input type="text" name="parent_address[]" value="<?php echo $row['parent_address'];?>" required="required" /> </td>
               <td><input type="text" name="device_type[]" value="<?php echo $row['device_type'];?>" required="required" /> </td>
-              <td colspan='2'>
+              <td>
                 <select name = "estado[]" style="width: 7em;">
                     <option value="1" <?php if($row['estado'] == 1) {echo " SELECTED ";} echo">"; ?>Activado</option>
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>Reescanear</option>
                 </select>
               </td>
+              <form name="fdelenodo" method="post">
+              <input type="hidden" name="idnododelete" value="<?php echo $row['idnodo'];?>" />
+              <td><input type="submit" name="delete_nodo" value="Borrar"/></td>
+              </form>
            </tr>
            <?php
            }
@@ -93,6 +125,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </tbody>
         </table>
         <input type="submit" name="update_nodo" value="Actualizar" />
+        <input type="submit" name="insert_nodo" value="Insertar" />
         </form>
         
         <h4 style="color:#3A72A5;">Administración sectores</h4>
@@ -110,7 +143,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
              <th>Salida</th>
              <th>Reintentos</th>
              <th>Tiempo latch</th>
-             <th>F. Alta</th>
+             <th>Borrar</th>
            </tr>
         </thead>
         <tbody>
@@ -125,14 +158,18 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
               <td><input type="number" name="num_salida[]" min="1" max="99" value="<?php echo $row['num_salida'];?>" required="required" /> </td>
               <td><input type="number" name="reintentos[]" min="-1" max="99" value="<?php echo $row['reintentos'];?>" required="required" /> </td>
               <td><input type="number" name="time_latch[]" value="<?php echo $row['time_latch'];?>" required="required" /> </td>
-              <td><?php echo date("d/m/Y", strtotime($row['falta']));?></td>
+              <form name="fdelensector" method="post">
+              <input type="hidden" name="idsectordelete" value="<?php echo $row['idsector'];?>" />
+              <td><input type="submit" name="delete_sector" value="Borrar"/></td>
+              </form>
            </tr>
            <?php
            }
            ?>
         </tbody>
         </table>
-        <input type="submit" name="update_sectores" value="Actualizar" />
+        <input type="submit" name="update_sector" value="Actualizar" />
+        <input type="submit" name="insert_sector" value="Insertar" />
         </form>
         </div>
     </body>
