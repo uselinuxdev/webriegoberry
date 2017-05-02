@@ -71,7 +71,7 @@
             }
         }
         // Función combo
-        function cargacombo()
+        function cargacombobit()
         {
             mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
             mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
@@ -109,7 +109,7 @@
         <h4 style="color:#3A72A5;">Administración parametros server</h4>
         <form name="fparameter" method="post">
         <div id="parameter" style="overflow-x:auto;" >
-        <table id="tparameter" >
+        <table id="tparameter">
         <thead>
            <tr>
              <th>Nombre parametro</th>
@@ -179,7 +179,7 @@
         <h4 style="color:#3A72A5;">Administración nombres de bits</h4>
         <form name="fbitname" method="post">
         <!--Cargar combo-->
-        <?php cargacombo();?>
+        <?php cargacombobit();?>
         <div id="bitname" style="overflow-x:auto;" >
         <table id="tbitname" >
         <thead>

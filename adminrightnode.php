@@ -66,7 +66,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
              <th>Tipo</th>
              <th>Estado</th>
            </tr>
-        </thead
+        </thead>
         <tbody>
            <?php
            $result = mysql_query("SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,falta,fmodif,fbaja FROM nodos");
@@ -97,19 +97,25 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         
         <h4 style="color:#3A72A5;">Administración sectores</h4>
         <form name="nodos" method="post">
+        <?php
+            $ClassZigbee = new ZigbeeClass();
+            $ClassZigbee->cargacombonodos();
+            echo ' <input type="submit" name="carganodo" value="Cargar"/>';
+        ?>
         <table id="tsectores" >
         <thead>
            <tr>
              <th>Nº Sector</th>
              <th>Nombre</th>
-             <th>Nº Salida</th>
+             <th>Salida</th>
+             <th>Reintentos</th>
              <th>Tiempo latch</th>
              <th>F. Alta</th>
            </tr>
-        </thead
+        </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idsector,num_sector,nombre_sector,idnodo,num_salida,time_latch,falta,fmodif,fbaja FROM sectores");
+           $result = mysql_query("SELECT idsector,num_sector,nombre_sector,idnodo,num_salida,time_latch,reintentos,falta,fmodif,fbaja FROM sectores where idnodo=".$_POST['cbnodos']." order by num_sector");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idsector[]" value="<?php echo $row['idsector'];?>">
@@ -117,6 +123,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
               <td><input type="number" name="num_sector[]" min="1" max="99" value="<?php echo $row['num_sector'];?>" required="required" /> </td>
               <td><input type="text" name="nombre_sector[]" size=35 value="<?php echo $row['nombre_sector'];?>" required="required" /> </td>
               <td><input type="number" name="num_salida[]" min="1" max="99" value="<?php echo $row['num_salida'];?>" required="required" /> </td>
+              <td><input type="number" name="reintentos[]" min="-1" max="99" value="<?php echo $row['reintentos'];?>" required="required" /> </td>
               <td><input type="number" name="time_latch[]" value="<?php echo $row['time_latch'];?>" required="required" /> </td>
               <td><?php echo date("d/m/Y", strtotime($row['falta']));?></td>
            </tr>

@@ -16,7 +16,11 @@ function checktab() {
     if (!empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
         $_SESSION['stabindex'] = 1;
     }
-    if (!empty($_POST['update_nodo']) or !empty($_POST['update_sectores'])) {
+    // Control resumen
+    if (!empty($_POST['update_resumen'])or !empty($_POST['insert_resumen']) or !empty($_POST['comboestimado']) or !empty($_POST['update_estimacion']) or !empty($_POST['insert_estimacion'])) {
+        $_SESSION['stabindex'] = 2;
+    }
+    if (!empty($_POST['update_nodo']) or !empty($_POST['update_sectores']) or !empty($_POST['carganodo'])) {
         $_SESSION['stabindex'] = 3;
     }
 }
@@ -54,6 +58,9 @@ function checktab() {
             ?>
         </div>
         <div id="form_resum"> 
+            <?php
+                include 'adminrightresumen.php';
+            ?>
         </div>
         <div id="form_zigbee"> 
             <?php
