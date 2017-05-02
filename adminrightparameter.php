@@ -32,39 +32,35 @@
         // Crear clase de para llamada a funciones genericas
         require("ParameterClass.php");
         // Control post
+        $ClassParam = new ParameterClass();
         // Update logic  
-        if(isset($_POST['update_parametros']))
-        {
-            $ClassParam = new ParameterClass();
+        if(isset($_POST['update_param']))
+        {   
+            echo 'Update parameter.';
             $ClassParam->updateparameter(); 
+        }
+        if(isset($_POST['insert_param']))
+        {
+            $ClassParam->insertparameter(); 
+        }
+        if(isset($_POST['delete_param']))
+        {
+            $ClassParam->deleteparameter(); 
         }
         if(isset($_POST['update_bitname']))
         {
-            $ClassParam = new ParameterClass();
             $ClassParam->updatebit(); 
         }
         // Delete logic
-        if(isset($_POST['delete_parametros']))
-        {
-            $ClassParam = new ParameterClass();
-            $ClassParam->deleteparameter(); 
-        }
         if(isset($_POST['delete_bit']))
         {
-            $ClassParam = new ParameterClass();
             $ClassParam->deletebit(); 
         }
         // Insert si esta un parametro seleccionado en combo
-        if(isset($_POST['insert_parametros']))
-        {
-            $ClassParam = new ParameterClass();
-            $ClassParam->insertparameter(); 
-        }
         if(isset($_POST['insert_bitname']))
         {
             if(!empty($_POST['cbvalorbit']))
             {
-                $ClassParam = new ParameterClass();
                 $ClassParam->insertbit(); 
             }else{
                 echo "Debe seleccionar algún parámetro del desplegable.";
@@ -108,7 +104,7 @@
     <body>
         <h4 style="color:#3A72A5;">Administración parametros server</h4>
         <form name="fparameter" method="post">
-        <div id="parameter" style="overflow-x:auto;" >
+        <div id="parameter" style="overflow-x:auto;">
         <table id="tparameter">
         <thead>
            <tr>
@@ -132,7 +128,6 @@
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
-           <input type="hidden" name="idserver[]" value="<?php echo $row['idserver'];?>">
            <tr>
               <td><input type="text" name="parametro[]" style="width: 140px;"  value="<?php echo $row['parametro'];?>" required="required"/> </td>
               <td>
@@ -155,15 +150,15 @@
                 </select>
               </td>
               <!--Datapiker color-->
-              <td><input type="color" name="color[]" value="<?php echo $row['color'];?>"/> </td>
-              <td><input type="number" name="estado[]" min="0" max="99" value="<?php echo $row['estado'];?>" required="required" /> </td>
+              <td><input type="color" name="color[]" value="<?php echo $row['color'];?>"/></td>
+              <td><input type="number" name="estado[]" min="0" max="99" value="<?php echo $row['estado'];?>" required="required" /></td>
               <td><input type="text" name="prefijonum[]" value="<?php echo $row['prefijonum'];?>"/> </td>
               <td><input type="number" name="posdecimal[]" min="0" max="6" value="<?php echo $row['posdecimal'];?>" required="required" /> </td>
               <td><input type="number" name="estlink[]" min="0" max="9" value="<?php echo $row['estlink'];?>" required="required" /> </td>
               <td><input type="number" name="nivel[]" min="0" max="4" value="<?php echo $row['nivel'];?>" required="required" /> </td>
               <form name="fdeleteparam" method="post">
               <input type="hidden" name="idparamdelete" value="<?php echo $row['idparametro'];?>"/>
-              <td><input type="submit" name="delete_parametros" value="Borrar"/></td>
+              <td><input type="submit" name="delete_param" value="Borrar"/></td>
               </form>
            </tr>
            <?php
@@ -172,15 +167,15 @@
         </tbody>
         </table>
         </div>
-        <input type="submit" name="update_parametros" value="Actualizar" />
-        <input type="submit" name="insert_parametros" value="Insertar" />
+        <input type="submit" name="update_param" value="Actualizar"/>
+        <input type="submit" name="insert_param" value="Insertar"/>
         </form>
         <!--Form de binarios.-->    
         <h4 style="color:#3A72A5;">Administración nombres de bits</h4>
         <form name="fbitname" method="post">
+        <div id="bitname" style="overflow-x:auto;" >
         <!--Cargar combo-->
         <?php cargacombobit();?>
-        <div id="bitname" style="overflow-x:auto;" >
         <table id="tbitname" >
         <thead>
            <tr>
@@ -199,7 +194,7 @@
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <tr>
               <td><input type="number" name="posicion[]" min="0" max="31" value="<?php echo $row['posicion'];?>" required="required" /> </td>
-              <td><input type="text" name="nombrebit[]" size="80" value="<?php echo $row['nombrebit'];?>" required="required" /> </td>
+              <td><input type="text" name="nombrebit[]" size="80" value="<?php echo $row['nombrebit'];?>"/> </td>
               <form name="fdeletebit" method="post">
               <input type="hidden" name="idbitdelete" value="<?php echo $row['idbit'];?>"/>
               <td><input type="submit" name="delete_bit" value="Borrar"/></td>

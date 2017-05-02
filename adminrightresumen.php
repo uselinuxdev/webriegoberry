@@ -197,7 +197,6 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </div>
         <input type="submit" name="update_estimacion" value="Actualizar" />
         <input type="submit" name="insert_estimacion" value="Insertar" />
-
         </form>
     </body>
 </html>

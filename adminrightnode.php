@@ -39,30 +39,26 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         // Crear clase de para llamada a funciones genericas
         require("ZigbeeClass.php");
         // Control post
+        $ClassZigbee = new ZigbeeClass();
         if(isset($_POST['update_nodo']))
         {
-            $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->updatenodes(); 
         }
         if(isset($_POST['insert_nodo']))
         {
-            $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->insertnodes(); 
         }
         if(isset($_POST['delete_nodo']))
         {
-            $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->deletenodes();
         }
         // Control de sectores
         if(isset($_POST['update_sector']))
         {
-            $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->updatesector(); 
         }
         if(isset($_POST['delete_sector']))
         {
-            $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->deletesector(); 
         }
         // Controlar combo seleccionado
@@ -70,7 +66,6 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         {
             if(!empty($_POST['cbnodos']))
             {
-                $ClassZigbee = new ZigbeeClass();
                 $ClassZigbee->insertsector();
             }else{
                 echo "Debe seleccionar algún nodo del desplegable.";
@@ -79,9 +74,9 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         ?>
     </head>
     <body>
-        <div id="tnode" style="overflow-x:auto;" >
         <h4 style="color:#3A72A5;">Administración nodos</h4>
         <form name="nodos" method="post">
+        <div id="tnode" style="overflow-x:auto;" >
         <table id="tnodos" >
         <thead>
            <tr>
@@ -124,12 +119,13 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            ?>
         </tbody>
         </table>
+        </div>
         <input type="submit" name="update_nodo" value="Actualizar" />
         <input type="submit" name="insert_nodo" value="Insertar" />
         </form>
-        
         <h4 style="color:#3A72A5;">Administración sectores</h4>
         <form name="nodos" method="post">
+        <div id="dnodos" style="overflow-x:auto;" >
         <?php
             $ClassZigbee = new ZigbeeClass();
             $ClassZigbee->cargacombonodos();
@@ -168,9 +164,9 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            ?>
         </tbody>
         </table>
+        </div>
         <input type="submit" name="update_sector" value="Actualizar" />
         <input type="submit" name="insert_sector" value="Insertar" />
         </form>
-        </div>
     </body>
 </html>

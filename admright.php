@@ -9,21 +9,14 @@ and open the template in the editor.
 function checktab() {
     // Control de tab seleccionadas
     // Control parametros
-    if (!empty($_POST['update_parametros']) or !empty($_POST['delete_parametros']) or !empty($_POST['insert_parametros'])) {
-        $_SESSION['stabindex'] = 1;
-    }
-    // Control bit name
-    if (!empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
+    if (!empty($_POST['update_param']) or !empty($_POST['delete_param']) or !empty($_POST['insert_param']) or !empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
         $_SESSION['stabindex'] = 1;
     }
     // Control resumen
     if (!empty($_POST['update_resumen'])or !empty($_POST['insert_resumen']) or !empty($_POST['comboestimado']) or !empty($_POST['update_estimacion']) or !empty($_POST['insert_estimacion'])) {
         $_SESSION['stabindex'] = 2;
     }
-    if (!empty($_POST['update_nodo']) or !empty($_POST['insert_nodo']) or !empty($_POST['delete_nodo'])) {
-        $_SESSION['stabindex'] = 3;
-    }
-    if (!empty($_POST['update_sector']) or !empty($_POST['insert_sector']) or !empty($_POST['delete_sector']) or !empty($_POST['carganodo'])) {
+    if (!empty($_POST['update_nodo']) or !empty($_POST['insert_nodo']) or !empty($_POST['delete_nodo']) or !empty($_POST['update_sector']) or !empty($_POST['insert_sector']) or !empty($_POST['delete_sector']) or !empty($_POST['carganodo'])) {
         $_SESSION['stabindex'] = 3;
     }
 }
