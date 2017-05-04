@@ -19,6 +19,10 @@ function checktab() {
     if (!empty($_POST['update_nodo']) or !empty($_POST['insert_nodo']) or !empty($_POST['delete_nodo']) or !empty($_POST['update_sector']) or !empty($_POST['insert_sector']) or !empty($_POST['delete_sector']) or !empty($_POST['carganodo'])) {
         $_SESSION['stabindex'] = 3;
     }
+    if (!empty($_POST['update_user']) or !empty($_POST['insert_user']) or !empty($_POST['delete_user'])) {
+        $_SESSION['stabindex'] = 4;
+    }
+    
 }
 ?>
 <html>
@@ -42,6 +46,7 @@ function checktab() {
               <li><a href="#form_param">Parametros</a></li>
               <li><a href="#form_resum">Resumen</a></li>
               <li><a href="#form_zigbee">Zigbee</a></li>
+              <li><a href="#form_user">Usuarios</a></li>
         </ul>
         <div id="form_install"> 
             <?php
@@ -61,6 +66,11 @@ function checktab() {
         <div id="form_zigbee"> 
             <?php
                 include 'adminrightnode.php';
+            ?>
+        </div>
+         <div id="form_user"> 
+            <?php
+                include 'adminrightuser.php';
             ?>
         </div>
         </div>

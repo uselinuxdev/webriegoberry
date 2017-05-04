@@ -36,7 +36,7 @@
         // Update logic  
         if(isset($_POST['update_param']))
         {   
-            echo 'Update parameter.';
+            //echo 'Update parameter.';
             $ClassParam->updateparameter(); 
         }
         if(isset($_POST['insert_param']))
