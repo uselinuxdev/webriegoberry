@@ -47,33 +47,29 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <?php
         // Crear clase de para llamada a funciones genericas
         require("riegoresumenClass.php");
+        $Classresumen = new riegoresumenClass();
         // Control post
         if(isset($_POST['update_resumen']))
         {
-            $Classresumen = new riegoresumenClass();
             $Classresumen->updateresumen(); 
         }
         if(isset($_POST['insert_resumen']))
         {
-            $Classresumen = new riegoresumenClass();
             $Classresumen->insertresumen(); 
         }
         // Control de estimación
         if(isset($_POST['update_estimacion']))
         {
-            $Classresumen = new riegoresumenClass();
             $Classresumen->updateestimacion();
         }
         if(isset($_POST['delete_estimacion']))
         {
-            $Classresumen = new riegoresumenClass();
             $Classresumen->deleteestimacion();
         }
         if(isset($_POST['insert_estimacion']))
         {
             if(!empty($_POST['comboestimado']))
             {
-                $Classresumen = new riegoresumenClass();
                 $Classresumen->insertestimacion($_POST['comboestimado']);
             }else{
                 echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
