@@ -229,7 +229,7 @@ class ZigbeeClass {
         mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
         mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
 
-        $sql = "SELECT idnodo,node_identifier,source_addr_long FROM nodos where parent_address <> '00' order by node_identifier ";
+        $sql = "SELECT idnodo,node_identifier,source_addr_long FROM nodos where device_type <> '00' order by node_identifier ";
   
         // Pintar combo
         echo '<select name="cbnodos">'; 
