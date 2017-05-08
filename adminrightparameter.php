@@ -124,7 +124,7 @@
        </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by parametro,estado");
+           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by tipo,pmemoria,parametro,estado");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">

@@ -229,16 +229,15 @@ class ZigbeeClass {
         mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
         mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
 
-        $sql = "SELECT idnodo,nombre_nodo from nodos ";
-        $sql.=" where estado >0 order by nombre_nodo" ;
+        $sql = "SELECT idnodo,node_identifier,source_addr_long FROM nodos where parent_address <> '00' order by node_identifier ";
   
         // Pintar combo
         echo '<select name="cbnodos">'; 
         $resparametros = mysql_query($sql);
-        echo "<option value=0>  Seleccionar un nodo activo  </option>"; 
+        echo "<option value=0>  Seleccionar un nodo </option>"; 
         while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
             $id = $row["idnodo"] ; //Asignamos el id del campo que quieras mostrar
-            $vparametro = substr($row["nombre_nodo"],0,50); // Asignamos el nombre del campo que quieras mostrar
+            $vparametro = substr($row["node_identifier"]." - ".$row["source_addr_long"],0,50); // Asignamos el nombre del campo que quieras mostrar
             //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
             $vcombo = "<option value=".$id;
             if($_POST['cbnodos']==$id) {
