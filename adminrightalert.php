@@ -129,5 +129,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <input type="submit" name="update_alert" value="Actualizar" />
         <input type="submit" name="insert_alert" value="Insertar" />
         </form>
+        
+        <input type="text" name="pruebas" value="<?php echo $ClassAlert->checkalert(1);?>" />
     </body>
 </html>

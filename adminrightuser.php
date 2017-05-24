@@ -59,6 +59,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <table id="tuser" >
         <thead>
            <tr>
+             <th>Server</th>
              <th>Usuario</th>
              <th>Password</th>
              <th>Email</th>
@@ -74,8 +75,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idusuario[]" value="<?php echo $row['idusuario'];?>">
-           <input type="hidden" name="idserver[]" value="<?php echo $row['idserver'];?>">
            <tr>
+              <td><?php $ClassUser->cargacomboserver("idserver[]",$row['idserver']);?></td> 
               <td><input type="text" name="usuario[]" style="width: 100px;" value="<?php echo $row['usuario'];?>" required="required" /> </td>
               <!--La password se actualiza si se escribe-->
               <td><input type="password" name="password[]" style="width: 100px;" value=""/> </td>

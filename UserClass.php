@@ -27,25 +27,26 @@ class UserClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        for($i=0;$i <count($_POST['usuario']);$i++)
+        for($i=0;$i<count($_POST['usuario']);$i++)
         {
             // Control password si hay valor actalizar
             $spreparate = "";
             $spassmd5 = "";
-            $sbind ="ssisi";
+            $sbind ="ssisii";
             if (strlen($_POST['password'][$i])>0)
             {
                //echo 'Cambio password.';
                $spassmd5 = md5($_POST['password'][$i]); 
                $spreparate ="password = ?,";
-               $sbind ="sssisi";
+               $sbind ="sssisii";
             }
             // Controlar password si tiene datos se pinta
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE usuarios SET usuario = ?,".$spreparate." 
                 email = ?, 
                 nivel = ?,  
-                descripcion = ?
+                descripcion = ?,
+                idserver = ?
                 WHERE idusuario = ?");
             if(strlen($spassmd5)> 0)
             {
@@ -55,6 +56,7 @@ class UserClass {
                 $_POST['email'][$i],
                 $_POST['nivel'][$i],
                 $_POST['descripcion'][$i],
+                $_POST['idserver'][$i],
                 $_POST['idusuario'][$i]);
             }else
             {
@@ -63,6 +65,7 @@ class UserClass {
                 $_POST['email'][$i],
                 $_POST['nivel'][$i],
                 $_POST['descripcion'][$i],
+                $_POST['idserver'][$i],
                 $_POST['idusuario'][$i]);
             }
 
@@ -130,6 +133,32 @@ class UserClass {
         $mysqli->close();
         return 0;
     }
+     
+    public function cargacomboserver($name,$idparam)
+        {
+            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
+            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
+            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+            
+            $sql = "SELECT idserver,nombreserver from server_instalacion where estado > 0 ";
+            
+            // Pintar combo
+            echo '<select name="'.$name.'" style="width: 115px;">'; 
+            // No definido
+            $resparametros = mysql_query($sql);
+            // Parametros de la select
+            while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                $id = $row["idserver"] ; //Asignamos el id del campo que quieras mostrar
+                $vparametro = substr($row["nombreserver"],0,50); // Asignamos el nombre del campo que quieras mostrar
+                //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+                $vcombo = "<option value=".$id;
+                if($idparam==$id) {$vcombo = $vcombo. " SELECTED ";}
+                $vcombo = $vcombo.">";
+                $vcombo = $vcombo.$vparametro."</option>"; 
+                echo $vcombo;
+            } //Cerramos el ciclo 
+            echo '</select>';
+        }
 
 //End of class
 }

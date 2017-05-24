@@ -150,7 +150,7 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
-        public function cargacombouser($name,$iduser)
+    public function cargacombouser($name,$iduser)
         {
             mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
             mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
@@ -177,6 +177,124 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
-    
+    // Funcion publica, recorre las alertas por tipo: 0 bit, 1 diaria,2 mensual
+    public function checkalert($tipolectura)
+        {
+            // Conexiones
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if ($mysqli->connect_errno)
+            {
+                echo $mysqli->host_info."\n";
+                exit();
+            }
+            // Importante juego de caracteres
+            if (!mysqli_set_charset($mysqli, "utf8")) {
+                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+                exit();
+            } 
+            $sselect ="select * from alertserver where tipo=".$tipolectura." and estado=1 order by idparametro";
+            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+            while($row = mysqli_fetch_array($result)) {
+                // Por cada parametero recuperar la select
+                echo "Correcto:".$row['idparametro'];
+               $rowvalor = $this->valorbd($row['idparametro'],$tipolectura);
+               // Controlar q $rowvalor tiene filas
+               if($rowvalor <> 0)
+               {
+
+               }
+            }
+        }
+    // Retorna array 
+    private function valorbd($vparam,$tipolectura)
+        {
+            // Conexiones
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if ($mysqli->connect_errno)
+            {
+                echo $mysqli->host_info."\n";
+                exit();
+            }
+            // Importante juego de caracteres
+            if (!mysqli_set_charset($mysqli, "utf8")) {
+                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+                exit();
+            }
+            // Coger la variable string de filtro de fecha
+            $sdate=$this->getfecha($tipolectura);
+            switch ($tipolectura) {
+            case 2:
+                // Mes actual. Coger los 2 días últimos calculados
+                $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
+                $sselect.="WHERE idparametro = ".$vparam;
+                $sselect.= $sdate;
+                $sselect .=" group by idparametro";
+                break;
+//            case 3:
+//                // Año actual
+//                $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
+//                $sselect.="WHERE idparametro = ".$vparam;
+//                $sselect.= $sdate;
+//                $sselect.=" GROUP BY idparametro";
+//                break;
+            default:
+                $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica ";
+                $sselect.="WHERE idparametro = ".$vparam;
+                $sselect.= $sdate;
+            }
+        // Recuperar array
+        $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        $rowvalor = mysqli_fetch_array($result);
+        // Control ticket en B.D.
+        if(mysql_num_rows($rowvalor)== 0){
+            return 0;
+            echo "return 0";
+        }
+        else{
+            // Existia, retornar resultado.
+            echo "rowvalor";
+             return $rowvalor;
+        }  
+        }
+    // Retorna el filtro de fechas según el tipo deseado(1 día, 2 mes, 3 año) 
+    //public function getfecha($tipolectura) 
+    private function getfecha($tipolectura) 
+    {
+        // La función con la tipo lectura, returna un rango de fechas
+        // Para alertas se coge el día anterior, mes anterior, año aterior.
+        $sqldate = "";
+        $vfecha =date('Y-m-d'); 
+        // Fecha pruebas /////////////////////////////////////////////////////////////////////////////////////////////// <--
+        $vfecha = "2016-08-15";
+        switch ($tipolectura) {
+        case 2:
+            // Fecha del mes anterior
+            $vmes = date('m',strtotime($vfecha));
+            $vyear = date('Y',strtotime($vfecha));
+            // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
+            $vfecha = "01-".$vmes."-".$vyear;
+            $vdesde = date("Y-m-d H:i:s", strtotime('-1 month', strtotime($vfecha)));
+            $vhasta = date("Y-m-d H:i:s", strtotime('+0 month',strtotime($vfecha)));
+            break;
+        case 3:
+            // Ejecicio anterior
+            $vyear = date('Y',strtotime($vfecha));
+            // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
+            $vfecha = "01-01-".strval(intval($vyear)-1);
+            //echo $vfecha;
+            $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
+            $vhasta = date("Y-m-d H:i:s", strtotime('+1 year',strtotime($vfecha)));
+            break;
+        default:
+            // fecha de ayer.
+            $vdesde = date("Y-m-d H:i:s", strtotime('-1 days', strtotime($vfecha)));
+            $vhasta = date("Y-m-d H:i:s", strtotime('+0 days',strtotime($vfecha)));
+        }
+        // Retornar rango de fechas
+        $sqldate = " AND flectura >= '".date($vdesde)."'";
+        $sqldate.=" AND flectura < '".date($vhasta)."'";
+        // Retornar fechas
+        return $sqldate;
+    }
     // End of class
 }
