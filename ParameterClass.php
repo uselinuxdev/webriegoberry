@@ -22,7 +22,8 @@ class ParameterClass {
         }
         for($i =0;$i <count($_POST['idparametro']);$i++)
         {
-            $stmt = $mysqli->prepare("UPDATE parametros_server SET parametro=?,"
+            $stmt = $mysqli->prepare("UPDATE parametros_server SET idserver =?,"
+                    . "parametro=?,"
                     . "TIPO=?,"
                     . "posiciones=?,"
                     . "lectura=?,"
@@ -32,12 +33,12 @@ class ParameterClass {
                     . "posdecimal=?,"
                     . "estlink=?,"
                     . "nivel=?,"
-                    . "color=?,"
-                    . "idserver =? "
+                    . "color=?"
                     . " WHERE idparametro = ?");
 
             // Vincular variables
-            if (!$stmt->bind_param("ssissisiiisii",
+            if (!$stmt->bind_param("ississisiiisi",
+                    $_POST['idserver'][$i],
                     $_POST['parametro'][$i],
                     $_POST['tipo'][$i],
                     $_POST['posiciones'][$i],
@@ -49,7 +50,6 @@ class ParameterClass {
                     $_POST['estlink'][$i],
                     $_POST['nivel'][$i],
                     $_POST['color'][$i],
-                    $_POST['idserver'][$i],
                     $_POST['idparametro'][$i])) {
                 echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
                 return -1;
