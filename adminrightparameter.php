@@ -131,7 +131,7 @@
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <tr>
-              <td><?php $ClassParam->cargacomboserver("idserver[]",$row['idserver']);?></td> 
+              <td><?php $ClassParam->cargacomboserver('idserver[]',$row['idserver']);?></td> 
               <td><input type="text" name="parametro[]" style="width: 140px;"  value="<?php echo $row['parametro'];?>" required="required"/> </td>
               <td>
                 <select name = "tipo[]"style="width: 120px;">
