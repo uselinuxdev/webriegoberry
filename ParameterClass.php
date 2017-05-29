@@ -22,7 +22,8 @@ class ParameterClass {
         }
         for($i =0;$i <count($_POST['idparametro']);$i++)
         {
-            $stmt = $mysqli->prepare("UPDATE parametros_server SET parametro=?,"
+            $stmt = $mysqli->prepare("UPDATE parametros_server SET idserver =?,"
+                    . "parametro=?,"
                     . "TIPO=?,"
                     . "posiciones=?,"
                     . "lectura=?,"
@@ -36,7 +37,8 @@ class ParameterClass {
                     . " WHERE idparametro = ?");
 
             // Vincular variables
-            if (!$stmt->bind_param("ssissisiiisi",
+            if (!$stmt->bind_param("ississisiiisi",
+                    $_POST['idserver'][$i],
                     $_POST['parametro'][$i],
                     $_POST['tipo'][$i],
                     $_POST['posiciones'][$i],
@@ -253,4 +255,38 @@ class ParameterClass {
 //        $stmt->close();
 //        return 0;
     }
+    public function cargacomboserver($name,$idparam)
+        {
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if ($mysqli->connect_errno)
+            {
+                echo $mysqli->host_info."\n";
+                return -1;
+            }
+            // Importante juego de caracteres
+            //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+            if (!mysqli_set_charset($mysqli, "utf8")) {
+                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+                exit();
+            }
+            
+            $sql = "SELECT idserver,nombreserver from server_instalacion where estado > 0 ";
+            
+            // Pintar combo
+            echo '<select name="'.$name.'" style="width: 115px;">'; 
+            // No definido
+            $resparametros = mysql_query($sql);
+            // Parametros de la select
+            while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                $id = $row["idserver"] ; //Asignamos el id del campo que quieras mostrar
+                $vparametro = substr($row["nombreserver"],0,50); // Asignamos el nombre del campo que quieras mostrar
+                //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+                $vcombo = "<option value=".$id;
+                if($idparam==$id) {$vcombo = $vcombo. " SELECTED ";}
+                $vcombo = $vcombo.">";
+                $vcombo = $vcombo.$vparametro."</option>"; 
+                echo $vcombo;
+            } //Cerramos el ciclo 
+            echo '</select>';
+        }
 }

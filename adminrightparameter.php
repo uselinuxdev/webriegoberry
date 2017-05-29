@@ -78,7 +78,7 @@
             $sql.=" and server_instalacion.estado = 1 " ;
             $sql.=" and parametros_server.tipo like'%B%' and parametros_server.lectura ='M' and parametros_server.estado > 0" ;
             $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
-            $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
+ //           $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
             $sql.=" order by parametros_server.estado,parametros_server.parametro ";
             // Pintar combo
             echo '<select name="cbvalorbit">'; 
@@ -108,6 +108,7 @@
         <table id="tparameter">
         <thead>
            <tr>
+             <th>Servidor</th>  
              <th>Nombre parametro</th>
              <th>Tipo</th>
              <th>Memoria</th>
@@ -124,11 +125,13 @@
        </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by tipo,pmemoria,parametro,estado");
+           //$result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by tipo,pmemoria,parametro,estado");
+           $result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by tipo,pmemoria,parametro,estado");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <tr>
+              <td><?php $ClassParam->cargacomboserver("idserver[]",$row['idserver']);?></td> 
               <td><input type="text" name="parametro[]" style="width: 140px;"  value="<?php echo $row['parametro'];?>" required="required"/> </td>
               <td>
                 <select name = "tipo[]"style="width: 120px;">
