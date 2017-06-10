@@ -71,7 +71,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idusuario,usuario,password,email,nivel,descripcion,falta,idserver from usuarios where idserver=".$_SESSION['idserver']." order by usuario");
+           $result = mysql_query("SELECT idusuario,usuario,password,email,nivel,descripcion,falta,idserver from usuarios order by usuario");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idusuario[]" value="<?php echo $row['idusuario'];?>">

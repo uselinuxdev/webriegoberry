@@ -9,7 +9,7 @@ and open the template in the editor.
 function checktab() {
     // Control de tab seleccionadas
     // Control parametros
-    if (!empty($_POST['update_param']) or !empty($_POST['delete_param']) or !empty($_POST['insert_param']) or !empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
+    if (!empty($_POST['update_p']) or !empty($_POST['delete_p']) or !empty($_POST['insert_p']) or !empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
         $_SESSION['stabindex'] = 1;
     }
     // Control resumen
