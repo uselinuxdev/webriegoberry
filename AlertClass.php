@@ -206,31 +206,37 @@ class AlertClass {
                         case "=":
                             if ($rowvalor['VALOR'] == $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                         case "!=":
                             if ($rowvalor['VALOR'] != $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                         case ">=":
                             if ($rowvalor['VALOR'] >= $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                         case "<=": 
                             if ($rowvalor['VALOR'] <= $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                         case ">":  
                             if ($rowvalor['VALOR'] > $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                         case "<":  
                             if ($rowvalor['VALOR'] < $row['valor']){
                                 // Mail alerta
+                                $this->mailalert($rowvalor,$row);
                             }
                             break;
                   }
