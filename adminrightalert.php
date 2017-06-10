@@ -117,7 +117,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
               <td><?php echo date("d/m/Y", strtotime($row['falta']));?></td>
               <form name="fdeletealert" method="post">
               <input type="hidden" name="idalertdelete" value="<?php echo $row['idalert'];?>" />
-              <td><input type="submit" name="delete_alert" value="Borrar"/></td>
+              <td><input type="submit" name="delete_alert" value="Borrar"></td>
               </form>
            </tr>
            <?php
@@ -126,10 +126,14 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </tbody>
         </table>
         </div>
-        <input type="submit" name="update_alert" value="Actualizar" />
-        <input type="submit" name="insert_alert" value="Insertar" />
+        <input type="submit" name="update_alert" value="Actualizar">
+        <input type="submit" name="insert_alert" value="Insertar">
         </form>
         
-        <input type="text" name="pruebas" value="<?php echo $ClassAlert->checkalert(1);?>" />
+        <textarea rows="4" cols="50">
+        <?php 
+            echo $ClassAlert->checkalert(1);
+        ?>
+        </textarea>
     </body>
 </html>

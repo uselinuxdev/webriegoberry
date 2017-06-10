@@ -196,15 +196,54 @@ class AlertClass {
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             while($row = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
-                echo "Correcto:".$row['idparametro'];
+               //echo "Correcto:".$row['idparametro'];
                $rowvalor = $this->valorbd($row['idparametro'],$tipolectura);
-               // Controlar q $rowvalor tiene filas
-               if($rowvalor <> 0)
+               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
+               if(!empty($rowvalor))
                {
-
+                  //echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
+                  switch ($row['operacion']) {
+                        case "=":
+                            if ($rowvalor['VALOR'] == $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                        case "!=":
+                            if ($rowvalor['VALOR'] != $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                        case ">=":
+                            if ($rowvalor['VALOR'] >= $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                        case "<=": 
+                            if ($rowvalor['VALOR'] <= $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                        case ">":  
+                            if ($rowvalor['VALOR'] > $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                        case "<":  
+                            if ($rowvalor['VALOR'] < $row['valor']){
+                                // Mail alerta
+                            }
+                            break;
+                  }
                }
             }
         }
+    // Función mail alerta
+    private function mailalert($rowvalor,$row)
+    {
+        // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
+       
+        return 1;
+    }
     // Retorna array 
     private function valorbd($vparam,$tipolectura)
         {
@@ -238,23 +277,16 @@ class AlertClass {
 //                $sselect.=" GROUP BY idparametro";
 //                break;
             default:
-                $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica ";
+                $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
                 $sselect.="WHERE idparametro = ".$vparam;
                 $sselect.= $sdate;
+               // echo $sselect;
             }
-        // Recuperar array
-        $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-        $rowvalor = mysqli_fetch_array($result);
-        // Control ticket en B.D.
-        if(mysql_num_rows($rowvalor)== 0){
-            return 0;
-            echo "return 0";
-        }
-        else{
-            // Existia, retornar resultado.
-            echo "rowvalor";
-             return $rowvalor;
-        }  
+            // Recuperar array
+            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+            $rowvalor = mysqli_fetch_array($result);
+            // Retorna un array.
+            return $rowvalor;
         }
     // Retorna el filtro de fechas según el tipo deseado(1 día, 2 mes, 3 año) 
     //public function getfecha($tipolectura) 
@@ -265,7 +297,7 @@ class AlertClass {
         $sqldate = "";
         $vfecha =date('Y-m-d'); 
         // Fecha pruebas /////////////////////////////////////////////////////////////////////////////////////////////// <--
-        $vfecha = "2016-08-15";
+        $vfecha = "2017-05-31";
         switch ($tipolectura) {
         case 2:
             // Fecha del mes anterior
