@@ -194,49 +194,50 @@ class AlertClass {
             } 
             $sselect ="select * from alertserver where tipo=".$tipolectura." and estado=1 order by idparametro";
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-            while($row = mysqli_fetch_array($result)) {
+            while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
                //echo "Correcto:".$row['idparametro'];
                $rowvalor = $this->valorbd($row['idparametro'],$tipolectura);
                // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
                if(!empty($rowvalor))
                {
-                  //echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
-                  switch ($row['operacion']) {
+//                    echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
+//                   return 0;
+                  switch ($rowalert['operacion']) {
                         case "=":
-                            if ($rowvalor['VALOR'] == $row['valor']){
+                            if ($rowvalor['VALOR'] == $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                         case "!=":
-                            if ($rowvalor['VALOR'] != $row['valor']){
+                            if ($rowvalor['VALOR'] != $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                         case ">=":
-                            if ($rowvalor['VALOR'] >= $row['valor']){
+                            if ($rowvalor['VALOR'] >= $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                         case "<=": 
-                            if ($rowvalor['VALOR'] <= $row['valor']){
+                            if ($rowvalor['VALOR'] <= $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                         case ">":  
-                            if ($rowvalor['VALOR'] > $row['valor']){
+                            if ($rowvalor['VALOR'] > $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                         case "<":  
-                            if ($rowvalor['VALOR'] < $row['valor']){
+                            if ($rowvalor['VALOR'] < $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$row);
+                                $this->mailalert($rowvalor,$rowalert);
                             }
                             break;
                   }
@@ -244,10 +245,41 @@ class AlertClass {
             }
         }
     // Función mail alerta
-    private function mailalert($rowvalor,$row)
+    private function mailalert($rowdb,$rowalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
-       
+        // Coger los datos de la instalación.
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            exit();
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        // Datos de instalación,server y usuario alerta.
+        $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
+                from instalacion i,server_instalacion s, usuarios u
+                where i.idinstalacion = s.idinstalacion
+                and u.idserver = s.idserver
+                and s.idserver=".$rowvalert['idserver']." and u.idusuario=".$rowvalert['idusuario'];
+        print_r($rowvalert);
+        return 0;
+        $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        while($row = mysqli_fetch_array($result)) {
+            // Datos del correo.
+            $para      = $row['email'];
+            $titulo    = 'Alertas automáticas instalación '.$row['nombre'].".Servidor ".$row['nombreserver'];
+            $cabeceras = 'From: alertas@riegosolar.net' . "\r\n" .
+                'Reply-To: info@riegosolar.net' . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+            $mensaje   = 'Valor del día:'.$rowdb['VALOR']." / Valor de la alerta:".$rowalert['valor'];
+            // Mandar mail
+            mail($para, $titulo, $mensaje, $cabeceras);
+        }
         return 1;
     }
     // Retorna array 
