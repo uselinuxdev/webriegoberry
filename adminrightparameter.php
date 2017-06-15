@@ -6,7 +6,6 @@
         <!Funciones post>
         <?php
         // Crear clase de para llamada a funciones genericas
-        require("ParameterClass.php");
         // Control post
         $ClassParam = new ParameterClass();
         // Update logic  

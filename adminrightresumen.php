@@ -46,8 +46,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <!Funciones post>
         <?php
         // Crear clase de para llamada a funciones genericas
-        require("riegoresumenClass.php");
         $Classresumen = new riegoresumenClass();
+        $ClassAlertres = new AlertClass();
         // Control post
         if(isset($_POST['update_resumen']))
         {
@@ -74,6 +74,16 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
             }else{
                 echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
             }
+        }
+        // Lanzar el correo del parametro del combo
+        if(isset($_POST['check_estimacion']))
+        {
+            if(!empty($_POST['comboestimado']))
+                {
+                    $Classresumen->checkstimate($_POST['comboestimado']);
+                }else{
+                    echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
+                }
         }
         ?>
     </head>
@@ -162,12 +172,15 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
              <th>Parametro</th>
              <th>Valorx</th>
              <th>Valory</th>
+             <th>Usuario</th>
+             <th>Operacion</th>
+             <th>Porcentaje</th>
              <th>Borrar</th>
            </tr>
         </thead>
         <tbody>
            <?php
-           $sql = "SELECT idestimacion,p.idparametro,p.parametro,valorx,valory "
+           $sql = "SELECT idestimacion,p.idparametro,p.parametro,valorx,valory,idusuario,operacion,poralert "
                    . "from admestimacion a,parametros_server p"
                    . " where p.idparametro = a.idparametro"
                    . " and p.idparametro=".$_POST['comboestimado']." order by idparametro,valorx";
@@ -178,8 +191,20 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>" />
            <tr>
               <td><?php echo $row['parametro'];?></td>
-              <td><input type="number" name="valorx[]" value="<?php echo $row['valorx'];?>" required="required"/> </td>
-              <td><input type="number" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
+              <td><input type="number" style="width: 40px;" name="valorx[]" value="<?php echo $row['valorx'];?>" required="required"/> </td>
+              <td><input type="number" style="width: 100px;" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
+              <td>
+                  <?php
+                    $ClassAlertres->cargacombouser("idusuario[]",$row['idusuario']);
+                  ?>
+              </td>
+              <td>
+                <select name = "operacion[]" style="width: 60px;">
+                    <option value=">" <?php if($row['operacion'] == '>') {echo " SELECTED ";} echo">";?>Mayor</option>
+                    <option value="<" <?php if($row['operacion'] == '<') {echo " SELECTED ";} echo">";?>Menor</option>
+                </select>
+              </td>
+              <td><input type="number" name="poralert[]" min="5" max="50" value="<?php echo $row['poralert'];?>"/> </td>
               <form name="fdelestimate" method="post">
               <input type="hidden" name="idestimaciondelete" value="<?php echo $row['idestimacion'];?>" />
               <td><input type="submit" name="delete_estimacion" value="Borrar"/></td>
@@ -193,6 +218,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </div>
         <input type="submit" name="update_estimacion" value="Actualizar" />
         <input type="submit" name="insert_estimacion" value="Insertar" />
+        <input type="submit" name="check_estimacion" value="Check Alerta" />
         </form>
     </body>
 </html>

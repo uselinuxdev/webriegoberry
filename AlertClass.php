@@ -197,55 +197,130 @@ class AlertClass {
             while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
                //echo "Correcto:".$row['idparametro'];
-               $rowvalor = $this->valorbd($row['idparametro'],$tipolectura);
+               $rowvalor = $this->valorbd($rowalert['idparametro'],$tipolectura);
+               // Calcular el valor descontando decimales
+               $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);
                // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
                if(!empty($rowvalor))
                {
-//                    echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
+//                   echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
 //                   return 0;
                   switch ($rowalert['operacion']) {
                         case "=":
-                            if ($rowvalor['VALOR'] == $rowalert['valor']){
+                            if ($valorcal == $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                         case "!=":
-                            if ($rowvalor['VALOR'] != $rowalert['valor']){
+                            if ($valorcal != $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                         case ">=":
-                            if ($rowvalor['VALOR'] >= $rowalert['valor']){
+                            if ($valorcal >= $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                         case "<=": 
-                            if ($rowvalor['VALOR'] <= $rowalert['valor']){
+                            if ($valorcal <= $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                         case ">":  
-                            if ($rowvalor['VALOR'] > $rowalert['valor']){
+                            if ($valorcal > $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                         case "<":  
-                            if ($rowvalor['VALOR'] < $rowalert['valor']){
+                            if ($valorcal < $rowalert['valor']){
                                 // Mail alerta
-                                $this->mailalert($rowvalor,$rowalert);
+                                $this->mailalert($valorcal,$rowalert);
                             }
                             break;
                   }
                }
             }
         }
-    // Función mail alerta
-    private function mailalert($rowdb,$rowalert)
+    // Datos de la tabla de estimación
+    public function checkstimate($idparametro)
+        {
+            // Conexiones
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if ($mysqli->connect_errno)
+            {
+                echo $mysqli->host_info."\n";
+                exit();
+            }
+            // Importante juego de caracteres
+            if (!mysqli_set_charset($mysqli, "utf8")) {
+                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+                exit();
+            }
+            // Coger la fecha actual
+            $vmes = date('m',strtotime('-1 month',date()));
+            // Todas las lineas del mes pasado
+            $sselect ="select * from admestimacion where idparametro = ".$idparametro."and valorx=".$vmes;
+            
+            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+            while($rowalert = mysqli_fetch_array($result)) {
+                // Por cada parametero recuperar la select
+               //echo "Correcto:".$row['idparametro'];
+               $rowdb = $this->valorbd($rowalert['idparametro'],2);
+               // Calcular el valor descontando decimales
+               $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);
+               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
+               if(!empty($rowvalor))
+               {
+//                   echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
+//                   return 0;
+                  switch ($rowalert['operacion']) {
+                        case "=":
+                            if ($valorcal == $rowalert['valor']*($rowalert['poralert']/100) ){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert);
+                            }
+                            break;
+                        case "!=":
+                            if ($valorcal != $rowalert['valor']*($rowalert['poralert']/100)){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert['valor']*($rowalert['poralert']/100));
+                            }
+                            break;
+                        case ">=":
+                            if ($valorcal >= $rowalert['valor']*($rowalert['poralert']/100)){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert);
+                            }
+                            break;
+                        case "<=": 
+                            if ($valorcal <= $rowalert['valor']*($rowalert['poralert']/100)){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert);
+                            }
+                            break;
+                        case ">":  
+                            if ($valorcal > $rowalert['valor']*($rowalert['poralert']/100)){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert);
+                            }
+                            break;
+                        case "<":  
+                            if ($valorcal < $rowalert['valor']*($rowalert['poralert']/100)){
+                                // Mail alerta
+                                $this->mailalert($valorcal,$rowalert);
+                            }
+                            break;
+                  }
+               }
+            }
+        }
+    // Función mail alerta-------------------------- Falta adaptar esta funcion a la entrada de 2 funciones checkstimate / checkalert
+    private function mailalert($valorcal,$rowalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -265,9 +340,7 @@ class AlertClass {
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
                 and u.idserver = s.idserver
-                and s.idserver=".$rowvalert['idserver']." and u.idusuario=".$rowvalert['idusuario'];
-        print_r($rowvalert);
-        return 0;
+                and s.idserver=".$rowalert['idserver']." and u.idusuario=".$rowalert['idusuario'];
         $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
         while($row = mysqli_fetch_array($result)) {
             // Datos del correo.
@@ -276,7 +349,10 @@ class AlertClass {
             $cabeceras = 'From: alertas@riegosolar.net' . "\r\n" .
                 'Reply-To: info@riegosolar.net' . "\r\n" .
                 'X-Mailer: PHP/' . phpversion();
-            $mensaje   = 'Valor del día:'.$rowdb['VALOR']." / Valor de la alerta:".$rowalert['valor'];
+            
+            // Calculo con decimales ajustados a la config del parametro
+            
+            $mensaje   = 'Valor del día:'.$valorcal." / Valor de la alerta:".$rowalert['valor'];
             // Mandar mail
             mail($para, $titulo, $mensaje, $cabeceras);
         }
@@ -318,7 +394,7 @@ class AlertClass {
                 $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
                 $sselect.="WHERE idparametro = ".$vparam;
                 $sselect.= $sdate;
-               // echo $sselect;
+                //echo $sselect;
             }
             // Recuperar array
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
@@ -365,6 +441,20 @@ class AlertClass {
         $sqldate.=" AND flectura < '".date($vhasta)."'";
         // Retornar fechas
         return $sqldate;
+    }
+    public function posdecimal($valor,$posiciones) {
+        if ($posiciones > 0) {
+            $div = 1;
+            for ($x = 0; $x < $posiciones; $x++) {
+                $div = $div * 10;
+            }
+            // Resultado
+            $valor = $valor/$div;
+            $valor = round($valor, $posiciones);
+            //$valor = $valor/$div;
+        }
+        // Retorna valor sin tocar o con la division
+        return $valor;           
     }
     // End of class
 }

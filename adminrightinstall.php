@@ -9,7 +9,6 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <?php
             // Crear clase de para llamada a funciones genericas
-            require("InstallClass.php");
             // Control post
             if(isset($_POST['update_install']))
             {

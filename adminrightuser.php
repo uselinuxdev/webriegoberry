@@ -35,7 +35,6 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <!Funciones post>
         <?php
         // Crear clase de para llamada a funciones genericas
-        require("UserClass.php");
         // Control post
         $ClassUser = new UserClass();
         if(isset($_POST['update_user']))

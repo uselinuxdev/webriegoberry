@@ -6,6 +6,14 @@ and open the template in the editor.
 -->
 <?php
 // Con el objeto si existe o no en el post
+// Poner los requeridos
+require("InstallClass.php");
+require("ZigbeeClass.php");
+require("ParameterClass.php");
+require("UserClass.php");
+require("AlertClass.php");
+require("riegoresumenClass.php");
+
 function checktab() {
     // Control de tab seleccionadas
     // Control parametros

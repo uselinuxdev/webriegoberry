@@ -292,13 +292,19 @@ class riegoresumenClass
         for($i =0;$i <count($_POST['idestimacion']);$i++)
         {
             $stmt = $mysqli->prepare("UPDATE admestimacion SET valorx=?,"
-                    . "valory=?"
+                    . "valory=?,"
+                    . "idusuario=?,"
+                    . "operacion=?,"
+                    . "poralert=?"
                     . " WHERE idestimacion = ?");
 
             // Vincular variables
-            if (!$stmt->bind_param("iii",
+            if (!$stmt->bind_param("iiisii",
                     $_POST['valorx'][$i],
                     $_POST['valory'][$i],
+                    $_POST['idusuario'][$i],
+                    $_POST['operacion'][$i],
+                    $_POST['poralert'][$i],
                     $_POST['idestimacion'][$i])) {
                 echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
                 return -1;
