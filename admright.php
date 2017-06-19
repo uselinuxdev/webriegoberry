@@ -21,7 +21,7 @@ function checktab() {
         $_SESSION['stabindex'] = 1;
     }
     // Control resumen
-    if (!empty($_POST['update_resumen'])or !empty($_POST['insert_resumen']) or !empty($_POST['comboestimado']) or !empty($_POST['update_estimacion']) or !empty($_POST['insert_estimacion'])) {
+    if (!empty($_POST['update_resumen'])or !empty($_POST['insert_resumen']) or !empty($_POST['comboestimado']) or !empty($_POST['update_estimacion']) or !empty($_POST['check_estimacion']) or !empty($_POST['insert_estimacion'])) {
         $_SESSION['stabindex'] = 2;
     }
     if (!empty($_POST['update_nodo']) or !empty($_POST['insert_nodo']) or !empty($_POST['delete_nodo']) or !empty($_POST['update_sector']) or !empty($_POST['insert_sector']) or !empty($_POST['delete_sector']) or !empty($_POST['carganodo'])) {

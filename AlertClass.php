@@ -247,7 +247,7 @@ class AlertClass {
             }
         }
     // Datos de la tabla de estimación
-    public function checkstimate($idparametro)
+    public function checkstimate($idparametro = NULL)
         {
             // Conexiones
             $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -261,66 +261,106 @@ class AlertClass {
                 printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
                 exit();
             }
+            // Array con datos a funcion mail
+            $aalert = array();
+
             // Coger la fecha actual
-            $vmes = date('m',strtotime('-1 month',date()));
+            $vmes = (int)date('m', strtotime('-1 month') );
             // Todas las lineas del mes pasado
-            $sselect ="select * from admestimacion where idparametro = ".$idparametro."and valorx=".$vmes;
-            
+            if (!empty($idparametro)) {
+                $sselect ="select * from admestimacion where idparametro = ".$idparametro." and valorx=".$vmes;
+            }else {
+                $sselect ="select * from admestimacion where valorx=".$vmes;
+            }
+            $sselect .= " ORDER BY idusuario,idparametro,valorx";
+            //echo $sselect;
+
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+            $icont=0;
             while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
-               //echo "Correcto:".$row['idparametro'];
                $rowdb = $this->valorbd($rowalert['idparametro'],2);
                // Calcular el valor descontando decimales
                $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);
+               // Añadir al array $rowdb el valor calculado
+               $rowdb['VALOR'] = $valorcal;
                // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
-               if(!empty($rowvalor))
+               if(!empty($rowdb))
                {
-//                   echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
-//                   return 0;
+                // Variables de calculo por %
+
+//                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
+//                //// Calculo : Valor estamado --- 100 como valorreal ----x x=valorreal*100/valor estamado
+                  //// Si valorporcent operador 100-x --> mail
+                  
+                  // Porcentaje real sobre estimado puede ser <> 100%.
+                  $porcentreal = ($rowdb['VALOR']*100)/$rowalert['valory']; 
+                  $porcentreal = 100 - $porcentreal;
+                  
+//                  echo "Valor real:".$rowdb['VALOR']." / valor estamado: ".$rowalert['valory'];
+//                  echo ".El % real sobre estimado:".$porcentreal.".Operador ".$rowalert['operacion'].".Nº porcentaje configurado:".$rowalert['poralert'];
+                  
+                  $bmail = false;
+                  // Logica de calculo pasar a mail las filas que cumplan los criterios
                   switch ($rowalert['operacion']) {
-                        case "=":
-                            if ($valorcal == $rowalert['valor']*($rowalert['poralert']/100) ){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
-                            }
-                            break;
-                        case "!=":
-                            if ($valorcal != $rowalert['valor']*($rowalert['poralert']/100)){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert['valor']*($rowalert['poralert']/100));
-                            }
-                            break;
-                        case ">=":
-                            if ($valorcal >= $rowalert['valor']*($rowalert['poralert']/100)){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
-                            }
-                            break;
-                        case "<=": 
-                            if ($valorcal <= $rowalert['valor']*($rowalert['poralert']/100)){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
-                            }
-                            break;
-                        case ">":  
-                            if ($valorcal > $rowalert['valor']*($rowalert['poralert']/100)){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
-                            }
-                            break;
-                        case "<":  
-                            if ($valorcal < $rowalert['valor']*($rowalert['poralert']/100)){
-                                // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
-                            }
-                            break;
-                  }
-               }
+                    case "=":
+                        if ($rowalert['poralert'] == $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    case "!=":
+                        if ($rowalert['poralert'] != $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    case ">=":
+                        if ($rowalert['poralert'] >= $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    case "<=": 
+                        if ($rowalert['poralert'] <= $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    case ">":  
+                        if ($rowalert['poralert'] > $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    case "<":  
+                        if ($rowalert['poralert'] < $porcentreal){
+                            $bmail = true;
+                        }
+                        break;
+                    }
+                    if($bmail) {
+                        // Array con string keys.
+                        $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                        $aalert[$icont]['NOMBREP']=$rowdb['NOMBREP'];
+                        $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
+                        $aalert[$icont]['VALOR']=$rowdb['VALOR'];
+                        $aalert[$icont]['valory']=$rowalert['valory'];
+                        $aalert[$icont]['operacion']=$rowalert['operacion'];
+                        $aalert[$icont]['poralert']=$rowalert['poralert'];
+                        $aalert[$icont]['vdif']=$vdif;
+                        $aalert[$icont]['vporcent']=$vporcent;
+
+                        $icont++;
+                    }
+                }
+               
             }
+            // Llamar a la función
+            if (sizeof($aalert) > 0) {
+                $this->mailalert($aalert);
+            }else{
+               // echo "No existen filas a tratar.";
+            }
+                    
         }
-    // Función mail alerta-------------------------- Falta adaptar esta funcion a la entrada de 2 funciones checkstimate / checkalert
-    private function mailalert($valorcal,$rowalert)
+
+    private function mailalert($aalert,$vtextalert ="")
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -335,27 +375,81 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        // Datos de instalación,server y usuario alerta.
-        $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
+        // Crear un array con los detalles del correo.
+        // Recorrer todas las filas del array y pintar array final
+        $afinal = array();
+        $iduser = null;
+        $icont = 0;
+        // Variables de proceso
+        $to ="";
+        $subject="";
+        $message="";
+        $headers="";
+        foreach ($aalert as $vfila) {
+            if($iduser <> $vfila['idusuario'])
+            {
+                // Si icont > 0 mandar correo del usuario anterior. Y procede envio
+                if($icont > 0)
+                {
+                    // Final tabla
+                    $message .='</table>
+                    </body>
+                    </html>';
+                     mail($to,$subject,$message,$headers);
+                }
+                $iduser = $vfila['idusuario'];
+                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
                 and u.idserver = s.idserver
-                and s.idserver=".$rowalert['idserver']." and u.idusuario=".$rowalert['idusuario'];
-        $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-        while($row = mysqli_fetch_array($result)) {
-            // Datos del correo.
-            $para      = $row['email'];
-            $titulo    = 'Alertas automáticas instalación '.$row['nombre'].".Servidor ".$row['nombreserver'];
-            $cabeceras = 'From: alertas@riegosolar.net' . "\r\n" .
-                'Reply-To: info@riegosolar.net' . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
-            
-            // Calculo con decimales ajustados a la config del parametro
-            
-            $mensaje   = 'Valor del día:'.$valorcal." / Valor de la alerta:".$rowalert['valor'];
-            // Mandar mail
-            mail($para, $titulo, $mensaje, $cabeceras);
+                and s.idserver=".$_SESSION['idserver']." and u.idusuario=".$iduser;
+                //echo $sselect;
+                $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+                $row = mysqli_fetch_array($result);
+                // Datos del correo.
+                $to = $row['email'];
+                $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                // Always set content-type when sending HTML email
+                $headers = "MIME-Version: 1.0" . "\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+                // More headers
+                $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
+                //$headers .= 'Cc: myboss@example.com' . "\r\n";
+                
+                $message = '
+                <html>
+                <head>
+                <title>'.$subject.'</title>
+                </head>
+                <body>
+                <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
+                <hr style="color: #3A72A5;" />';
+                // Cabecera del mensaje
+                $message .='<p/>Listado de alertas instalación<p/>';
+                // Recorrer todas las lineas de detalle
+                $message .='<table>
+                <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
+                <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
+                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
+                <tr></tr><tr></tr>
+                <tr><td>Fecha</td><td>Parámetro</td><td>Valor Real</td><td>Valor Estimado</td><td>Operador - valor%</td></tr>';                 
+            }
+            // Pintar detalles de cada fila
+            $message .='<tr>';
+            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['NOMBREP'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['operacion'].' '.$vfila['poralert'].'%</td>';
+            $message .='</tr>';   
+            // Más filas
+            $icont ++;
         }
+        // Mandar mail de último usuario
+        // Final tabla
+        $message .='<tr></tr></table>
+        <hr style="color: #3A72A5;" />
+        <p>Final de listado de alertas.</p>
+        </body>
+        </html>';
+        mail($to,$subject,$message,$headers);
         return 1;
     }
     // Retorna array 

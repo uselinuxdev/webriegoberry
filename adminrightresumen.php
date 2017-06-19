@@ -70,9 +70,12 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         {
             if(!empty($_POST['comboestimado']))
             {
+                // Sólo ese parametro
                 $Classresumen->insertestimacion($_POST['comboestimado']);
             }else{
-                echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
+//                echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
+                // Todos los parametros
+                $Classresumen->insertestimacion();
             }
         }
         // Lanzar el correo del parametro del combo
@@ -80,7 +83,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         {
             if(!empty($_POST['comboestimado']))
                 {
-                    $Classresumen->checkstimate($_POST['comboestimado']);
+                    $ClassAlertres->checkstimate($_POST['comboestimado']);
                 }else{
                     echo "Debe seleccionar algún parámetro del desplegable de estimaciones.";
                 }
