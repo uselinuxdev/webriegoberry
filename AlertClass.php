@@ -177,8 +177,8 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
-    // Funcion publica, recorre las alertas por tipo: 0 bit, 1 diaria,2 mensual
-    public function checkalert($tipolectura)
+    // Funcion publica, recorre las alertas por tipo: 1 diaria,0 última
+    public function checkalert()
         {
             // Conexiones
             $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -192,58 +192,102 @@ class AlertClass {
                 printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
                 exit();
             } 
-            $sselect ="select * from alertserver where tipo=".$tipolectura." and estado=1 order by idparametro";
+            // Array con datos a funcion mail
+            $aalert = array();
+            $icont=0;
+            $sselect ="select * from alertserver where estado=1 order by idparametro";
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
-               //echo "Correcto:".$row['idparametro'];
-               $rowvalor = $this->valorbd($rowalert['idparametro'],$tipolectura);
-               // Calcular el valor descontando decimales
-               $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);
-               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
-               if(!empty($rowvalor))
-               {
-//                   echo 'Valor del día:'.$rowvalor['VALOR']." / Valor de la alerta:".$row['valor'];
-//                   return 0;
-                  switch ($rowalert['operacion']) {
+                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                // Calcular el valor descontando decimales  
+                // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
+                if(!empty($rowdb))
+                {
+                    // Control del tipo de parametro
+                    if(!empty($rowdb['WORDVALOR']))
+                    {
+                        // Se trata de un WORDVALOR coger el bit que se desea check
+                        $valorcal = substr($rowdb['WORDVALOR'],$rowalert['nbit'],1);
+                    } else
+                    {
+                        $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);  
+                    }
+                    $bmail = false;
+                    switch ($rowalert['operacion']) {
                         case "=":
                             if ($valorcal == $rowalert['valor']){
+                                $rowalert['operacion'] ="Igual";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
                         case "!=":
                             if ($valorcal != $rowalert['valor']){
+                                $rowalert['operacion'] ="Distinto";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
                         case ">=":
                             if ($valorcal >= $rowalert['valor']){
+                                $rowalert['operacion'] ="Mayor o igual";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
                         case "<=": 
                             if ($valorcal <= $rowalert['valor']){
+                                $rowalert['operacion'] ="Menor o igual";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
                         case ">":  
                             if ($valorcal > $rowalert['valor']){
+                                $rowalert['operacion'] ="Mayor";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
                         case "<":  
                             if ($valorcal < $rowalert['valor']){
+                                $rowalert['operacion'] ="Menor";
                                 // Mail alerta
-                                $this->mailalert($valorcal,$rowalert);
+                                $bmail = true;
                             }
                             break;
-                  }
-               }
+                    }
+                    // Control de filtro de horas
+                    if($rowalert['horaminbit'] > time('00:00:00') or $rowalert['horamaxbit'] > time('00:00:00'))
+                    {
+                        if(time() < $rowalert['horaminbit'] or time() >$rowalert['horamaxbit'])
+                        {
+                            $bmail = false;
+                        }
+                    }
+                    // Si hay que enviar mail
+                    if($bmail) {
+                        // Array con string keys.
+                        $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                        $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
+                        IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
+                        $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
+                        $aalert[$icont]['VALOR']=$valorcal;
+                        $aalert[$icont]['valory']=$rowalert['valor'];
+                        $aalert[$icont]['operacion']=$rowalert['operacion'];
+                        $aalert[$icont]['vporcent']="";
+                        $icont++;
+                    }
+                    
+                }
+            }
+            //print_r($aalert);
+            // Llamar a la función
+            if (sizeof($aalert) > 0) {
+                $this->mailalert($aalert);
+            }else{
+               // echo "No existen filas a tratar.";
             }
         }
     // Datos de la tabla de estimación
@@ -337,19 +381,17 @@ class AlertClass {
                     if($bmail) {
                         // Array con string keys.
                         $aalert[$icont]['idusuario']=$rowalert['idusuario'];
-                        $aalert[$icont]['NOMBREP']=$rowdb['NOMBREP'];
+                        $aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];
                         $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
                         $aalert[$icont]['VALOR']=$rowdb['VALOR'];
                         $aalert[$icont]['valory']=$rowalert['valory'];
                         $aalert[$icont]['operacion']=$rowalert['operacion'];
                         $aalert[$icont]['poralert']=$rowalert['poralert'];
                         $aalert[$icont]['vdif']=$vdif;
-                        $aalert[$icont]['vporcent']=$vporcent;
-
+                        $aalert[$icont]['vporcent']=$vporcent."%";
                         $icont++;
                     }
                 }
-               
             }
             // Llamar a la función
             if (sizeof($aalert) > 0) {
@@ -360,7 +402,7 @@ class AlertClass {
                     
         }
 
-    private function mailalert($aalert,$vtextalert ="")
+    private function mailalert($aalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -433,11 +475,11 @@ class AlertClass {
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
-                <tr><td>Fecha</td><td>Parámetro</td><td>Valor Real</td><td>Valor Estimado</td><td>Operador - valor%</td></tr>';                 
+                <tr><td>Fecha</td><td>Alerta</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
             }
             // Pintar detalles de cada fila
             $message .='<tr>';
-            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['NOMBREP'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['operacion'].' '.$vfila['poralert'].'%</td>';
+            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['operacion'].' '.$vfila['poralert'].'</td>';
             $message .='</tr>';   
             // Más filas
             $icont ++;
@@ -452,7 +494,7 @@ class AlertClass {
         mail($to,$subject,$message,$headers);
         return 1;
     }
-    // Retorna array 
+    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
     private function valorbd($vparam,$tipolectura)
         {
             // Conexiones
@@ -470,8 +512,20 @@ class AlertClass {
             // Coger la variable string de filtro de fecha
             $sdate=$this->getfecha($tipolectura);
             switch ($tipolectura) {
+            case 0:
+                // Coger el máximo valor de lectura
+                $sselect ="SELECT MAX(IDLECTURA) as MAXID FROM lectura_parametros ";
+                $sselect.="WHERE idparametro = ".$vparam;
+                $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+                $rowvalor = mysqli_fetch_array($result);
+                if(empty($rowvalor)){
+                    return 0;
+                }
+                $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica ";
+                $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID'];
+                break;
             case 2:
-                // Mes actual. Coger los 2 días últimos calculados
+                // Mes actual.
                 $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
                 $sselect.="WHERE idparametro = ".$vparam;
                 $sselect.= $sdate;
@@ -485,14 +539,17 @@ class AlertClass {
 //                $sselect.=" GROUP BY idparametro";
 //                break;
             default:
+                // Valor diario
                 $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
                 $sselect.="WHERE idparametro = ".$vparam;
                 $sselect.= $sdate;
                 //echo $sselect;
             }
             // Recuperar array
+            //echo $sselect;
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $rowvalor = mysqli_fetch_array($result);
+            //print_r($rowvalor);
             // Retorna un array.
             return $rowvalor;
         }

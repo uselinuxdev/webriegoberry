@@ -49,6 +49,10 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         {
             $ClassAlert->deletealert();
         }
+        if(isset($_POST['check_alert']))
+        {
+            $ClassAlert->checkalert();
+        }
         ?>
     </head>
     <body>
@@ -97,9 +101,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
               </td>
               <td>
                 <select name = "tipo[]" style="width: 7em;">
-                    <option value="0" <?php if($row['tipo'] == 0) {echo " SELECTED ";} echo">"; ?>Bit</option>
+                    <option value="0" <?php if($row['tipo'] == 0) {echo " SELECTED ";} echo">"; ?>Ultima</option>
                     <option value="1" <?php if($row['tipo'] == 1) {echo " SELECTED ";} echo">"; ?>Diaria</option>
-                    <option value="2" <?php if($row['tipo'] == 2) {echo " SELECTED ";} echo">"; ?>Mensual</option>
                 </select>
               </td>
               <td>
@@ -127,12 +130,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </div>
         <input type="submit" name="update_alert" value="Actualizar">
         <input type="submit" name="insert_alert" value="Insertar">
+        <input type="submit" name="check_alert" value="Comprobar">
         </form>
-        
-        <textarea rows="4" cols="50">
-        <?php 
-            //echo $ClassAlert->checkalert(1);
-        ?>
         </textarea>
     </body>
 </html>
