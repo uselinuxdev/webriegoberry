@@ -568,7 +568,7 @@ class AlertClass {
         $sqldate = "";
         $vfecha =date('Y-m-d'); 
         // Fecha pruebas /////////////////////////////////////////////////////////////////////////////////////////////// <--
-        $vfecha = "2017-05-31";
+        ////$vfecha = "2017-05-31";
         switch ($tipolectura) {
         case 2:
             // Fecha del mes anterior
