@@ -349,31 +349,37 @@ class AlertClass {
                   switch ($rowalert['operacion']) {
                     case "=":
                         if ($rowalert['poralert'] == $porcentreal){
+                            $rowalert['operacion'] ="% igual";
                             $bmail = true;
                         }
                         break;
                     case "!=":
                         if ($rowalert['poralert'] != $porcentreal){
+                            $rowalert['operacion'] ="% distinto";
                             $bmail = true;
                         }
                         break;
                     case ">=":
                         if ($rowalert['poralert'] >= $porcentreal){
+                            $rowalert['operacion'] ="% mayor o igual";
                             $bmail = true;
                         }
                         break;
                     case "<=": 
                         if ($rowalert['poralert'] <= $porcentreal){
+                            $rowalert['operacion'] ="% menor o igual";
                             $bmail = true;
                         }
                         break;
                     case ">":  
                         if ($rowalert['poralert'] > $porcentreal){
+                            $rowalert['operacion'] ="% mayor";
                             $bmail = true;
                         }
                         break;
                     case "<":  
                         if ($rowalert['poralert'] < $porcentreal){
+                            $rowalert['operacion'] ="% menor";
                             $bmail = true;
                         }
                         break;
@@ -388,7 +394,7 @@ class AlertClass {
                         $aalert[$icont]['operacion']=$rowalert['operacion'];
                         $aalert[$icont]['poralert']=$rowalert['poralert'];
                         $aalert[$icont]['vdif']=$vdif;
-                        $aalert[$icont]['vporcent']=$vporcent."%";
+                        $aalert[$icont]['vporcent']=$vporcent;
                         $icont++;
                     }
                 }
@@ -444,7 +450,7 @@ class AlertClass {
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
                 and u.idserver = s.idserver
-                and s.idserver=".$_SESSION['idserver']." and u.idusuario=".$iduser;
+                and u.idusuario=".$iduser;
                 //echo $sselect;
                 $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
                 $row = mysqli_fetch_array($result);
@@ -479,7 +485,7 @@ class AlertClass {
             }
             // Pintar detalles de cada fila
             $message .='<tr>';
-            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['operacion'].' '.$vfila['poralert'].'</td>';
+            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['poralert'].$vfila['operacion'].'</td>';
             $message .='</tr>';   
             // Más filas
             $icont ++;
