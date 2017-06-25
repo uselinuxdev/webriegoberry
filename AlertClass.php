@@ -429,7 +429,7 @@ class AlertClass {
         $iduser = null;
         $icont = 0;
         // Variables de proceso
-        $to ="";
+        $toemail ="";
         $subject="";
         $message="";
         $headers="";
@@ -443,7 +443,9 @@ class AlertClass {
                     $message .='</table>
                     </body>
                     </html>';
-                     mail($to,$subject,$message,$headers);
+                    mail($toemail,$subject,$message,$headers);
+                    // Log de mail enviado.
+                    $this->logmail($toemail,$subject);
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
@@ -455,7 +457,7 @@ class AlertClass {
                 $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
-                $to = $row['email'];
+                $toemail = $row['email'];
                 $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
                 // Always set content-type when sending HTML email
                 $headers = "MIME-Version: 1.0" . "\r\n";
@@ -497,7 +499,8 @@ class AlertClass {
         <p>Final de listado de alertas.</p>
         </body>
         </html>';
-        mail($to,$subject,$message,$headers);
+        mail($toemail,$subject,$message,$headers);
+        $this->logmail($toemail,$subject);
         return 1;
     }
     // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
@@ -559,7 +562,33 @@ class AlertClass {
             // Retorna un array.
             return $rowvalor;
         }
-    // Retorna el filtro de fechas según el tipo deseado(1 día, 2 mes, 3 año) 
+    // Log de mail en mysql
+    private function logmail($toemail,$subject)
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        
+        $sinsert = "INSERT INTO alertserverlog (toemail,subject) VALUES ('".$toemail."','".$subject."')";
+        //echo $sinsert;
+        if ($mysqli->query($sinsert) === TRUE)
+        {
+            //echo "Nuevo bitname creado.";
+        } else {
+            echo "Falló la inserción: (" . $mysqli->errno . ") " . $mysqli->error;
+        }
+        $mysqli->close();
+        return 0; 
+    }
     //public function getfecha($tipolectura) 
     private function getfecha($tipolectura) 
     {
