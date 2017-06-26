@@ -60,8 +60,8 @@
               <td><input type="text" name="parametro[]" style="width: 140px;"  value="<?php echo $row['parametro'];?>" required="required"/> </td>
               <td>
                 <select name = "TIPO[]"style="width: 120px;">
-                    <option value="I" <?php if($row['TIPO'] == 'I') {echo " SELECTED ";} echo">"; ?>IMPUT</option>
-                    <option value="IB" <?php if($row['TIPO'] == 'IB') {echo " SELECTED ";} echo">"; ?>IMPUT BIN</option>
+                    <option value="I" <?php if($row['TIPO'] == 'I') {echo " SELECTED ";} echo">"; ?>INPUT</option>
+                    <option value="IB" <?php if($row['TIPO'] == 'IB') {echo " SELECTED ";} echo">"; ?>INPUT BIN</option>
                     <option value="C" <?php if($row['TIPO'] == 'C') {echo " SELECTED ";} echo">"; ?>BOBINA</option>
                     <option value="HB" <?php if($row['TIPO'] == 'HB') {echo " SELECTED ";} echo">"; ?>HOLDING BIN</option>
                     <option value="H" <?php if($row['TIPO'] == 'H') {echo " SELECTED ";} echo">"; ?>HOLDING</option>
