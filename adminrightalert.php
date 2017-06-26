@@ -53,6 +53,21 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         {
             $ClassAlert->checkalert();
         }
+        if(isset($_POST['check_email']))
+        {
+            $toemail = 'eusebio.antonio.castro@gmail.com';
+            $subject = "Alertas automáticas instalación ";
+            // Always set content-type when sending HTML email
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+            // More headers
+            $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
+            //$headers .= 'Cc: myboss@example.com' . "\r\n";
+
+            $message = 'Correo de pruebas';
+            mail($toemail,$subject,$message,$headers);
+        }
         ?>
     </head>
     <body>
@@ -131,6 +146,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <input type="submit" name="update_alert" value="Actualizar">
         <input type="submit" name="insert_alert" value="Insertar">
         <input type="submit" name="check_alert" value="Comprobar">
+        <input type="submit" name="check_email" value="Check Email">
         </form>
         </textarea>
     </body>

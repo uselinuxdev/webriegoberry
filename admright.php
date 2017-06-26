@@ -30,7 +30,7 @@ function checktab() {
     if (!empty($_POST['update_user']) or !empty($_POST['insert_user']) or !empty($_POST['delete_user'])) {
         $_SESSION['stabindex'] = 4;
     }
-    if (!empty($_POST['update_alert']) or !empty($_POST['insert_alert']) or !empty($_POST['delete_alert'])  or !empty($_POST['check_alert'])) {
+    if (!empty($_POST['update_alert']) or !empty($_POST['insert_alert']) or !empty($_POST['delete_alert'])  or !empty($_POST['check_alert']) or !empty($_POST['check_email'])) {
         $_SESSION['stabindex'] = 5;
     }
 }
