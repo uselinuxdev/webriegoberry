@@ -146,7 +146,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <input type="submit" name="update_alert" value="Actualizar">
         <input type="submit" name="insert_alert" value="Insertar">
         <input type="submit" name="check_alert" value="Comprobar">
-<!--        <input type="submit" name="check_email" value="Check Email">-->
+        <input type="submit" name="check_email" value="Check Email">
         </form>
         </textarea>
     </body>
