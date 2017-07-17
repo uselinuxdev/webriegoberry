@@ -39,10 +39,12 @@ class ZigbeeClass {
                 node_identifier = ?,  
                 parent_address = ?,
                 device_type = ?,
-                estado = ?
+                estado = ?,
+                rssi = ?,
+                battery_voltage = ?
                 WHERE idnodo = ?");
            // echo "stmt preparado correctamente.";
-            $stmt->bind_param('ssssssii',
+            $stmt->bind_param('ssssssissi',
                 $_POST['nombre_nodo'][$i],
                 $_POST['source_addr'][$i],
                 $_POST['source_addr_long'][$i],
@@ -50,6 +52,8 @@ class ZigbeeClass {
                 $_POST['parent_address'][$i],
                 $_POST['device_type'][$i],
                 $_POST['estado'][$i],
+                $_POST['rssi'][$i],
+                $_POST['battery_voltage'][$i],
                 $_POST['idnodo'][$i]);
             //echo "stmt bind_param correcto.";
             // Ejecutar

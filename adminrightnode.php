@@ -80,19 +80,21 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <table id="tnodos" >
         <thead>
            <tr>
-             <th>Nombre nodo</th>
-             <th>Address</th>
-             <th>Addr. Long</th>
-             <th>Id nodo</th>
-             <th>D.padre</th>
+             <th>Nombre</th>
+             <th>Dirección(16)</th>
+             <th>Dirección(64)</th>
+             <th>Identificador</th>
+             <th>Padre</th>
              <th>Tipo</th>
              <th>Estado</th>
+             <th>Rssi</th>
+             <th>Bateria</th>
              <th>Borrar</th>
            </tr>
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,falta,fmodif,fbaja FROM nodos");
+           $result = mysql_query("SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,rssi,battery_voltage,falta,fmodif,fbaja FROM nodos");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idnodo[]" value="<?php echo $row['idnodo'];?>">
@@ -109,6 +111,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>Reescanear</option>
                 </select>
               </td>
+              <td><input type="text" name="rssi[]" value="<?php echo $row['rssi'];?>" required="required" /> </td>
+              <td><input type="text" name="battery_voltage[]" value="<?php echo $row['battery_voltage'];?>" required="required" /> </td>
               <form name="fdelenodo" method="post">
               <input type="hidden" name="idnododelete" value="<?php echo $row['idnodo'];?>" />
               <td><input type="submit" name="delete_nodo" value="Borrar"/></td>
