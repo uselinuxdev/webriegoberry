@@ -99,7 +99,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            ?>
            <input type="hidden" name="idnodo[]" value="<?php echo $row['idnodo'];?>">
            <tr>
-              <td><input type="text" name="nombre_nodo[]" size="35" value="<?php echo $row['nombre_nodo'];?>" required="required" /> </td>
+              <td><input type="text" name="nombre_nodo[]" size="35" style="width: 130px;" value="<?php echo $row['nombre_nodo'];?>" required="required" /> </td>
               <td><input type="text" name="source_addr[]" value="<?php echo $row['source_addr'];?>"/> </td>
               <td><input type="text" name="source_addr_long[]" style="width: 120px;" value="<?php echo $row['source_addr_long'];?>" /> </td>
               <td><input type="text" name="node_identifier[]" value="<?php echo $row['node_identifier'];?>" /> </td>
