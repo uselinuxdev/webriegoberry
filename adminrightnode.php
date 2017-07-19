@@ -100,19 +100,19 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            <input type="hidden" name="idnodo[]" value="<?php echo $row['idnodo'];?>">
            <tr>
               <td><input type="text" name="nombre_nodo[]" size="35" value="<?php echo $row['nombre_nodo'];?>" required="required" /> </td>
-              <td><input type="text" name="source_addr[]" value="<?php echo $row['source_addr'];?>" required="required" /> </td>
-              <td><input type="text" name="source_addr_long[]" style="width: 120px;" value="<?php echo $row['source_addr_long'];?>" required="required" /> </td>
-              <td><input type="text" name="node_identifier[]" value="<?php echo $row['node_identifier'];?>" required="required" /> </td>
-              <td><input type="text" name="parent_address[]" value="<?php echo $row['parent_address'];?>" required="required" /> </td>
-              <td><input type="text" name="device_type[]" value="<?php echo $row['device_type'];?>" required="required" /> </td>
+              <td><input type="text" name="source_addr[]" value="<?php echo $row['source_addr'];?>"/> </td>
+              <td><input type="text" name="source_addr_long[]" style="width: 120px;" value="<?php echo $row['source_addr_long'];?>" /> </td>
+              <td><input type="text" name="node_identifier[]" value="<?php echo $row['node_identifier'];?>" /> </td>
+              <td><input type="text" name="parent_address[]" value="<?php echo $row['parent_address'];?>" /> </td>
+              <td><input type="text" name="device_type[]" value="<?php echo $row['device_type'];?>" /> </td>
               <td>
                 <select name = "estado[]" style="width: 7em;">
                     <option value="1" <?php if($row['estado'] == 1) {echo " SELECTED ";} echo">"; ?>Activado</option>
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>Reescanear</option>
                 </select>
               </td>
-              <td><input type="text" name="rssi[]" value="<?php echo $row['rssi'];?>" required="required" /> </td>
-              <td><input type="text" name="battery_voltage[]" value="<?php echo $row['battery_voltage'];?>" required="required" /> </td>
+              <td><input type="text" name="rssi[]" value="<?php echo $row['rssi'];?>"/> </td>
+              <td><input type="text" name="battery_voltage[]" value="<?php echo $row['battery_voltage'];?>" /> </td>
               <form name="fdelenodo" method="post">
               <input type="hidden" name="idnododelete" value="<?php echo $row['idnodo'];?>" />
               <td><input type="submit" name="delete_nodo" value="Borrar"/></td>
