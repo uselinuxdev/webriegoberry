@@ -51,7 +51,8 @@
         <tbody>
            <?php
            //$result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by tipo,pmemoria,parametro,estado");
-           $result = mysql_query("SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by CAST(pmemoria as decimal),parametro,estado");
+           //$result = mysql_query("SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by CAST(pmemoria as decimal),parametro,estado");
+           $result = mysql_query("SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by idserver,tipo,CAST(pmemoria as decimal),parametro,estado");
            while( $row = mysql_fetch_assoc( $result ) ){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
