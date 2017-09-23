@@ -46,7 +46,7 @@ function selectdia($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
    // echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
@@ -71,7 +71,7 @@ function selectmes($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,FLECTURA AS FECHA  FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA  FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
@@ -92,7 +92,7 @@ function selectyear($vparam,$expexcel = 0) {
     $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
     $vhasta = date("Y-m-d H:i:s", strtotime('+1 year',strtotime($vfecha)));
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,MES as HORA,FLECTURA AS FECHA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,MES as HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
@@ -108,7 +108,7 @@ function selectall($vparam,$expexcel = 0) {
     $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,YEAR as HORA,FLECTURA AS FECHA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,YEAR as HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,YEAR,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
@@ -137,7 +137,7 @@ function selectrango($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,VALOR,COLOR,HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
