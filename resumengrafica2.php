@@ -40,6 +40,7 @@
                     "chart" => array(
                                 "caption"=> "".$subtext." mes actual",
                                 "yaxisname"=> "".$arraya[0]['PREFIJO']."",
+                                "exportEnabled" => 1,
                                 "rotatevalues"=> "0",
                                 "showvalues"=> "0",
                                 "valuefontcolor"=> "074868",

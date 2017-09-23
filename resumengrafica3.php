@@ -39,6 +39,7 @@
         $arrData = array(
                     "chart" => array(
                                 "caption"=>  "".$subtext." año actual",
+                                "exportEnabled" => 1,
                                 "captionFontSize"=> "12",
                                 "subcaptionFontSize"=> "12",
                                 "baseFontColor"=> "#333333",

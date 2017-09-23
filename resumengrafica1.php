@@ -39,6 +39,7 @@
         $arrData = array(
                     "chart" => array(
                             "caption" => "Hoy ".$arraya[0]['PREFIJO']."",
+                            "exportEnabled" => 1,
                             "subCaption"  => "".$subtext."",
                             "captionFontSize"  => "14",
                             "subcaptionFontSize"  => "14",		
