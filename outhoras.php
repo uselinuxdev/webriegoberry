@@ -266,6 +266,7 @@ function chart($vlabelstep,$textox)
 //                   // "palettecolors"=>  "#FD9927,#FECE2F,#9DCD3F,#CECD42,#64D3D1",   //<--- Colores de la grafica
 //                    "showtooltip"=>  "1",
 //                    "showborder"=>  "0"
+                    "exportEnabled" => 1,
                     "labelStep" => "".$vlabelstep."",
                     "xaxisname"=>  "".$textox."",
                     "plotgradientcolor"=> "",

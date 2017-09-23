@@ -238,6 +238,7 @@ function chart()
                  // Labelstep cada cuanto pinta la barra de abajo  
                   //  "caption" => "".$textox."",
                  // "palettecolors"=>  "0080C0",  // Colores de la grafica
+                    "exportEnabled" => 1,
                     "bgColor" => "#ffffff",
                     "borderAlpha"=> "20",
                     "canvasBorderAlpha"=> "0",

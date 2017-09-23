@@ -19,7 +19,11 @@ and open the template in the editor.
         {
             header("Location: login.php");
         }
-        $_SESSION['pag'] = "riegohoras.php";
+        if ($_SESSION['pag'] <> "riegohoras.php")
+        {
+            $_SESSION['stabindex']= 0;
+            $_SESSION['pag'] = "riegohoras.php";
+        }
         ?>
     </head>
     <body>

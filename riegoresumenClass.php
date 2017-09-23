@@ -142,12 +142,14 @@ class riegoresumenClass
             $vcombo = $vcombo.">";
             $vcombo = $vcombo."Ninguno</option>"; 
             echo $vcombo;
-            // Estimado
-            $vcombo = "<option value=0";
-            if($idparam==0) {$vcombo = $vcombo. " SELECTED ";}
-            $vcombo = $vcombo.">";
-            $vcombo = $vcombo."Estimado</option>"; 
-            echo $vcombo;
+            // Estimado. Si es distino del compo de administración de estimaciones
+            if ($name <> 'comboestimado') {
+                $vcombo = "<option value=0";
+                if($idparam==0) {$vcombo = $vcombo. " SELECTED ";}
+                $vcombo = $vcombo.">";
+                $vcombo = $vcombo."Estimado</option>"; 
+                echo $vcombo;
+            }
             // Parametros de la select
             while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                 $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
