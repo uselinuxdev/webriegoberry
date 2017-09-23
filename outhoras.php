@@ -71,7 +71,7 @@ function selectmes($vparam,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,DATE_FORMAT(FLECTURA,'%H:%i') AS FECHA  FROM vgrafica ";
+    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,DATE_FORMAT(FLECTURA,'%d/%m %H:%i') AS FECHA  FROM vgrafica ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica ";
