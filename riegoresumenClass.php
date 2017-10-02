@@ -130,7 +130,7 @@ class riegoresumenClass
             $sql.=" and server_instalacion.estado = 1 " ;
             $sql.=" and parametros_server.estado > 0 and parametros_server.tipo not like'%B%'" ;
             $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
-            $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
+           # $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
             $sql.=" order by parametros_server.parametro,parametros_server.estado ";
             
             // Pintar combo
@@ -259,7 +259,7 @@ class riegoresumenClass
         $sql.=" and server_instalacion.estado = 1 " ;
         $sql.=" and parametros_server.estado > 0 and parametros_server.tipo not like'%B%'" ;
         $sql.=" and parametros_server.nivel <= ".$_SESSION['nivel'];
-        $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
+        #$sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
         $sql.=" order by parametros_server.parametro,parametros_server.estado ";
         
         $resparametros = mysql_query($sql);
