@@ -141,7 +141,7 @@ function nombrebits($dbhandle, $idparametro, $tbits)
             $nombits = nombrebits($dbhandle,$vparam, strlen($fila1["WORDVALOR"])); 
             $vprin = '{
                         "chart": {
-                            "exportEnabled" => 1,
+                            "exportEnabled" : "1",
                             "caption": "'.$vvalor.'",
                             "subcaption": "Por mapa de color",
                             "xaxisname": "Hora lectura",
