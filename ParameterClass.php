@@ -148,7 +148,6 @@ class ParameterClass {
 //        $stmt->close();
 //        return 0;
     }
-    // Nuevo comentario.
     // Logica parametros_bitname
     public function updatebit()
     {
