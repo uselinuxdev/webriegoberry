@@ -77,7 +77,7 @@ function CheckLogin()
          return false;
      }
       if ($_SESSION['tlogon'] + $_SESSION['minsesion'] * 60 < time()) {
-          $_SESSION['textsesion'] = "Por razones de seguridad su sesión ha esperiado, vuelva a ingresar sus datos en el sistema.";
+          $_SESSION['textsesion'] = "Por razones de seguridad su sesión ha espirado, vuelva a ingresar sus datos en el sistema.";
           return false;
           // session timed out
       }

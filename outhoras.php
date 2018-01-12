@@ -195,35 +195,27 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
     $afilas = array();
     
     // Cargar datos en array
-    $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
-    $sql = getsql($arrayp[0],$vtiposalida,0);
-    $result = $link->query($sql);
-    
+    $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);  
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     // General chart
-    $adata = chart($vlabelstep,$textox);
-    $adet = datachart($afilas);
-    
-    // Las categorias
-    $acat = categorychart($afilas,$vtiposalida);
-
-    $adata["categories"]=[["category"=>$acat]];
-    // creating dataset object
-    $adata["dataset"] = [$adet];
+    $adata = chart($vlabelstep,$textox); 
     // Recorrer el resto del array
     $longitud = count($arrayp);
-    $sexcel = $arrayp[0];
-    for($i=1; $i<$longitud; $i++)
+    for($i=0; $i<$longitud; $i++)
     {
         $sql = getsql($arrayp[$i],$vtiposalida,0);
         $result = $link->query($sql);
         $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
         $adet = datachart($afilas);
         // ERROR???
-        array_push($adata["dataset"],$adet);
+        array_push($adata["dataset"],$adet);      
         // Control select excel.
         $sexcel .= ','.$arrayp[$i];
+        // Las categorias
+        $acat = categorychart($afilas,$acat,$vtiposalida);
     }
+    // Añadir categorías
+    $adata["categories"]=[["category"=>$acat]];
     // Retornar el excel
     $sqlexp = getsql($sexcel,$vtiposalida,1);
     // Guardar SQL en $_POST para realizar el export
@@ -284,7 +276,7 @@ function chart($vlabelstep,$textox)
     return $arrData;
 }
 
-function categorychart($array,$vtiposalida) {
+function categorychart($array,$atotal,$vtiposalida) {
     // Categorias. Valores X de la gráfica
     $arrCat = array();
     // Recorrer todas las filas del arraya
@@ -295,9 +287,10 @@ function categorychart($array,$vtiposalida) {
            $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
         }
         array_push($arrCat, array("label" => $array[$i]["FECHA"]));
+        //$atotal["FECHA"] = $array[$i]["FECHA"];
     }
-    //var_dump($arrCat);
-    return $arrCat;
+    var_dump($atotal);
+    return $atotal;
 }
 
 function datachart($array)

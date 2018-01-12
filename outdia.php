@@ -63,7 +63,7 @@ function selectdia($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
-    $sselect.=" order by flectura,idparametro";
+    $sselect.=" order by idparametro,flectura";
     return $sselect;
 }
 
@@ -98,9 +98,9 @@ function selectmes($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
         }
         $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
         $sselect .=" AND flectura > CURRENT_DATE() - INTERVAL 2 DAY";  
-        $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by flectura,idparametro";
+        $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura";
     }else {
-        $sselect .=" order by flectura,idparametro";
+        $sselect .=" order by idparametro,flectura";
     }
     //echo $sselect;
     return $sselect;
@@ -119,12 +119,12 @@ function selectyear($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,MES,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
+        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
-    $sselect.=" GROUP BY idparametro,MES order by flectura,idparametro";
+    $sselect.=" GROUP BY idparametro,MES order by idparametro,flectura";
     return $sselect;
 }
 
@@ -139,7 +139,7 @@ function selectall($vparam,$expexcel = 0) {
         $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHAPOSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in (".$_SESSION['vparam'].")";
-    $sselect.=" GROUP BY YEAR order by flectura,idparametro";
+    $sselect.=" GROUP BY YEAR order by idparametro,flectura";
     return $sselect;
 }
 
@@ -191,39 +191,58 @@ function configchar($arrayp,$vtiposalida,&$ilink)
     
     // Cargar datos en array
     $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
-    $sql = getsql($arrayp[0],$vtiposalida,$vdesde,$vhasta,0);
-    //echo $sql;
-    $result = $link->query($sql);
-    
-    $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
+    // creating dataset object
     // General chart
     $adata = chart();
-    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida,$ilink);
+    
+    // Recorrer el resto del array
+    $longitud = count($arrayp);
+    $sparm = $arrayp[0];
+    for($i=1; $i<$longitud; $i++)
+    {
+        $sparm .= ','.$arrayp[$i];
+    }
+    $sqlexp = getsql($sparm,$vtiposalida,$vdesde,$vhasta,0);
+    //print_r($sqlexp);
+    $result = $link->query($sqlexp);
+    $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     
     // Las categorias
     $acat = categorychart($afilas,$vtiposalida);
-
-    $adata["categories"]=[["category"=>$acat]];
-    // creating dataset object
-    $adata["dataset"] = [$adet];
-    // Recorrer el resto del array
-    $longitud = count($arrayp);
-    $sexcel = $arrayp[0];
-    for($i=1; $i<$longitud; $i++)
-    {
-        $sql = getsql($arrayp[$i],$vtiposalida,$vdesde,$vhasta,0);
-        $result = $link->query($sql);
-        $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
-        $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
-        // ERROR???
-        array_push($adata["dataset"],$adet);
-        // Control select excel.
-        $sexcel .= ','.$arrayp[$i];
-    }
-    // Retornar el excel
-    $sqlexp = getsql($sexcel,$vtiposalida,$vdesde,$vhasta,0);
-    // Añadir todos los parametros del array
+    $adata["categories"] = array();
+    array_push($adata["categories"], array("category"=>$acat));
     
+    
+    // Datos de detalles
+    $adata["dataset"] = array();
+    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
+    //var_dump($adet);
+    // Serie final
+    for($i = 0; $i< count($adet); $i++) {
+        //var_dump($aserie);
+        $aserie = $adet[$i]["DET"];
+        //print_r($aserie);
+        $aseriefin = array();
+//        // En vez de recorrer el array de valores de la serie. Recorrer siempre el array de categorías y pintar hueco o valor
+        foreach($acat as $fcreate) {
+            //print_r(array_search($fcreate["label"], array_column($aserie,"label")))." / ".$fcreate["label"];
+            // Si existe categoria en array, sino, pinta 0
+            $ipos = array_search($fcreate["label"], array_column($aserie,"label"));
+            if (false !== $ipos) {
+                //echo "Existe ".$fcreate["label"]." en ".$key." / ";
+                array_push($aseriefin, array("value" => $aserie[$ipos]["value"], "link" => $aserie[$ipos]["link"]));
+            }else {
+                //echo "No existe ".$fcreate["label"]." en ".$key." / ";
+                array_push($aseriefin, array("value" => 0, "link" => "")); 
+            }
+        }
+        // Añadir serie
+        array_push($adata["dataset"], array("seriesName"=> "".$aserie[0]["serie"]."", "data"=>$aseriefin,"color" => "".$aserie[0]["color"].""));
+    }
+//        
+        
+//   
+        ///$arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas,"color" => "".$array[0]["COLOR"].""];
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
     
@@ -256,37 +275,51 @@ function chart()
     return $arrData;
 }
 
-function categorychart($array,$vtiposalida) {
-    // Categorias. Valores X de la gráfica
-    $arrCat = array();
+function categorychart($afilas,$vtiposalida) {
+    $acat = array();
     // Array de meses.
     $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
-    // Recorrer todas las filas del arraya
-    $longitud = count($array);
-    for($i=0; $i<$longitud; $i++)
-    {
+    // Recorrer todas la filas
+    foreach ($afilas as $afila) {
         if ($vtiposalida ==3){
-           $array[$i]["HORA"] = $ameses[$array[$i]["HORA"] - 1];
+            $afila["HORA"] = $ameses[$afila["HORA"] - 1];
         }
-        array_push($arrCat, array("label" => "".$array[$i]["HORA"]));
+        $acat[$afila["HORA"]]=$afila["HORA"];
     }
-    //var_dump($ameses);
-    return $arrCat;
+    array_multisort($acat);
+    // Recorrer el array y pintar el final
+    $acatfin = array();
+    foreach ($acat as $aval)
+    {
+        array_push($acatfin, array("label" => $aval));
+    }
+//    var_dump($arrCat);
+    //var_dump($acatfin);
+    return $acatfin;
+//    return $arrCat;
 }
 
 function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
 {
     // Datos. Valores Y de la gráfica. Varias series
-    $arrDat = array();
-    $afilas = array();
-    // Poner en array la serie y el tipo de renderizado
-    $vserie = substr($array[0]["NOMBREP"],0,20)." ".$array[0]["PREFIJO"];
-    
+    $aserie = array();
+    $aseries = array();
    //  Recorrer todas las filas del arraya
     $longitud = count($array);
+    $idpar = $array[0]["idparametro"];
     for($i=0; $i<$longitud; $i++)
 	{
+            // Control de series
+            //print_r($array[$i]["idparametro"]);
+            if ($idpar <> $array[$i]["idparametro"]) 
+            {
+                array_push($aseries,array("idparametro" => $idpar,"DET" => $aserie));
+                $idpar = $array[$i]["idparametro"];
+                //print_r($idpar);
+                $aserie = array();
+            }
             // Control de link de sectores
+            $vserie = substr($array[$i]["NOMBREP"],0,20)." ".$array[$i]["PREFIJO"];
             $vlink = "";
             if($array[$i]["ESTLINK"] == 1) {
                 $ilink = 1;
@@ -294,13 +327,19 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
             }   
             // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            array_push($afilas, array("value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
+
+            array_push($aserie, array("serie" => $vserie,"label"=> $array[$i]["HORA"],"value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
            // array_push($afilas, array("value" => $vvalor, "link" => $vlink));
-        }  
-    $arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas,"color" => "".$array[0]["COLOR"].""];
-    //var_dump ($arrDat);
-    return $arrDat;
+        }
+        // Tiene q ser al final igual
+        array_push($aseries,array("idparametro" => $idpar,"DET" => $aserie));
+    //print_r($aseries);
+    //print_r($aseries);
+    // Recorrer la series y pintar 0 para todas las categorías.
+    
+    return $aseries;
 }
+
 
 ?>
 
