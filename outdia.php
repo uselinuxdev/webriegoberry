@@ -246,6 +246,11 @@ function configchar($arrayp,$vtiposalida,&$ilink)
     // Guardar SQL en $_POST para realizar el export
     $_SESSION['ssql'] = $sqlexp;
     
+    // Retornar el excel
+    $sqlexp = getsql($sparm,$vtiposalida,$vdesde,$vhasta,1);
+    // Guardar SQL en $_POST para realizar el export
+    $_SESSION['ssql'] = $sqlexp;
+    
     //var_dump($adata);
     return $adata;
 }
