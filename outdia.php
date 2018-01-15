@@ -55,10 +55,10 @@ function selectdia($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     //vhasta = '2015-03-07 00:00:00';
     //echo $vhasta;
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT IDLECTURA,IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,ESTLINK FROM vgrafica_horas ";
+    $sselect = "SELECT IDPARAMETRO,IDLECTURA,NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,ESTLINK FROM vgrafica_horas ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas ";
+        $sselect = "SELECT idparametro,NOMBREP AS PARAMETRO,COLOR,VALOR,DATE_FORMAT(FLECTURA,'%H') AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -83,7 +83,7 @@ function selectmes($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     $sselect ="SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect ="SELECT NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
+        $sselect ="SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,COLOR,VALOR,DIA,FLECTURA AS FLECTURA,POSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect .=" AND flectura >= '".date($vdesde)."'";
@@ -94,11 +94,11 @@ function selectmes($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
         if ($expexcel == 0) {
             $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,DIA AS HORA,ESTLINK,DATE_FORMAT(flectura,'%Y-%m-%d') AS FLECTURA FROM vgrafica_horas "; 
         }else {
-            $sselect .=" SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,DIA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_horas "; 
+            $sselect .=" SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,DIA,FLECTURA AS FLECTURA,POSDECIMAL FROM vgrafica_horas "; 
         }
         $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
         $sselect .=" AND flectura > CURRENT_DATE() - INTERVAL 2 DAY";  
-        $sselect .=" group by NOMBREP,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura";
+        $sselect .=" group by idparametro,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura";
     }else {
         $sselect .=" order by idparametro,flectura";
     }
@@ -116,10 +116,10 @@ function selectyear($vparam,&$vdesde,&$vhasta,$expexcel = 0) {
     $vdesde = date("Y-m-d H:i:s", strtotime('+0 hours', strtotime($vfecha)));
     $vhasta = date("Y-m-d H:i:s", strtotime('+1 year',strtotime($vfecha)));
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
+    $sselect = "SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,ESTLINK FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,MES AS HORA,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
+        $sselect = "SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,POSDECIMAL,MES AS HORA,FLECTURA AS FECHA FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in(".$_SESSION['vparam'].")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
@@ -133,13 +133,13 @@ function selectall($vparam,$expexcel = 0) {
     $_SESSION['vparam'] = $vparam;
     // Formato de fecha estandar yyyy-mm-dd HH:mm:ss
     // Usar vista unión parametros_server y lectura_parametros
-    $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,YEAR AS HORA,ESTLINK FROM vgrafica_dias ";
+    $sselect = "SELECT IDPARAMETRO,NOMBREP,PREFIJO,POSDECIMAL,COLOR,SUM(VALOR) AS VALOR,YEAR AS HORA,ESTLINK FROM vgrafica_dias ";
     // Controlar si es para exportar
     if ($expexcel == 1) {
-        $sselect = "SELECT NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHAPOSDECIMAL FROM vgrafica_dias ";
+        $sselect = "SELECT IDPARAMETRO,NOMBREP AS PARAMETRO,COLOR,SUM(VALOR) AS VALOR,YEAR,FLECTURA AS FECHA,POSDECIMAL FROM vgrafica_dias ";
     }
     $sselect.="WHERE idparametro in (".$_SESSION['vparam'].")";
-    $sselect.=" GROUP BY YEAR order by idparametro,flectura";
+    $sselect.=" GROUP BY idparametro,YEAR order by idparametro,YEAR";
     return $sselect;
 }
 
@@ -182,8 +182,10 @@ function configchar($arrayp,$vtiposalida,&$ilink)
     $adata= array();
     $acat= array();
     $adet= array();
-    
+    // Array de meses.
+    $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
     $afilas = array();
+    
     
     // Variables desde, hasta para subinforme
     $vdesde = date("Y-m-d");
@@ -208,14 +210,15 @@ function configchar($arrayp,$vtiposalida,&$ilink)
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     
     // Las categorias
-    $acat = categorychart($afilas,$vtiposalida);
+    $acat = categorychart($afilas,$vtiposalida,$ameses);
+    //print_r($acat);
     $adata["categories"] = array();
     array_push($adata["categories"], array("category"=>$acat));
     
     
     // Datos de detalles
     $adata["dataset"] = array();
-    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida);
+    $adet = datachart($afilas,$vdesde,$vhasta,$vtiposalida,$ameses,$ilink);
     //var_dump($adet);
     // Serie final
     for($i = 0; $i< count($adet); $i++) {
@@ -244,7 +247,6 @@ function configchar($arrayp,$vtiposalida,&$ilink)
 //   
         ///$arrDat = ["seriesName"=> "".$vserie."", "data"=>$afilas,"color" => "".$array[0]["COLOR"].""];
     // Guardar SQL en $_POST para realizar el export
-    $_SESSION['ssql'] = $sqlexp;
     
     // Retornar el excel
     $sqlexp = getsql($sparm,$vtiposalida,$vdesde,$vhasta,1);
@@ -280,15 +282,10 @@ function chart()
     return $arrData;
 }
 
-function categorychart($afilas,$vtiposalida) {
+function categorychart($afilas,$vtiposalida,$ameses) {
     $acat = array();
-    // Array de meses.
-    $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
     // Recorrer todas la filas
     foreach ($afilas as $afila) {
-        if ($vtiposalida ==3){
-            $afila["HORA"] = $ameses[$afila["HORA"] - 1];
-        }
         $acat[$afila["HORA"]]=$afila["HORA"];
     }
     array_multisort($acat);
@@ -296,6 +293,9 @@ function categorychart($afilas,$vtiposalida) {
     $acatfin = array();
     foreach ($acat as $aval)
     {
+        if ($vtiposalida ==3){
+            $aval = $ameses[$aval - 1];
+        }
         array_push($acatfin, array("label" => $aval));
     }
 //    var_dump($arrCat);
@@ -304,7 +304,7 @@ function categorychart($afilas,$vtiposalida) {
 //    return $arrCat;
 }
 
-function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
+function datachart($array,$vdesde,$vhasta,$vtiposalida,$ameses,&$ilink)
 {
     // Datos. Valores Y de la gráfica. Varias series
     $aserie = array();
@@ -332,8 +332,11 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,&$ilink)
             }   
             // Calculo valor
             $vvalor = posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-
-            array_push($aserie, array("serie" => $vserie,"label"=> $array[$i]["HORA"],"value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
+            $vlabel = $array[$i]["HORA"];
+            if ($vtiposalida ==3){
+                $vlabel = $ameses[$vlabel - 1];
+            }
+            array_push($aserie, array("serie" => $vserie,"label"=> $vlabel,"value" => $vvalor,"color" => "".$array[$i]["COLOR"]."", "link" => $vlink));
            // array_push($afilas, array("value" => $vvalor, "link" => $vlink));
         }
         // Tiene q ser al final igual

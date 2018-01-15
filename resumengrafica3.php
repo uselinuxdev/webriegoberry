@@ -8,7 +8,7 @@
         $dataseriesa = array();
         $dataseriesb = array();
         $dataseriesc = array();
-        // Controlar los parámetros a tratar
+        // Controlar los parÃ¡metros a tratar
         if(!empty($arraya)) {
             $subtext .= $arraya[0]['NOMBREP'];
             $dataseriesa = datachart3($arraya);
@@ -35,10 +35,10 @@
                 $arrCat = categorychart3($arrayc);
             }
         }
-        // Configuración chart
+        // ConfiguraciÃ³n chart
         $arrData = array(
                     "chart" => array(
-                                "caption"=>  "".$subtext." año actual",
+                                "caption"=>  "".$subtext." aÃ±o actual",
                                 "exportEnabled" => 1,
                                 "captionFontSize"=> "12",
                                 "subcaptionFontSize"=> "12",
@@ -64,9 +64,9 @@
                                 "divLineDashLen"=> "1"
                             )
 	);
-        // añadir las series
+        // aÃ±adir las series
         $arrData["categories"]=array(array("category"=>$arrCat));
-        // añadir valores
+        // aÃ±adir valores
         $arrData["dataset"] = array(array("seriesName"=> $arraya[0]['NOMBREP'], "data"=>$dataseriesa),array("seriesName"=> $arrayb[0]['NOMBREP'], "data"=>$dataseriesb),array("seriesName"=> $arrayc[0]['NOMBREP'], "data"=>$dataseriesc));
 
         return $arrData;
@@ -76,7 +76,7 @@
         $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
         $arrCat = array();
         // Recorrer todas las filas del arraya
-        // Categorias. Valores X de la gráfica. Pintar siempre los 12 meses.
+        // Categorias. Valores X de la grÃ¡fica. Pintar siempre los 12 meses.
         for($i=0; $i<12; $i++)
         {
             $vlabel = $ameses[$i];
@@ -86,9 +86,7 @@
             {
               $scolor = "color => '".$array[$i]["COLOR"]."'";         
             }
-            array_push($arrCat, array(
-                    "label" => $vlabel,$scolor)
-            ); 
+            array_push($arrCat, array("label" => $vlabel,$scolor)); 
         }
         //print_r($arrCat);
         return $arrCat;
@@ -96,7 +94,7 @@
     
     function datachart3($array)
     {
-        // Categorias. Valores Y de la gráfica. Pintar los 12 meses
+        // Categorias. Valores Y de la grÃ¡fica. Pintar los 12 meses
         $myCalc3 = new riegoresumenClass();
         $adat = array();
         $valor = 0;
@@ -189,7 +187,7 @@
         
   	?>
 
-  	<div id="chart-grafica3"><!-- Grafica Nº3 --></div>
+  	<div id="chart-grafica3"><!-- Grafica NÂº3 --></div>
    </body>
 
 </html>

@@ -8,32 +8,23 @@
         $dataseriesa = array();
         $dataseriesb = array();
         $dataseriesc = array();
+        
+        // Categorías
+        $arrCat = categorychart2($arraya,$arrayb,$arrayc);
+        
         // Controlar los parámetros a tratar
         if(!empty($arraya)) {
             $subtext .= $arraya[0]['NOMBREP'];
-            $dataseriesa = datachart2($arraya);
-            if(empty($arrCat))
-            {
-                $arrCat = categorychart2($arraya);
-            }
+            $dataseriesa = datachart2($arraya,$arrCat);
         }     
         if(!empty($arrayb)) {
             $subtext .= " vs ".$arrayb[0]['NOMBREP'];
-            $dataseriesb = datachart2($arrayb);
-            // Cargar categorias del primer array
-            if(empty($arrCat))
-            {
-                $arrCat = categorychart2($arrayb);
-            }
+            $dataseriesb = datachart2($arrayb,$arrCat);
         }
         if(!empty($arrayc)) {
             $subtext .= " vs ".$arrayc[0]['NOMBREP'];
             // Cargar categorias del primer array
-            $dataseriesc = datachart2($arrayc);
-            if(empty($arrCat))
-            {
-                $arrCat = categorychart2($arrayc);
-            }
+            $dataseriesc = datachart2($arrayc,$arrCat);
         }
         // Configuración chart
         $arrData = array(
@@ -64,25 +55,31 @@
 
         return $arrData;
     }
-    function categorychart2($array) {
-        $arrCat = array();
-        // Recorrer todas las filas del arraya
-        $longitud = count($array);
-        for($i=0; $i<$longitud; $i++)
-        {
-            // Control de color.
-            $scolor = "";
-            if(isset($array[$i]["COLOR"])) 
-            {
-              $scolor = "color => '".$array[$i]["COLOR"]."'";         
-            }
-            $vlabel = $array[$i]["HORA"];
-            array_push($arrCat, array(
-                    "label" => $vlabel,$scolor )
-            ); 
+  
+    function categorychart2($arraya,$arrayb,$arrayc) {
+        $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
+        // Categorias. Valores X de la gráfica
+        $acat = array();
+        // Recorrer todas la filas
+        foreach ($arraya as $afila) {
+            $acat[$afila["HORA"]]=array("HORA"=>$afila["HORA"],"COLOR"=>"".$afila["COLOR"]."");
         }
-        //print_r($arrCat);
-        return $arrCat;
+        foreach ($arrayb as $afila) {
+            $acat[$afila["HORA"]]=array("HORA"=>$afila["HORA"],"COLOR"=>"".$afila["COLOR"]."");
+        }
+        foreach ($arrayc as $afila) {
+            $acat[$afila["HORA"]]=array("HORA"=>$afila["HORA"],"COLOR"=>"".$afila["COLOR"]."");
+        }
+        array_multisort($acat);
+        // Recorrer el array y pintar el final
+        $acatfin = array();
+        foreach ($acat as $aval)
+        {
+            array_push($acatfin, array("label" => $aval["HORA"],"COLOR" =>$aval["COLOR"]));
+        }
+        //var_dump($acatfin);
+       // var_dump($acatfin);
+        return $acatfin;
     }
     
     function mediachart2($array) {
@@ -109,26 +106,24 @@
         return $arrMedia;
     }
     
-    function datachart2($array)
+    function datachart2($array,$arrCat)
     {
         // Categorias. Valores Y de la gráfica
-        $myCalc2 = new riegoresumenClass();
+        $myCalc = new riegoresumenClass();
         $adat = array();
-        // Recorrer todas las filas del arraya
-        $longitud = count($array);
-        for($i=0; $i<$longitud; $i++)
-	{
-          // Calculo valor
-            $vvalor = $myCalc2->posdecimal($array[$i]["VALOR"],$array[$i]["POSDECIMAL"]);
-            // Control de color.
-            $scolor = "";
-            if(isset($array[$i]["COLOR"])) 
-            {
-              $scolor = "color => '".$array[$i]["COLOR"]."'";         
+        // Control de color.
+        $scolor = "";
+        $scolor = "color => '".$array[0]["COLOR"]."'";  
+        // Recoger la categoría, si no existe pintar 0
+        foreach($arrCat as $fcreate) {
+            $ipos = array_search($fcreate["label"], array_column($array,"HORA"));
+            if (false !== $ipos) {
+                // Calculo valor
+                $vvalor = $myCalc->posdecimal($array[$ipos]["VALOR"],$array[$ipos]["POSDECIMAL"]);
+                array_push($adat, array("value" => $vvalor,$scolor));
+            }else {
+                array_push($adat, array("value" => 0,$scolor));
             }
-            array_push($adat, array(
-                    "value" => $vvalor,$scolor)
-            );     
         }
         return $adat;
     }

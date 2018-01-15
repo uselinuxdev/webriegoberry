@@ -19,21 +19,21 @@ function exportMysqlToexcel($filename = 'export')
     // Se desactiva porque no se usa.
     //////include_once("PHPExcel/Classes/PHPExcel.php");
     
-     // Creamos la conexión
+     // Creamos la conexiÃ³n
     //Primero hacemos las conexiones
     $hostdb = $_SESSION['serverdb'];  // MySQl host
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
     mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexión a B.D.");
+    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexiÃ³n a B.D.");
     mysql_select_db($namedb,$conn);
     
     // La sentencia pasada por sesion.
     $sql = mysql_query($_SESSION['ssql']) or die ("Error en SQL:".$_SESSION['ssql'].". ".mysql_error()); 
     
     if ($sql) {
-        // Cargar array por índice, para obtener el primer valor
+        // Cargar array por Ã­ndice, para obtener el primer valor
         $row = mysql_fetch_row($sql);
         // Fichero a generar
         $filename=$row[0];
@@ -43,9 +43,9 @@ function exportMysqlToexcel($filename = 'export')
         /// Generamos objeto excel
         $pexcel = new PHPExcel(); 
         
-        $pexcel->getActiveSheet()->setTitle("Valores exportados instalación");
+        $pexcel->getActiveSheet()->setTitle("Valores exportados instalaciÃ³n");
         $pexcel->getProperties()->setCreator("Riegosolar");
-        $pexcel->getProperties()->setTitle("Valores exportados instalación"); 
+        $pexcel->getProperties()->setTitle("Valores exportados instalaciÃ³n"); 
         
         //$pexcel->setActiveSheetIndex(0)->setCellValue("A1","Valores Exportados"); 
         // Recorrer el excel
@@ -73,7 +73,7 @@ function exportMysqlToexcel($filename = 'export')
         // Detalles de filas, pintar valores
         while($row = mysql_fetch_assoc($sql))
         {
-            // Realizar la división del valor
+            // Realizar la divisiÃ³n del valor
             $row["VALOR"] = posdecimal($row["VALOR"],$row["POSDECIMAL"]);
             // Recorrer el array
             $icolum = 0;
@@ -101,14 +101,14 @@ function exportMysqlToexcel($filename = 'export')
 
 function exportMysqlToCsv($filename = 'export')
 {
-    // Creamos la conexión
+    // Creamos la conexiÃ³n
     //Primero hacemos las conexiones
     $hostdb = $_SESSION['serverdb'];  // MySQl host
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
     mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexión a B.D.");
+    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexiÃ³n a B.D.");
     mysql_select_db($namedb,$conn);
     
     
@@ -116,13 +116,13 @@ function exportMysqlToCsv($filename = 'export')
     $sql = mysql_query($_SESSION['ssql']) or die ("Error en SQL:".$_SESSION['ssql'].". ".mysql_error()); 
     
     if ($sql) {
-        // Cargar array por índice, para obtener el primer valor
+        // Cargar array por Ã­ndice, para obtener el primer valor
         $row = mysql_fetch_row($sql);
         // echo $row;
         // Crear puntero a ficheros uploads (relativo al php
         //$filename= 'export/uploads/'.$filename.'_'.strtotime("now").'.csv';    
 
-        // El nombre del fichero es el parámetro1 + fecha
+        // El nombre del fichero es el parÃ¡metro1 + fecha
         $filename=$row[0];
         $filename= $filename.'_'.date("Y-m-d");
         $filename= 'export/uploads/'.$filename.'.csv';
@@ -166,7 +166,7 @@ function exportMysqlToCsv($filename = 'export')
             // Variables del CSV
             $separador = "";
             $coma = "";
-            // Realizar la división del valor
+            // Realizar la divisiÃ³n del valor
             $row["VALOR"] = posdecimal($row["VALOR"],$row["POSDECIMAL"]);
             // Recorrer el array
             // Formato de salida CSV: "campo1","campo2".... Filas
