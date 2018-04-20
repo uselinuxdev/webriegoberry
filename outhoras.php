@@ -3,7 +3,6 @@
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
--- PRUEBA GIT LOCAL
 -->
 <html>
 <?php
@@ -78,6 +77,8 @@ function selectmes($vparam,$expexcel = 0) {
     $sselect.="WHERE idparametro in (".$vparam.")";
     $sselect.=" AND flectura >= '".date($vdesde)."'";
     $sselect.=" AND flectura < '".date($vhasta)."'";
+    # Solo 1 fila por hora
+    $sselect.=" and DATE_FORMAT(FLECTURA,'%i') ='00'";
     $sselect.=" ORDER BY idparametro,flectura";
     return $sselect;
 }
@@ -211,6 +212,7 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
         $sparm .= ','.$arrayp[$i];
     }
     $sqlexp = getsql($sparm,$vtiposalida,$vdesde,$vhasta,0);
+    
     $result = $link->query($sqlexp);
     $afilas = $result->fetchAll(PDO::FETCH_ASSOC);
     //print_r($afilas);
@@ -385,7 +387,7 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,$ameses,&$ilink)
         }
         if (!empty($_POST['cbvalorm'])) {
             $vtiposalida = 2;
-            $vlabelstep = 288;
+            $vlabelstep = 4;
             $textox = "Dias";
             $_SESSION['escsv'] = 1;
             $vgroup = $_POST['ckgroupm'];
