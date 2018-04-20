@@ -387,7 +387,7 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,$ameses,&$ilink)
         }
         if (!empty($_POST['cbvalorm'])) {
             $vtiposalida = 2;
-            $vlabelstep = 4;
+            $vlabelstep = 12;
             $textox = "Dias";
             $_SESSION['escsv'] = 1;
             $vgroup = $_POST['ckgroupm'];
