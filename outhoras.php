@@ -244,7 +244,7 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
             }
         }
      // Añadir serie
-     array_push($adata["dataset"], array("seriesName"=> $aserie[0]["serie"],"renderAs"=>"area","data"=>$aseriefin,"color" => $aserie[0]["color"]));
+     array_push($adata["dataset"], array("seriesName"=> $aserie[0]["serie"],"color" => $aserie[0]["color"],"renderAs"=>"area","data"=>$aseriefin));
     }
     //print_r($adata);
     // Retornar el excel
@@ -357,12 +357,11 @@ function datachart($array,$vdesde,$vhasta,$vtiposalida,$ameses,&$ilink)
             if ($vtiposalida ==3){
                 $vlabel = $ameses[$vlabel - 1];
             }
-            array_push($aserie, array("serie" => $vserie,"renderAs"=>"area", "label"=> "".$vlabel."", "value" => $vvalor," color" => "".$array[$i]["COLOR"].""));
+            array_push($aserie, array("serie" => $vserie,"color" => $array[$i]["COLOR"],"renderAs"=>"area", "label"=> "".$vlabel."", "value" => $vvalor));
         }
         // Tiene q ser al final igual
         array_push($aseries,array("idparametro" => $idpar,"DET" => $aserie));
     // Recorrer la series y pintar 0 para todas las categorías.
-    
     return $aseries;
 }
 
