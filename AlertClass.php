@@ -463,7 +463,7 @@ class AlertClass {
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 
-                // More headers
+                // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.
                 $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
                 //$headers .= 'Cc: myboss@example.com' . "\r\n";
                 
