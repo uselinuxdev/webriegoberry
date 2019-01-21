@@ -462,6 +462,8 @@ class AlertClass {
                 //$headers .= "Content-type:text/html;charset=UTF-8" .PHP_EOL;
                 // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.      
                 $headers = "From: Alertas Riegosolar <".$from.">".PHP_EOL;
+                $headers .= "MIME-Version: 1.0".PHP_EOL;
+                $headers .= "Content-Type: text/html; charset=ISO-8859-1".PHP_EOL;
                 //$headers .= 'Cc: myboss@example.com' . "\r\n";
                 
                 $message = '
