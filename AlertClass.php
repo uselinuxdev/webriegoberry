@@ -193,11 +193,12 @@ class AlertClass {
             // Array con datos a funcion mail
             $aalert = array();
             $icont=0;
-            $sselect ="select * from alertserver where estado=1 order by idparametro";
+            $sselect ="select a.*,p.lectura from alertserver a,parametros_server p where a.estado=1 and";
+            $sselect .=" a.idparametro=p.idparametro order by idparametro";
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
-                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo'],$rowalert['lectura']);
                 // Calcular el valor descontando decimales  
                 // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
                 if(!empty($rowdb))
@@ -503,8 +504,8 @@ class AlertClass {
         $this->logmail($toemail,$subject);
         return 1;
     }
-    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
-    private function valorbd($vparam,$tipolectura)
+    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes. Tipo parametro inmediato (M), contador (H)....
+    private function valorbd($vparam,$tipolectura,$tipoparametro='M')
         {
             // Conexiones
             $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -530,8 +531,13 @@ class AlertClass {
                 if(empty($rowvalor)){
                     return 0;
                 }
-                $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica ";
-                $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID'];
+                if($tipoparametro == 'M'){
+                    $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica ";
+                    $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID'];
+                }else{
+                    $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica_horas ";
+                    $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID']; 
+                }
                 break;
             case 2:
                 // Mes actual.
@@ -555,7 +561,7 @@ class AlertClass {
                 //echo $sselect;
             }
             // Recuperar array
-            //echo $sselect;
+            echo $sselect;
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $rowvalor = mysqli_fetch_array($result);
             //print_r($rowvalor);
