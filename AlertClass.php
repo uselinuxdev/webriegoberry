@@ -479,7 +479,7 @@ class AlertClass {
                 $message = '
                 <html>
                 <head>
-                <title>'.$subject.'</title>
+                <title>'.$mail->Subject.'</title>
                 </head>
                 <body>
                 <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
