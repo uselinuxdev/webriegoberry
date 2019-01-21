@@ -423,7 +423,7 @@ class AlertClass {
         $iduser = null;
         $icont = 0;
         // Variables de proceso
-        $from = "alertas@riegosolar.net"; // Siempre se tiene que usar el smtp de riegosolar
+        $from = "alarmas@riegosolar.net"; // Siempre se tiene que usar el smtp de riegosolar
         $toemail ="";
         $subject="";
         $message="";
@@ -441,7 +441,7 @@ class AlertClass {
                     </body>
                     </html>';
                     // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
-                    mail($toemail,$subject,$message,$headers,"-f$from");
+                    mail($toemail,$subject,$message,$headers,"-f".$from);
                     // Log de mail enviado.
                     $this->logmail($toemail,$subject);
                 }
@@ -458,10 +458,10 @@ class AlertClass {
                 $toemail = $row['email'];
                 $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
                 // Always set content-type when sending HTML email
-                $headers = "MIME-Version: 1.0" .PHP_EOL;
-                $headers .= "Content-type:text/html;charset=UTF-8" .PHP_EOL;
+                //$headers = "MIME-Version: 1.0" .PHP_EOL;
+                //$headers .= "Content-type:text/html;charset=UTF-8" .PHP_EOL;
                 // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.      
-                $headers = "From: ".$from." <".$from.">".PHP_EOL;
+                $headers = "From: Alertas Riegosolar <".$from.">".PHP_EOL;
                 //$headers .= 'Cc: myboss@example.com' . "\r\n";
                 
                 $message = '
@@ -497,7 +497,7 @@ class AlertClass {
         </body>
         </html>';
         // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
-        mail($toemail,$subject,$message,$headers,"-f$from");
+        mail($toemail,$subject,$message,$headers,"-f".$from);
         $this->logmail($toemail,$subject);
         return 1;
     }
