@@ -428,8 +428,7 @@ class AlertClass {
             exit();
         }
         // Clear clase mailer. Usar smtp de riegosolar
-        $mail = new PHPMailer;
-        $mail->isSMTP();
+        $mail = new PHPMailer\PHPMailer\PHPMailer();
         $mail->SMTPDebug = 2;
         $mail->Host = 'smtp.riegosolar.net';
         $mail->Port = 587;
