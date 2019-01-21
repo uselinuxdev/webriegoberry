@@ -1,20 +1,14 @@
 <?php
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  * Description of AlertClass
  *
  * @author Administrador
- /*Incluir clase PHPMailer */
-include("PHPMailer/PHPMailer.php");
-include("PHPMailer/Exception.php");
-include("PHPMailer/SMTP.php");
-
+ */
 class AlertClass {
     // Actualizar Usuarios
     public function updatealert()
@@ -311,7 +305,6 @@ class AlertClass {
             }
             // Array con datos a funcion mail
             $aalert = array();
-
             // Coger la fecha actual
             $vmes = (int)date('m', strtotime('-1 month') );
             // Todas las lineas del mes pasado
@@ -322,7 +315,6 @@ class AlertClass {
             }
             $sselect .= " ORDER BY idusuario,idparametro,valorx";
             //echo $sselect;
-
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $icont=0;
             while($rowalert = mysqli_fetch_array($result)) {
@@ -336,7 +328,6 @@ class AlertClass {
                if(!empty($rowdb))
                {
                 // Variables de calculo por %
-
 //                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
 //                //// Calculo : Valor estamado --- 100 como valorreal ----x x=valorreal*100/valor estamado
                   //// Si valorporcent operador 100-x --> mail
@@ -411,7 +402,6 @@ class AlertClass {
             }
                     
         }
-
     private function mailalert($aalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
@@ -427,24 +417,17 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        // Clear clase mailer. Usar smtp de riegosolar
-        $mail = new PHPMailer\PHPMailer\PHPMailer();
-        $mail->SMTPDebug = 2;
-        $mail->Host = 'smtp.riegosolar.net';
-        $mail->Port = 587;
-        $mail->SMTPAuth = true;
         // Crear un array con los detalles del correo.
         // Recorrer todas las filas del array y pintar array final
         $afinal = array();
         $iduser = null;
         $icont = 0;
         // Variables de proceso
-        $mail->Username = 'alertas@riegosolar.net';
-        $mail->Password = 'Riegosolar77';
-        $mail->setFrom('alertas@riegosolar.net', 'Alertas Riegosolar');
-        $mail->AltBody = 'Este es el texto sin formato de la alerta';
-        //mail->addAttachment('test.txt');
-        
+        $from = "alertas@riegosolar.net"; // Siempre se tiene que usar el smtp de riegosolar
+        $toemail ="";
+        $subject="";
+        $message="";
+        $headers="";
         foreach ($aalert as $vfila) {
             if($iduser <> $vfila['idusuario'])
             {
@@ -457,12 +440,10 @@ class AlertClass {
                     <p>Final de listado de alertas.</p>
                     </body>
                     </html>';
-                    $mail->msgHTML($message);
-                    if (!$mail->send()) {
-                        echo 'Mailer Error: ' . $mail->ErrorInfo;
-                    } else {
-                        $this->logmail($toemail,$subject);
-                    }
+                    // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
+                    mail($toemail,$subject,$message,$headers,"-f$from");
+                    // Log de mail enviado.
+                    $this->logmail($toemail,$subject);
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
@@ -474,12 +455,19 @@ class AlertClass {
                 $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
-                $mail->addAddress($row['email'], '');
-                $mail->Subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                $toemail = $row['email'];
+                $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                // Always set content-type when sending HTML email
+                $headers = "MIME-Version: 1.0" .PHP_EOL;
+                $headers .= "Content-type:text/html;charset=UTF-8" .PHP_EOL;
+                // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.      
+                $headers = "From: ".$from." <".$from.">".PHP_EOL;
+                //$headers .= 'Cc: myboss@example.com' . "\r\n";
+                
                 $message = '
                 <html>
                 <head>
-                <title>'.$mail->Subject.'</title>
+                <title>'.$subject.'</title>
                 </head>
                 <body>
                 <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
@@ -508,12 +496,9 @@ class AlertClass {
         <p>Final de listado de alertas.</p>
         </body>
         </html>';
-        $mail->msgHTML($message);
-        if (!$mail->send()) {
-            echo 'Error en envio de mail: ' . $mail->ErrorInfo;
-        } else {
-            $this->logmail($toemail,$subject);
-        }
+        // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
+        mail($toemail,$subject,$message,$headers,"-f$from");
+        $this->logmail($toemail,$subject);
         return 1;
     }
     // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
