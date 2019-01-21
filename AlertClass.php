@@ -10,7 +10,12 @@
  * Description of AlertClass
  *
  * @author Administrador
- */
+ /*Incluir clase PHPMailer */
+
+require 'PHPMailer/Exception.php';
+require 'PHPMailer/PHPMailer.php';
+require 'PHPMailer/SMTP.php';
+
 class AlertClass {
     // Actualizar Usuarios
     public function updatealert()
@@ -423,16 +428,25 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
+        // Clear clase mailer. Usar smtp de riegosolar
+        $mail = new PHPMailer;
+        $mail->isSMTP();
+        $mail->SMTPDebug = 2;
+        $mail->Host = 'smtp.riegosolar.net';
+        $mail->Port = 587;
+        $mail->SMTPAuth = true;
         // Crear un array con los detalles del correo.
         // Recorrer todas las filas del array y pintar array final
         $afinal = array();
         $iduser = null;
         $icont = 0;
         // Variables de proceso
-        $toemail ="";
-        $subject="";
-        $message="";
-        $headers="";
+        $mail->Username = 'alertas@riegosolar.net';
+        $mail->Password = 'Riegosolar77';
+        $mail->setFrom('alertas@riegosolar.net', 'Alertas Riegosolar');
+        $mail->AltBody = 'Este es el texto sin formato de la alerta';
+        //mail->addAttachment('test.txt');
+        
         foreach ($aalert as $vfila) {
             if($iduser <> $vfila['idusuario'])
             {
@@ -440,12 +454,17 @@ class AlertClass {
                 if($icont > 0)
                 {
                     // Final tabla
-                    $message .='</table>
+                    $message .='<tr></tr></table>
+                    <hr style="color: #3A72A5;" />
+                    <p>Final de listado de alertas.</p>
                     </body>
                     </html>';
-                    mail($toemail,$subject,$message,$headers);
-                    // Log de mail enviado.
-                    $this->logmail($toemail,$subject);
+                    $mail->msgHTML($message);
+                    if (!$mail->send()) {
+                        echo 'Mailer Error: ' . $mail->ErrorInfo;
+                    } else {
+                        $this->logmail($toemail,$subject);
+                    }
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
@@ -457,16 +476,8 @@ class AlertClass {
                 $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
-                $toemail = $row['email'];
-                $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
-                // Always set content-type when sending HTML email
-                $headers = "MIME-Version: 1.0" . "\r\n";
-                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
-                // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.
-                $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
-                //$headers .= 'Cc: myboss@example.com' . "\r\n";
-                
+                $mail->addAddress($row['email'], '');
+                $mail->Subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
                 $message = '
                 <html>
                 <head>
@@ -499,8 +510,12 @@ class AlertClass {
         <p>Final de listado de alertas.</p>
         </body>
         </html>';
-        mail($toemail,$subject,$message,$headers);
-        $this->logmail($toemail,$subject);
+        $mail->msgHTML($message);
+        if (!$mail->send()) {
+            echo 'Error en envio de mail: ' . $mail->ErrorInfo;
+        } else {
+            $this->logmail($toemail,$subject);
+        }
         return 1;
     }
     // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
