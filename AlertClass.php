@@ -11,10 +11,9 @@
  *
  * @author Administrador
  /*Incluir clase PHPMailer */
-
-require 'PHPMailer/Exception.php';
-require 'PHPMailer/PHPMailer.php';
-require 'PHPMailer/SMTP.php';
+include("PHPMailer/PHPMailer.php");
+include("PHPMailer/Exception.php");
+include("PHPMailer/SMTP.php");
 
 class AlertClass {
     // Actualizar Usuarios
