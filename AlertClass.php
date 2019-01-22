@@ -555,7 +555,7 @@ class AlertClass {
                 //echo $sselect;
             }
             // Recuperar array
-            echo $sselect;
+            //echo $sselect;
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $rowvalor = mysqli_fetch_array($result);
             // Si tiene 2 filas es tipo contador H y se retorna la diferencia de row1 - row2.
@@ -563,10 +563,10 @@ class AlertClass {
             if(!empty($rowvalor2))
             {
                 $rowvalor['VALOR'] = $rowvalor['VALOR'] - $rowvalor2['VALOR'];
-                echo "Control de tipo contador.";
-                print_r($rowvalor2);
+                //echo "Control de tipo contador.";
+                //print_r($rowvalor2);
             }
-            print_r($rowvalor);
+            //print_r($rowvalor);
             // Retorna un array.
             return $rowvalor;
         }
