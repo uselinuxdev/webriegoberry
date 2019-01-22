@@ -523,20 +523,14 @@ class AlertClass {
             $sdate=$this->getfecha($tipolectura);
             switch ($tipolectura) {
             case 0:
-                // Coger el máximo valor de lectura
-                $sselect ="SELECT MAX(IDLECTURA) as MAXID FROM lectura_parametros ";
-                $sselect.="WHERE idparametro = ".$vparam;
-                $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-                $rowvalor = mysqli_fetch_array($result);
-                if(empty($rowvalor)){
-                    return 0;
-                }
+                // Coger el máximo valor de lectura por tipo parametro
+                $sselect ="SELECT * FROM vgrafica ";
+                $sselect .=" WHERE idparametro = ".$vparam;
+                $sselect .=" order by idlectura desc LIMIT ";
                 if($tipoparametro == 'M'){
-                    $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica ";
-                    $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID'];
+                    $sselect.=" 1";
                 }else{
-                    $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica_horas ";
-                    $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID']; 
+                    $sselect.=" 2";
                 }
                 break;
             case 2:
@@ -564,7 +558,13 @@ class AlertClass {
             echo $sselect;
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $rowvalor = mysqli_fetch_array($result);
-            //print_r($rowvalor);
+            // Si tiene 2 filas es tipo contador H y se retorna la diferencia de row1 - row2.
+            $rowvalor2 = mysqli_fetch_array($result);
+            if(!empty($rowvalor2))
+            {
+                $rowvalor['VALOR'] = $rowvalor['VALOR'] - $rowvalor2['VALOR'];
+            }
+            print_r($rowvalor);
             // Retorna un array.
             return $rowvalor;
         }
