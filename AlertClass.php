@@ -563,6 +563,8 @@ class AlertClass {
             if(!empty($rowvalor2))
             {
                 $rowvalor['VALOR'] = $rowvalor['VALOR'] - $rowvalor2['VALOR'];
+                echo "Control de tipo contador.";
+                print_r($rowvalor2);
             }
             print_r($rowvalor);
             // Retorna un array.
