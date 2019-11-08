@@ -1,14 +1,24 @@
 <?php
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
  * Description of AlertClass
  *
  * @author Administrador
  */
+/* Use PHPMailer lib to send mails */
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 class AlertClass {
     // Actualizar Usuarios
     public function updatealert()
@@ -193,12 +203,12 @@ class AlertClass {
             // Array con datos a funcion mail
             $aalert = array();
             $icont=0;
-            $sselect ="select a.*,p.lectura from alertserver a,parametros_server p where a.estado=1 and";
-            $sselect .=" a.idparametro=p.idparametro order by idparametro";
+            $sselect ="select * from alertserver where estado=1 order by idparametro";
+	    //printf($sselect);
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             while($rowalert = mysqli_fetch_array($result)) {
                 // Por cada parametero recuperar la select
-                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo'],$rowalert['lectura']);
+                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
                 // Calcular el valor descontando decimales  
                 // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
                 if(!empty($rowdb))
@@ -306,6 +316,7 @@ class AlertClass {
             }
             // Array con datos a funcion mail
             $aalert = array();
+
             // Coger la fecha actual
             $vmes = (int)date('m', strtotime('-1 month') );
             // Todas las lineas del mes pasado
@@ -316,6 +327,7 @@ class AlertClass {
             }
             $sselect .= " ORDER BY idusuario,idparametro,valorx";
             //echo $sselect;
+
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $icont=0;
             while($rowalert = mysqli_fetch_array($result)) {
@@ -329,6 +341,7 @@ class AlertClass {
                if(!empty($rowdb))
                {
                 // Variables de calculo por %
+
 //                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
 //                //// Calculo : Valor estamado --- 100 como valorreal ----x x=valorreal*100/valor estamado
                   //// Si valorporcent operador 100-x --> mail
@@ -403,6 +416,7 @@ class AlertClass {
             }
                     
         }
+
     private function mailalert($aalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
@@ -418,13 +432,26 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
+		// Mail setting
+		$phpmailer = new PHPMailer();
+		$phpmailer->Username = "alarmas@riegosolar.net";
+		$phpmailer->Password = "Riegosolar_77";
+		//$phpmailer->SMTPDebug = 1;
+		$phpmailer->Host = "smtp.riegosolar.net";
+		$phpmailer->Port = '587';
+		$phpmailer->SMTPAuth = false;
+		$phpmailer->SMTPAutoTLS = false; 
+		$phpmailer->IsSMTP();
+		$phpmailer->SMTPAuth = true;
+		$phpmailer->setFrom($phpmailer->Username,"Alarmas automaticas.");
+		$phpmailer->IsHTML(true);
+		
         // Crear un array con los detalles del correo.
         // Recorrer todas las filas del array y pintar array final
         $afinal = array();
         $iduser = null;
         $icont = 0;
         // Variables de proceso
-        $from = "alarmas@riegosolar.net"; // Siempre se tiene que usar el smtp de riegosolar
         $toemail ="";
         $subject="";
         $message="";
@@ -436,13 +463,13 @@ class AlertClass {
                 if($icont > 0)
                 {
                     // Final tabla
-                    $message .='<tr></tr></table>
-                    <hr style="color: #3A72A5;" />
-                    <p>Final de listado de alertas.</p>
+                    $message .='</table>
                     </body>
-                    </html>';
-                    // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
-                    mail($toemail,$subject,$message,$headers,"-f".$from);
+                    </html>';					
+					$phpmailer->AddAddress($toemail); // recipients email
+					$phpmailer->Subject = $subject;	
+					$phpmailer->Body .= $message;
+					$phpmailer->Send();
                     // Log de mail enviado.
                     $this->logmail($toemail,$subject);
                 }
@@ -457,14 +484,13 @@ class AlertClass {
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
                 $toemail = $row['email'];
-                $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                $subject = "Alertas automaticas instalacion ".$row["nombre"].".Servidor ".$row['nombreserver'];
                 // Always set content-type when sending HTML email
-                //$headers = "MIME-Version: 1.0" .PHP_EOL;
-                //$headers .= "Content-type:text/html;charset=UTF-8" .PHP_EOL;
-                // Siempre mandar desde alertas@riegoslar.net. Se ha configurado el postfix y ssl con el certificado de ese usuario.      
-                $headers = "From: Alertas Riegosolar <".$from.">".PHP_EOL;
-                $headers .= "MIME-Version: 1.0".PHP_EOL;
-                $headers .= "Content-Type: text/html; charset=UTF-8".PHP_EOL;
+                $headers = "MIME-Version: 1.0" . "\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+                // More headers
+                $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
                 //$headers .= 'Cc: myboss@example.com' . "\r\n";
                 
                 $message = '
@@ -476,12 +502,12 @@ class AlertClass {
                 <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
                 <hr style="color: #3A72A5;" />';
                 // Cabecera del mensaje
-                $message .='<p/>Listado de alertas instalación<p/>';
+                $message .='<p/>Listado de alertas instalacion<p/>';
                 // Recorrer todas las lineas de detalle
                 $message .='<table>
-                <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
+                <tr><td>Instalacion: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
-                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
+                <tr><td>Ubicacion: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
                 <tr><td>Fecha</td><td>Alerta</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
             }
@@ -499,13 +525,17 @@ class AlertClass {
         <p>Final de listado de alertas.</p>
         </body>
         </html>';
-        // Se necesita en el header y el adicional from para que el server poxtfix lo recoja.
-        mail($toemail,$subject,$message,$headers,"-f".$from);
+	//echo $message;
+		$phpmailer->AddAddress($toemail); // recipients email
+		$phpmailer->Subject = $subject;	
+		$phpmailer->Body .= $message;
+		$phpmailer->Send();
+       
         $this->logmail($toemail,$subject);
         return 1;
     }
-    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes. Tipo parametro inmediato (M), contador (H)....
-    private function valorbd($vparam,$tipolectura,$tipoparametro='M')
+    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
+    private function valorbd($vparam,$tipolectura)
         {
             // Conexiones
             $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -523,15 +553,16 @@ class AlertClass {
             $sdate=$this->getfecha($tipolectura);
             switch ($tipolectura) {
             case 0:
-                // Coger el máximo valor de lectura por tipo parametro
-                $sselect ="SELECT * FROM vgrafica ";
-                $sselect .=" WHERE idparametro = ".$vparam;
-                $sselect .=" order by idlectura desc LIMIT ";
-                if($tipoparametro == 'M'){
-                    $sselect.=" 1";
-                }else{
-                    $sselect.=" 2";
+                // Coger el máximo valor de lectura
+                $sselect ="SELECT MAX(IDLECTURA) as MAXID FROM lectura_parametros ";
+                $sselect.="WHERE idparametro = ".$vparam;
+                $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+                $rowvalor = mysqli_fetch_array($result);
+                if(empty($rowvalor)){
+                    return 0;
                 }
+                $sselect ="SELECT NOMBREP,PREFIJO,POSDECIMAL,VALOR,WORDVALOR FROM vgrafica ";
+                $sselect.="WHERE IDLECTURA = ".$rowvalor['MAXID'];
                 break;
             case 2:
                 // Mes actual.
@@ -558,14 +589,6 @@ class AlertClass {
             //echo $sselect;
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
             $rowvalor = mysqli_fetch_array($result);
-            // Si tiene 2 filas es tipo contador H y se retorna la diferencia de row1 - row2.
-            $rowvalor2 = mysqli_fetch_array($result);
-            if(!empty($rowvalor2))
-            {
-                $rowvalor['VALOR'] = $rowvalor['VALOR'] - $rowvalor2['VALOR'];
-                //echo "Control de tipo contador.";
-                //print_r($rowvalor2);
-            }
             //print_r($rowvalor);
             // Retorna un array.
             return $rowvalor;
