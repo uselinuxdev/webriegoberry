@@ -188,116 +188,116 @@ class AlertClass {
     // Funcion publica, recorre las alertas por tipo: 1 diaria,0 última
     public function checkalert()
         {
-            // Conexiones
-            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
-            if ($mysqli->connect_errno)
-            {
-                echo $mysqli->host_info."\n";
-                exit();
-            }
-            // Importante juego de caracteres
-            if (!mysqli_set_charset($mysqli, "utf8")) {
-                printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
-                exit();
-            } 
-            // Array con datos a funcion mail
-            $aalert = array();
-            $icont=0;
-            $sselect ="select * from alertserver where estado=1 order by idparametro";
-	    //printf($sselect);
-            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-            while($rowalert = mysqli_fetch_array($result)) {
-                // Por cada parametero recuperar la select
-                $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
-                // Calcular el valor descontando decimales  
-                // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
-                if(!empty($rowdb))
-                {
-                    // Control del tipo de parametro
-                    if(!empty($rowdb['WORDVALOR']))
-                    {
-                        // Se trata de un WORDVALOR coger el bit que se desea check
-                        $valorcal = substr($rowdb['WORDVALOR'],$rowalert['nbit'],1);
-                    } else
-                    {
-                        $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);  
-                    }
-                    $bmail = false;
-                    switch ($rowalert['operacion']) {
-                        case "=":
-                            if ($valorcal == $rowalert['valor']){
-                                $rowalert['operacion'] ="Igual";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                        case "!=":
-                            if ($valorcal != $rowalert['valor']){
-                                $rowalert['operacion'] ="Distinto";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                        case ">=":
-                            if ($valorcal >= $rowalert['valor']){
-                                $rowalert['operacion'] ="Mayor o igual";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                        case "<=": 
-                            if ($valorcal <= $rowalert['valor']){
-                                $rowalert['operacion'] ="Menor o igual";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                        case ">":  
-                            if ($valorcal > $rowalert['valor']){
-                                $rowalert['operacion'] ="Mayor";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                        case "<":  
-                            if ($valorcal < $rowalert['valor']){
-                                $rowalert['operacion'] ="Menor";
-                                // Mail alerta
-                                $bmail = true;
-                            }
-                            break;
-                    }
-                    // Control de filtro de horas
-                    if($rowalert['horaminbit'] > time('00:00:00') or $rowalert['horamaxbit'] > time('00:00:00'))
-                    {
-                        if(time() < $rowalert['horaminbit'] or time() >$rowalert['horamaxbit'])
-                        {
-                            $bmail = false;
-                        }
-                    }
-                    // Si hay que enviar mail
-                    if($bmail) {
-                        // Array con string keys.
-                        $aalert[$icont]['idusuario']=$rowalert['idusuario'];
-                        $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
-                        IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
-                        $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
-                        $aalert[$icont]['VALOR']=$valorcal;
-                        $aalert[$icont]['valory']=$rowalert['valor'];
-                        $aalert[$icont]['operacion']=$rowalert['operacion'];
-                        $aalert[$icont]['vporcent']="";
-                        $icont++;
-                    }
-                    
-                }
-            }
-            //print_r($aalert);
-            // Llamar a la función
-            if (sizeof($aalert) > 0) {
-                $this->mailalert($aalert);
-            }else{
-               // echo "No existen filas a tratar.";
-            }
+         // Conexiones
+          $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+          if ($mysqli->connect_errno)
+          {
+              echo $mysqli->host_info."\n";
+              exit();
+          }
+          // Importante juego de caracteres
+          if (!mysqli_set_charset($mysqli, "utf8")) {
+              printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+              exit();
+          } 
+          // Array con datos a funcion mail
+          $aalert = array();
+          $icont=0;
+          $sselect ="select * from alertserver where estado=1 order by idparametro";
+          //printf($sselect);
+          $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+          while($rowalert = mysqli_fetch_array($result)) {
+              // Por cada parametero recuperar la select
+              $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+              // Calcular el valor descontando decimales  
+              // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
+              if(!empty($rowdb))
+              {
+                  // Control del tipo de parametro
+                  if(!empty($rowdb['WORDVALOR']))
+                  {
+                      // Se trata de un WORDVALOR coger el bit que se desea check
+                      $valorcal = substr($rowdb['WORDVALOR'],$rowalert['nbit'],1);
+                  } else
+                  {
+                      $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);  
+                  }
+                  $bmail = false;
+                  switch ($rowalert['operacion']) {
+                      case "=":
+                          if ($valorcal == $rowalert['valor']){
+                              $rowalert['operacion'] ="Igual";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                      case "!=":
+                          if ($valorcal != $rowalert['valor']){
+                              $rowalert['operacion'] ="Distinto";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                      case ">=":
+                          if ($valorcal >= $rowalert['valor']){
+                              $rowalert['operacion'] ="Mayor o igual";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                      case "<=": 
+                          if ($valorcal <= $rowalert['valor']){
+                              $rowalert['operacion'] ="Menor o igual";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                      case ">":  
+                          if ($valorcal > $rowalert['valor']){
+                              $rowalert['operacion'] ="Mayor";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                      case "<":  
+                          if ($valorcal < $rowalert['valor']){
+                              $rowalert['operacion'] ="Menor";
+                              // Mail alerta
+                              $bmail = true;
+                          }
+                          break;
+                  }
+                  // Control de filtro de horas
+                  if($rowalert['horaminbit'] > time('00:00:00') or $rowalert['horamaxbit'] > time('00:00:00'))
+                  {
+                      if(time() < $rowalert['horaminbit'] or time() >$rowalert['horamaxbit'])
+                      {
+                          $bmail = false;
+                      }
+                  }
+                  // Si hay que enviar mail
+                  if($bmail) {
+                      // Array con string keys.
+                      $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                      $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
+                      IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
+                      $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
+                      $aalert[$icont]['VALOR']=$valorcal;
+                      $aalert[$icont]['valory']=$rowalert['valor'];
+                      $aalert[$icont]['operacion']=$rowalert['operacion'];
+                      $aalert[$icont]['vporcent']="";
+                      $icont++;
+                  }
+
+              }
+          }
+          //print_r($aalert);
+          // Llamar a la función
+          if (sizeof($aalert) > 0) {
+              $this->mailalert($aalert);
+          }else{
+             // echo "No existen filas a tratar.";
+          }
         }
     // Datos de la tabla de estimación
     public function checkstimate($idparametro = NULL)
@@ -416,7 +416,22 @@ class AlertClass {
             }
                     
         }
-
+    private function newPHPMailer()
+    {
+        $phpmailer = new PHPMailer();
+        $phpmailer->Username = "alarmas@riegosolar.net";
+        $phpmailer->Password = "Riegosolar_77";
+        //$phpmailer->SMTPDebug = 1;
+        $phpmailer->Host = "smtp.riegosolar.net";
+        $phpmailer->Port = '587';
+        $phpmailer->SMTPAuth = false;
+        $phpmailer->SMTPAutoTLS = false; 
+        $phpmailer->IsSMTP();
+        $phpmailer->SMTPAuth = true;
+        $phpmailer->IsHTML(true);
+        $phpmailer->setFrom($phpmailer->Username,"Alarmas automaticas.");
+        return $phpmailer;
+    }
     private function mailalert($aalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
@@ -432,19 +447,8 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-		// Mail setting
-		$phpmailer = new PHPMailer();
-		$phpmailer->Username = "alarmas@riegosolar.net";
-		$phpmailer->Password = "Riegosolar_77";
-		//$phpmailer->SMTPDebug = 1;
-		$phpmailer->Host = "smtp.riegosolar.net";
-		$phpmailer->Port = '587';
-		$phpmailer->SMTPAuth = false;
-		$phpmailer->SMTPAutoTLS = false; 
-		$phpmailer->IsSMTP();
-		$phpmailer->SMTPAuth = true;
-		$phpmailer->setFrom($phpmailer->Username,"Alarmas automaticas.");
-		$phpmailer->IsHTML(true);
+        // Mail settingphpmailer = new PHPMailer();
+        $phpmailer=$this->newPHPMailer();
 		
         // Crear un array con los detalles del correo.
         // Recorrer todas las filas del array y pintar array final
@@ -463,15 +467,18 @@ class AlertClass {
                 if($icont > 0)
                 {
                     // Final tabla
-                    $message .='</table>
+                    $message .='<tr></tr></table>
+                    <hr style="color: #3A72A5;" />
+                    <p>Final de listado de alertas.</p>
                     </body>
-                    </html>';					
-					$phpmailer->AddAddress($toemail); // recipients email
-					$phpmailer->Subject = $subject;	
-					$phpmailer->Body .= $message;
-					$phpmailer->Send();
+                    </html>';				
+                    $phpmailer->AddAddress($toemail); // recipients email
+                    $phpmailer->Subject = $subject;	
+                    $phpmailer->Body .= $message;
+                    $phpmailer->Send();
                     // Log de mail enviado.
                     $this->logmail($toemail,$subject);
+                    $phpmailer=$this->newPHPMailer();
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
@@ -484,15 +491,14 @@ class AlertClass {
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
                 $toemail = $row['email'];
-                $subject = "Alertas automaticas instalacion ".$row["nombre"].".Servidor ".$row['nombreserver'];
-                // Always set content-type when sending HTML email
-                $headers = "MIME-Version: 1.0" . "\r\n";
-                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
-                // More headers
-                $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
-                //$headers .= 'Cc: myboss@example.com' . "\r\n";
+                $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
                 
+                
+                // Always set content-type when sending HTML email
+                $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
+                //$headers .= 'Cc: myboss@example.com' . "\r\n";
+                $headers .= "MIME-Version: 1.0"."\r\n"."Content-type: text/html; charset=UTF-8"."\r\n";
+                ///<meta charset="UTF-8">
                 $message = '
                 <html>
                 <head>
@@ -502,12 +508,12 @@ class AlertClass {
                 <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
                 <hr style="color: #3A72A5;" />';
                 // Cabecera del mensaje
-                $message .='<p/>Listado de alertas instalacion<p/>';
+                $message .='<p/>Listado de alertas instalación<p/>';
                 // Recorrer todas las lineas de detalle
                 $message .='<table>
-                <tr><td>Instalacion: </td><td>'.$row["nombre"].'</td></tr>
+                <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
-                <tr><td>Ubicacion: </td><td>'.$row["ubicacion"].'</td></tr>
+                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
                 <tr><td>Fecha</td><td>Alerta</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
             }
@@ -526,14 +532,158 @@ class AlertClass {
         </body>
         </html>';
 	//echo $message;
-		$phpmailer->AddAddress($toemail); // recipients email
-		$phpmailer->Subject = $subject;	
-		$phpmailer->Body .= $message;
-		$phpmailer->Send();
+        $phpmailer->AddAddress($toemail); // recipients email
+        $phpmailer->Subject = $subject;	
+        $phpmailer->Body .= $message;
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Send();
        
-        $this->logmail($toemail,$subject);
+        $this->logmail($toemail,$sub);
         return 1;
     }
+ 
+    public function mailsumary()
+      {
+        // Conexiones
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            exit();
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        } 
+        // Array con datos a funcion mail
+        $auser = array();
+        $icont=0;
+        $sselect ="select idusuario from usuarios where idserver=".$_SESSION['idserver']." and email IS NOT NULL";
+        //printf($sselect);
+        $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        while($rowuser = mysqli_fetch_array($result)) {
+            // Array con string keys.
+            $auser[$icont]['idusuario']=$rowuser['idusuario'];
+            $icont++;    
+        }
+        //print_r($auser);
+        // Llamar a la función
+        if (sizeof($auser) > 0) {
+            $this->sendmailsumary($auser);
+        }else{
+           // echo "No existen filas a tratar.";
+        }
+      }
+    
+    private function sendmailsumary($auser)
+    {
+        // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
+        // Coger los datos de la instalación.
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            exit();
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        // Mail setting
+        $phpmailer=$this->newPHPMailer();
+		
+        // Crear un array con los detalles del correo.
+        // Recorrer todas las filas del array y pintar array final
+        $afinal = array();
+        $iduser = null;
+        $icont = 0;
+        // Variables de proceso
+        $toemail ="";
+        $subject="";
+        $message="";
+        $headers="";
+        foreach ($auser as $vfila) {
+            
+            if($iduser <> $vfila['idusuario'])
+            {
+                // Si icont > 0 mandar correo del usuario anterior. Y procede envio
+                if($icont > 0)
+                {
+                    // Final tabla
+                    $message .='<tr></tr></table>
+                    <hr style="color: #3A72A5;" />
+                    <p>Final de resumen instalación.</p>
+                    </body>
+                    </html>';				
+                    $phpmailer->AddAddress($toemail); // recipients email
+                    $phpmailer->Subject = $subject;	
+                    $phpmailer->Body .= $message;
+                    $phpmailer->CharSet = 'UTF-8';
+                    $phpmailer->Send();
+                    // Log de mail enviado.
+                    $this->logmail($toemail,$subject);
+                    // Create new mail for the next user
+                    $phpmailer=$this->newPHPMailer();
+                }
+                $iduser = $vfila['idusuario'];
+                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
+                from instalacion i,server_instalacion s, usuarios u
+                where i.idinstalacion = s.idinstalacion
+                and u.idserver = s.idserver
+                and u.idusuario=".$iduser;
+                //echo $sselect;
+                $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+                $row = mysqli_fetch_array($result);
+                // Datos del correo.
+                $toemail = $row['email'];
+                $subject = "Resumen instalación ".$row["nombre"].".Servidor ".$row['nombreserver']."(".date('d/m/Y H:i:s').")";
+                
+                
+                // Always set content-type when sending HTML email
+                $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
+                //$headers .= 'Cc: myboss@example.com' . "\r\n";
+                $headers .= "MIME-Version: 1.0"."\r\n"."Content-type: text/html; charset=UTF-8"."\r\n";
+                ///<meta charset="UTF-8">
+                $message = '
+                <html>
+                <head>
+                <title>'.$subject.'</title>
+                </head>
+                <body>
+                <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
+                <hr style="color: #3A72A5;" />';
+                // Cabecera del mensaje
+                $message .='<p/>Listado de alertas instalación<p/>';
+                // Recorrer todas las lineas de detalle
+                $message .='<table>
+                <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
+                <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
+                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
+                <tr></tr><tr></tr>
+                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
+            }
+            $icont ++;
+        }
+        // Mandar mail de último usuario
+        // Final tabla
+        $message .='<tr></tr></table>
+        <hr style="color: #3A72A5;" />
+        <p>Final de resumen instalación.</p>
+        </body>
+        </html>';
+	//echo $message;
+        $phpmailer->AddAddress($toemail); // recipients email
+        $phpmailer->Subject = $subject;	
+        $phpmailer->Body .= $message;
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Send();
+       
+        $this->logmail($toemail,$sub);
+        return 1;
+    }
+    
     // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
     private function valorbd($vparam,$tipolectura)
         {

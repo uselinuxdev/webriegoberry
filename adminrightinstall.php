@@ -21,6 +21,11 @@ and open the template in the editor.
                 $ClassInstall = new InstallClass();
                 $ClassInstall->updateimagen(); 
             }
+            if(isset($_POST['mail_install']))
+            {
+                $ClassAlert = new AlertClass();
+                $ClassAlert->mailsumary();
+            }
             // Cargar datos
             $hostdb = $_SESSION['serverdb'];  // MySQl host
             $userdb = $_SESSION['dbuser'];  // MySQL username
@@ -129,6 +134,7 @@ and open the template in the editor.
                     echo '</tr>';
                 echo '</table>';
                 echo '<input type="submit" name="update_install" value="Actualizar"/>';
+                echo '<input type="submit" name="mail_install" value="Mail resumen"/>';
                 ?>
             </form>
         </div>
