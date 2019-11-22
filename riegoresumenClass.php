@@ -417,6 +417,67 @@ class riegoresumenClass
         return $sqldate;
     }
     
+    public function calcsumaryprod() 
+    {
+        $aparamf = $this->verParam();
+        // Establish a connection to the database
+        $dbhandle = new mysqli($_SESSION['serverdb'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname']);
+        if (!$dbhandle->set_charset("utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", $mysqli->error);
+            exit();
+        }
+
+        if ($dbhandle->connect_error) {
+           exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
+        }
+        
+        // Cargar los datos de hoy ,año y hasta año.
+        $ssql = "select Coalesce(max(l.intvalor)-min(l.intvalor),0) AS hoy,p.parametro,p.prefijonum As unidades,p.posdecimal As posdecimal" 
+         . " from lectura_parametros l,parametros_server p"
+         . " where l.idparametro = ".$aparamf[0]['idparametroa']
+         . " and l.idparametro = p.idparametro"
+         . " and l.flectura > CURDATE();";
+        $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+        $rowhoy = mysqli_fetch_array($result);
+        // Mes actual
+        $mesyear = date("Y")."-".date("m")."-01";
+        $ssql = "select sum(intvalor) as month"
+        . " from grafica_dias"
+        . " where idparametro=".$aparamf[0]['idparametroa']
+        . " and flectura >= '".$mesyear."'";
+        //echo $ssql;
+        $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+        $rowmonth = mysqli_fetch_array($result);
+        // Cargar año actual
+        $eneroyear = date("Y")."-01-01";
+        $ssql = "select sum(intvalor) as year"
+         . " from grafica_dias"
+         . " where idparametro=".$aparamf[0]['idparametroa']
+         . " and flectura > '".$eneroyear."';";
+        $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+        $rowyear = mysqli_fetch_array($result);
+        // Cargar años ateriores
+        $ssql = "select sum(intvalor) as preyear"
+        . " from grafica_dias"
+        . " where idparametro=".$aparamf[0]['idparametroa']
+        . " and flectura < '".$eneroyear."';";
+        $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
+        $rowpreyear = mysqli_fetch_array($result); 
+        //Crear array de datos finales
+        $asumaryprod = array();
+        $icont=0;
+        //$aalert[$icont]['idusuario']=$rowalert['idusuario'];
+        $asumaryprod[$icont]['parametro']=$rowhoy['parametro'];
+        $asumaryprod[$icont]['unidades']=$rowhoy['unidades'];
+        $asumaryprod[$icont]['hoy']=round($this->posdecimal($rowhoy['hoy'],$rowhoy['posdecimal'])).''.$rowhoy['unidades'];
+        $asumaryprod[$icont]['month']=round($this->posdecimal($rowmonth['month'],$rowhoy['posdecimal'])).''.$rowhoy['unidades'];
+        $asumaryprod[$icont]['year']=round($this->posdecimal($rowyear['year'],$rowhoy['posdecimal'])).''.$rowhoy['unidades'];
+        $asumaryprod[$icont]['preyear']=round($this->posdecimal($rowpreyear['preyear'],$rowhoy['posdecimal'])).''.$rowhoy['unidades'];
+        // All on array
+        return $asumaryprod;   
+    }  
+    
+    
     public function posdecimal($valor,$posiciones) {
     if ($posiciones > 0) {
         $div = 1;

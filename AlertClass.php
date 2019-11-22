@@ -542,7 +542,7 @@ class AlertClass {
         return 1;
     }
  
-    public function mailsumary()
+    public function mailsumary($asumaryprod)
       {
         // Conexiones
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
@@ -570,13 +570,13 @@ class AlertClass {
         //print_r($auser);
         // Llamar a la función
         if (sizeof($auser) > 0) {
-            $this->sendmailsumary($auser);
+            $this->sendmailsumary($auser,$asumaryprod);
         }else{
            // echo "No existen filas a tratar.";
         }
       }
     
-    private function sendmailsumary($auser)
+    private function sendmailsumary($auser,$asumaryprod)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -663,6 +663,16 @@ class AlertClass {
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
                 <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
+                $message .='<tr>
+                            // Valor hoy
+                            <td align="right">'.$asumaryprod[0]['hoy'].'</td>
+                            // Valor mes
+                            <td align="right">'.$asumaryprod[0]['month'].'</td>
+                            // Valor year
+                            <td align="right">'.$asumaryprod[0]['year'].'</td>
+                            // Valor preyear
+                            <td align="right">'.$asumaryprod[0]['preyear'].'</td>
+                            </tr>';
             }
             $icont ++;
         }

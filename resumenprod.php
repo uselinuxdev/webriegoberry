@@ -13,44 +13,13 @@ and open the template in the editor.
         <?php
             $Classresprod = new riegoresumenClass();
             $Classresprod->cargarClase('resumenprod'); 
-            $aparam = $Classresprod->verParam();
-            // Cargar los datos de hoy ,año y hasta año.
-            $ssql = "select Coalesce(max(l.intvalor)-min(l.intvalor),0) AS hoy,p.parametro,p.prefijonum As unidades,p.posdecimal As posdecimal" 
-                . " from lectura_parametros l,parametros_server p"
-                . " where l.idparametro = ".$aparam[0]['idparametroa']
-                . " and l.idparametro = p.idparametro"
-                . " and l.flectura > CURDATE();";
-            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
-            $rowhoy = mysqli_fetch_array($result);
-            // Mes actual
-            $mesyear = date("Y")."-".date("m")."-01";
-            $ssql = "select sum(intvalor) as month"
-            . " from grafica_dias"
-            . " where idparametro=".$aparam[0]['idparametroa']
-            . " and flectura >= '".$mesyear."'";
-            //echo $ssql;
-            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
-            $rowmonth = mysqli_fetch_array($result);
-            // Cargar año actual
-            $eneroyear = date("Y")."-01-01";
-            $ssql = "select sum(intvalor) as year"
-                . " from grafica_dias"
-                . " where idparametro=".$aparam[0]['idparametroa']
-                . " and flectura > '".$eneroyear."';";
-            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
-            $rowyear = mysqli_fetch_array($result);
-            // Cargar años ateriores
-            $ssql = "select sum(intvalor) as preyear"
-            . " from grafica_dias"
-            . " where idparametro=".$aparam[0]['idparametroa']
-            . " and flectura < '".$eneroyear."';";
-            $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
-            $rowpreyear = mysqli_fetch_array($result);
+            $asumaryprod = $Classresprod->calcsumaryprod();
+           // print_r($asumaryprod);
         ?>
     </head>
     <body>
         <div class="background">
-            <p> Resumen Producción: <?php echo substr($rowhoy['parametro'],0,20); ?> </p>
+            <p> Resumen Producción: <?php //echo substr($asumaryprod[0]['parametro'],0,20); ?> </p>
         <div class="front">
             <?php
                 echo '<table cellpadding="0" cellspacing="5" height="100%" class="db-tbresumen">';
@@ -63,21 +32,13 @@ and open the template in the editor.
                     echo '</tr>';
                     echo '<tr>';
                     // Valor hoy
-                    $valor = $Classresprod->posdecimal($rowhoy['hoy'],$rowhoy['posdecimal']);
-                    $valor = round($valor);
-                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
+                    echo '<td align="right">',$asumaryprod[0]['hoy'],'</td>';
                     // Valor mes
-                    $valor = $Classresprod->posdecimal($rowmonth['month'],$rowhoy['posdecimal']);
-                    $valor = round($valor);
-                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
+                    echo '<td align="right">',$asumaryprod[0]['month'],'</td>';
                     // Valor year
-                    $valor = $Classresprod->posdecimal($rowyear['year'],$rowhoy['posdecimal']);
-                    $valor = round($valor);
-                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
+                    echo '<td align="right">',$asumaryprod[0]['year'],'</td>';
                     // Valor preyear
-                    $valor = $Classresprod->posdecimal($rowpreyear['preyear'],$rowhoy['posdecimal']);
-                    $valor = round($valor);
-                    echo '<td align="right">',$valor.''.$rowhoy['unidades'],'</td>';
+                    echo '<td align="right">',$asumaryprod[0]['preyear'],'</td>';
                     echo '</tr>';
                 echo '</tbody>';
                 echo '</table>';

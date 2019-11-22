@@ -23,8 +23,11 @@ and open the template in the editor.
             }
             if(isset($_POST['mail_install']))
             {
+                $Classresprod = new riegoresumenClass();
+                $Classresprod->cargarClase('resumenprod'); 
+                $asumaryprod = $Classresprod->calcsumaryprod();
                 $ClassAlert = new AlertClass();
-                $ClassAlert->mailsumary();
+                $ClassAlert->mailsumary($asumaryprod);
             }
             // Cargar datos
             $hostdb = $_SESSION['serverdb'];  // MySQl host
