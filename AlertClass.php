@@ -628,7 +628,7 @@ class AlertClass {
                     $phpmailer=$this->newPHPMailer();
                 }
                 $iduser = $vfila['idusuario'];
-                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
+                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
                 and u.idserver = s.idserver
@@ -659,19 +659,17 @@ class AlertClass {
                 // Recorrer todas las lineas de detalle
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
+                <tr><td>Imagen: </td><td>'.$row["imagen"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
-                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
+                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>
+                <tr><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td></tr>';
                 $message .='<tr>
-                            // Valor hoy
-                            <td align="right">'.$asumaryprod[0]['hoy'].'</td>
-                            // Valor mes
-                            <td align="right">'.$asumaryprod[0]['month'].'</td>
-                            // Valor year
-                            <td align="right">'.$asumaryprod[0]['year'].'</td>
-                            // Valor preyear
-                            <td align="right">'.$asumaryprod[0]['preyear'].'</td>
+                            <td align="left">'.$asumaryprod[0]['hoy'].'</td>
+                            <td align="left">'.$asumaryprod[0]['month'].'</td>
+                            <td align="left">'.$asumaryprod[0]['year'].'</td>
+                            <td align="left">'.$asumaryprod[0]['preyear'].'</td>
                             </tr>';
             }
             $icont ++;
