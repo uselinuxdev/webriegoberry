@@ -657,6 +657,8 @@ class AlertClass {
                 // Cabecera del mensaje
                 $message .='<p/>Listado de alertas instalación<p/>';
                 // Recorrer todas las lineas de detalle
+                $phpmailer->AddEmbeddedImage($row["imagen"],'imginstall','instalacion.jpg');
+                $message .='<img src="cid:imginstall" width="300">';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Imagen: </td><td>'.$row["imagen"].'</td></tr>
@@ -688,7 +690,7 @@ class AlertClass {
         $phpmailer->CharSet = 'UTF-8';
         $phpmailer->Send();
        
-        $this->logmail($toemail,$sub);
+        $this->logmail($toemail,$subject);
         return 1;
     }
     
