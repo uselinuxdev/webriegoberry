@@ -78,15 +78,15 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         <thead>
            <tr>
              <th>Parametro</th>
-             <th>Usuario</th>
+             <th>Texto alerta</th>
              <th>Estado</th>
+             <th>Hora min.</th>
+             <th>Hora max.</th>
+             <th>Usuario</th>
              <th>Tipo</th>
              <th>Operación</th>
              <th>Valor</th>
-             <th>Texto alerta</th>
              <th>Nº Bit</th>
-             <th>Hora min. bit</th>
-             <th>Hora max. bit</th>
              <th>Alta</th>
              <th>Borrar</th>
            </tr>
@@ -103,21 +103,26 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
                     $ClassAlert->cargacomboparam("idparametro[]",$row['idparametro']);
                   ?>
               </td>
-              <td>
-                  <?php
-                    $ClassAlert->cargacombouser("idusuario[]",$row['idusuario']);
-                  ?>
-              </td>
+              <td><input type="text" name="textalert[]" style="width: 250px;" value="<?php echo $row['textalert'];?>" required="required" /> </td>
               <td>
                 <select name = "estado[]" style="width: 7em;">
                     <option value="1" <?php if($row['estado'] == 1) {echo " SELECTED ";} echo">"; ?>Activa</option>
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>No activa</option>
                 </select>
               </td>
+              <td><input type="time" name="horaminbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horaminbit'];?>" /> </td>
+              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horamaxbit'];?>" /> </td>
+              <td>
+                  <?php
+                    $ClassAlert->cargacombouser("idusuario[]",$row['idusuario']);
+                  ?>
+              </td>
               <td>
                 <select name = "tipo[]" style="width: 7em;">
                     <option value="0" <?php if($row['tipo'] == 0) {echo " SELECTED ";} echo">"; ?>Ultima</option>
                     <option value="1" <?php if($row['tipo'] == 1) {echo " SELECTED ";} echo">"; ?>Diaria</option>
+                    <option value="2" <?php if($row['tipo'] == 2) {echo " SELECTED ";} echo">"; ?>Mensual</option>
+                    <option value="3" <?php if($row['tipo'] == 3) {echo " SELECTED ";} echo">"; ?>Anual</option>
                 </select>
               </td>
               <td>
@@ -127,10 +132,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
                 </select>
               </td>
               <td><input type="number" name="valor[]" style="width: 70px;" value="<?php echo $row['valor'];?>" required="required" /> </td>
-              <td><input type="text" name="textalert[]" style="width: 250px;" value="<?php echo $row['textalert'];?>" required="required" /> </td>
               <td><input type="number" name="nbit[]" min="0" max="31" style="width: 40px;" value="<?php echo $row['nbit'];?>" /> </td>
-              <td><input type="time" name="horaminbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horaminbit'];?>" /> </td>
-              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horamaxbit'];?>" /> </td>
               <td><?php echo date("d/m/Y", strtotime($row['falta']));?></td>
               <form name="fdeletealert" method="post">
               <input type="hidden" name="idalertdelete" value="<?php echo $row['idalert'];?>" />
