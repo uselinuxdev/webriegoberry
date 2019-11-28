@@ -1,4 +1,4 @@
 #!/bin/bash
-WORKPATH=/var/www/html/riegosolar
+WORKPATH=`dirname $0`
 #script userapp and passapp
 php $WORKPATH/mailsumaryos.php admin Riegosolar77

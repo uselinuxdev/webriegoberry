@@ -657,7 +657,9 @@ class AlertClass {
                 // Cabecera del mensaje
                 $message .='<p/>Listado de alertas instalación<p/>';
                 // Recorrer todas las lineas de detalle
-                $phpmailer->AddEmbeddedImage($row["imagen"],'imginstall','instalacion.jpg');
+                //Pegar full path de imagen
+                $phpmailer->AddEmbeddedImage('/var/www/html/riegosolar/'.$row["imagen"],'imginstall','instalacion.jpg');
+                
                 $message .='<img src="cid:imginstall" width="300">';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
