@@ -185,7 +185,7 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
-    // Funcion publica, recorre las alertas por tipo: 1 diaria,0 última
+    // Funcion publica, recorre las alertas por tipo: 0 última,1 diaria,2 mensual y 3 anual
     public function checkalert()
         {
          // Conexiones
@@ -207,8 +207,59 @@ class AlertClass {
           //printf($sselect);
           $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
           while($rowalert = mysqli_fetch_array($result)) {
+              // El diario 1 sólo se calcula a las 8am
+              // Mensual 2 sólo el primer día del mes a las 9am
+              // Anual 3 sólo el primer día del año
               // Por cada parametero recuperar la select
-              $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+              switch ($rowalert['tipo']) {
+                  case 0:
+                    $aalert[$icont]['desctipo'] = 'Última';
+                    $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    break;  
+                  case 1:
+                    // Fecha del día anterior
+                    $aalert[$icont]['desctipo'] = 'Diaria';
+                    $vnow = date("H:i:s"); // 17:16:18 
+                    echo $vnow;
+                    if ($vnow > '08:00:00' and $vnow < '08:05:00')
+                    //if ($vnow > '08:00:00' and $vnow < '23:05:00')
+                    {
+                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    } else
+                    {
+                       unset($rowdb);
+                    }
+                    break;
+                  case 2:
+                    // Fecha del mes anterior
+                    $aalert[$icont]['desctipo'] = 'Mensual';
+                    $vnow = date("d H:i:s"); // 17:16:18
+                    echo $vnow;
+                    if ($vnow > '01 09:00:00' and $vnow < '01 09:05:00')
+                    //if ($vnow > '29 09:00:00' and $vnow < '30 09:05:00')
+                    {
+                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    } else
+                    {
+                       unset($rowdb);
+                    }
+                    break;
+                  case 3:
+                    // Fecha del año anterior
+                    $aalert[$icont]['desctipo'] = 'Anual';
+                    $vnow = date("m-d H:i:s"); // 17:16:18
+                    //echo $vnow;
+                    //if ($vnow > '11-29 10:00:00' or $vnow < '11-29 22:05:00')
+                    if ($vnow > '01-01 10:00:00' and $vnow < '01-01 10:05:00')
+                    {
+                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    } else
+                    {
+                       unset($rowdb);
+                    }
+                    break;
+              }
+
               // Calcular el valor descontando decimales  
               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
               if(!empty($rowdb))
@@ -481,7 +532,7 @@ class AlertClass {
                     $phpmailer=$this->newPHPMailer();
                 }
                 $iduser = $vfila['idusuario'];
-                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,s.nombreserver,s.falta,u.email 
+                $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
                 and u.idserver = s.idserver
@@ -492,7 +543,8 @@ class AlertClass {
                 // Datos del correo.
                 $toemail = $row['email'];
                 $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
-                
+                //Pegar full path de imagen
+                $phpmailer->AddEmbeddedImage('/var/www/html/riegosolar/'.$row["imagen"],'imginstall','instalacion.jpg');
                 
                 // Always set content-type when sending HTML email
                 $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
@@ -510,16 +562,17 @@ class AlertClass {
                 // Cabecera del mensaje
                 $message .='<p/>Listado de alertas instalación<p/>';
                 // Recorrer todas las lineas de detalle
+                $message .='<img src="cid:imginstall" width="300">';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
-                <tr><td>Fecha</td><td>Alerta</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
+                <tr><td>Fecha</td><td>Alerta</td><td>Periodo</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
             }
             // Pintar detalles de cada fila
             $message .='<tr>';
-            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['poralert'].$vfila['operacion'].'</td>';
+            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td>'.$vfila['desctipo'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['poralert'].$vfila['operacion'].'</td>';
             $message .='</tr>';   
             // Más filas
             $icont ++;
@@ -655,7 +708,7 @@ class AlertClass {
                 <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
                 <hr style="color: #3A72A5;" />';
                 // Cabecera del mensaje
-                $message .='<p/>Listado de alertas instalación<p/>';
+                $message .='<p/>Resumen diario instalación<p/>';
                 // Recorrer todas las lineas de detalle
                 //Pegar full path de imagen
                 $phpmailer->AddEmbeddedImage('/var/www/html/riegosolar/'.$row["imagen"],'imginstall','instalacion.jpg');
@@ -663,7 +716,6 @@ class AlertClass {
                 $message .='<img src="cid:imginstall" width="300">';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
-                <tr><td>Imagen: </td><td>'.$row["imagen"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
@@ -696,7 +748,7 @@ class AlertClass {
         return 1;
     }
     
-    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes
+    // Retorna array. Tipo lectura. 0 última,1 diaria,2 mes,3 anual
     private function valorbd($vparam,$tipolectura)
         {
             // Conexiones
@@ -733,13 +785,13 @@ class AlertClass {
                 $sselect.= $sdate;
                 $sselect .=" group by idparametro";
                 break;
-//            case 3:
-//                // Año actual
-//                $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
-//                $sselect.="WHERE idparametro = ".$vparam;
-//                $sselect.= $sdate;
-//                $sselect.=" GROUP BY idparametro";
-//                break;
+            case 3:
+                // Año actual
+                $sselect = "SELECT NOMBREP,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
+                $sselect.="WHERE idparametro = ".$vparam;
+                $sselect.= $sdate;
+                $sselect.=" GROUP BY idparametro";
+                break;
             default:
                 // Valor diario
                 $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
