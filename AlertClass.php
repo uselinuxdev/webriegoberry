@@ -218,13 +218,13 @@ class AlertClass {
                     break;  
                   case 1:
                     // Fecha del día anterior
-                    $aalert[$icont]['desctipo'] = 'Diaria';
                     $vnow = date("H:i:s"); // 17:16:18 
                     echo $vnow;
                     if ($vnow > '08:00:00' and $vnow < '08:05:00')
                     //if ($vnow > '08:00:00' and $vnow < '23:05:00')
                     {
                         $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                        $aalert[$icont]['desctipo'] = 'Diaria';
                     } else
                     {
                        unset($rowdb);
@@ -232,13 +232,13 @@ class AlertClass {
                     break;
                   case 2:
                     // Fecha del mes anterior
-                    $aalert[$icont]['desctipo'] = 'Mensual';
                     $vnow = date("d H:i:s"); // 17:16:18
                     echo $vnow;
                     if ($vnow > '01 09:00:00' and $vnow < '01 09:05:00')
                     //if ($vnow > '29 09:00:00' and $vnow < '30 09:05:00')
                     {
                         $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                        $aalert[$icont]['desctipo'] = 'Mensual';
                     } else
                     {
                        unset($rowdb);
@@ -246,13 +246,13 @@ class AlertClass {
                     break;
                   case 3:
                     // Fecha del año anterior
-                    $aalert[$icont]['desctipo'] = 'Anual';
                     $vnow = date("m-d H:i:s"); // 17:16:18
                     //echo $vnow;
                     //if ($vnow > '11-29 10:00:00' or $vnow < '11-29 22:05:00')
                     if ($vnow > '01-01 10:00:00' and $vnow < '01-01 10:05:00')
                     {
                         $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                        $aalert[$icont]['desctipo'] = 'Anual';
                     } else
                     {
                        unset($rowdb);
