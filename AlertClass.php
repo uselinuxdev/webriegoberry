@@ -612,7 +612,7 @@ class AlertClass {
         // Array con datos a funcion mail
         $auser = array();
         $icont=0;
-        $sselect ="select idusuario from usuarios where idserver=".$_SESSION['idserver']." and email IS NOT NULL";
+        $sselect ="select idusuario from usuarios where idserver=".$_SESSION['idserver']." and trim(email) <>''";
         //printf($sselect);
         $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
         while($rowuser = mysqli_fetch_array($result)) {
