@@ -59,14 +59,15 @@ function checkuserdb($vuser,$vpass)
     if ($ver > 7.0) {
         mysqli_query($cndb,$sql);
         $ifilas = mysqli_num_rows($cndb,$consulta);
+        $row = mysqli_fetch_array($cndb,$consulta);
     } else {
         $consulta = mysql_query($sql);
         $ifilas = mysql_num_rows($consulta);
+        $row = mysql_fetch_array($consulta);
     }
     
     if (ifilas) {
         // Datos de la primera fila
-        $row = mysql_fetch_array($consulta);
         // Variable de tiempo de sesion.
         $_SESSION['tlogon'] = time();
         $_SESSION['minsesion'] = 10;
