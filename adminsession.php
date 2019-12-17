@@ -55,13 +55,16 @@ function checkuserdb($vuser,$vpass)
     $sql.= " and password ='".$vpass."'";
     //echo $sql;
     // Execute the query, or else return the error message.
+    $ifilas = 0;
     if ($ver > 7.0) {
         mysqli_query($cndb,$sql);
+        $ifilas = mysqli_num_rows($cndb,$consulta);
     } else {
         $consulta = mysql_query($sql);
+        $ifilas = mysql_num_rows($consulta);
     }
     
-    if (mysql_num_rows($consulta)) {
+    if (ifilas) {
         // Datos de la primera fila
         $row = mysql_fetch_array($consulta);
         // Variable de tiempo de sesion.
