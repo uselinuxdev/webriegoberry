@@ -34,9 +34,21 @@ function checkuserdb($vuser,$vpass)
     $_SESSION['minsesion'] = 0;
     //Variable de sesion de selección de tabs
     $_SESSION['stabindex'] = 0;
-    $cndb=mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-    mysql_select_db($_SESSION['dbname'],$cndb) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-    mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+    $ver = (float)phpversion();
+    if ($ver > 7.0) {
+        //do something for php7.1 and above.
+        $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']) or die ("No se puede establecer la conexion!!!!");
+        mysqli_set_charset($cndb, 'utf8');
+    } else {
+        //do something for php5.6 or lower.
+        $cndb=mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!");  // dep php 7
+        mysql_select_db($_SESSION['dbname'],$cndb) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
+        mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+    }
+    
+    
+    
+
     
     // En la columna password se ha grabado el valor con la funcion MD5. update campo=MD5('valor');
     $vpass=md5($vpass); // Encrypted Password

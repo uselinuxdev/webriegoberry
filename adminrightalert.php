@@ -37,6 +37,7 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         // Crear clase de para llamada a funciones genericas
         // Control post
         $ClassAlert = new AlertClass();
+        //print_r($_POST);
         if(isset($_POST['update_alert']))
         {
             $ClassAlert->updatealert();
