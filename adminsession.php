@@ -57,8 +57,8 @@ function checkuserdb($vuser,$vpass)
     // Execute the query, or else return the error message.
     $ifilas = 0;
     if ($ver > 7.0) {
-        mysqli_query($cndb,$sql);
-        $ifilas = mysqli_num_rows($cndb,$consulta);
+        $consulta = mysqli_query($cndb,$sql);
+        $ifilas = mysqli_num_rows($consulta);
         $row = mysqli_fetch_array($cndb,$consulta);
     } else {
         $consulta = mysql_query($sql);
