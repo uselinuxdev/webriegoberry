@@ -46,10 +46,6 @@ function checkuserdb($vuser,$vpass)
         mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
     }
     
-    
-    
-
-    
     // En la columna password se ha grabado el valor con la funcion MD5. update campo=MD5('valor');
     $vpass=md5($vpass); // Encrypted Password
     
@@ -59,7 +55,12 @@ function checkuserdb($vuser,$vpass)
     $sql.= " and password ='".$vpass."'";
     //echo $sql;
     // Execute the query, or else return the error message.
-    $consulta = mysql_query($sql);
+    if ($ver > 7.0) {
+        mysqli_query($cndb,$sql);
+    } else {
+        $consulta = mysql_query($sql);
+    }
+    
     if (mysql_num_rows($consulta)) {
         // Datos de la primera fila
         $row = mysql_fetch_array($consulta);
