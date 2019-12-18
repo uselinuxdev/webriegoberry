@@ -34,17 +34,15 @@ function checkuserdb($vuser,$vpass)
     $_SESSION['minsesion'] = 0;
     //Variable de sesion de selección de tabs
     $_SESSION['stabindex'] = 0;
-    $ver = (float)phpversion();
-    if ($ver > 7.0) {
-        //do something for php7.1 and above.
-        $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']) or die ("No se puede establecer la conexion!!!!");
-        mysqli_set_charset($cndb, 'utf8');
-    } else {
-        //do something for php5.6 or lower.
-        $cndb=mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!");  // dep php 7
-        mysql_select_db($_SESSION['dbname'],$cndb) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-        mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+    //do something for php7.1 and above.
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+    if (!$cndb) {
+        echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+        echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+        echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+        exit;
     }
+    mysqli_set_charset($cndb, "utf8");
     
     // En la columna password se ha grabado el valor con la funcion MD5. update campo=MD5('valor');
     $vpass=md5($vpass); // Encrypted Password
@@ -53,28 +51,19 @@ function checkuserdb($vuser,$vpass)
     $sql = "select idusuario,usuario,nivel,idserver from usuarios";
     $sql.= " where usuario ='".$vuser."'";
     $sql.= " and password ='".$vpass."'";
-    //echo $sql;
-    // Execute the query, or else return the error message.
-    $ifilas = 0;
-    if ($ver > 7.0) {
-        $consulta = mysqli_query($cndb,$sql);
-        $ifilas = mysqli_num_rows($consulta);
-        $row = mysqli_fetch_array($cndb,$consulta);
-    } else {
-        $consulta = mysql_query($sql);
-        $ifilas = mysql_num_rows($consulta);
-        $row = mysql_fetch_array($consulta);
-    }
-    
-    if (ifilas) {
+    //echo $sql;   
+    $consulta = mysqli_query($cndb,$sql);  
+    if ($consulta) {
         // Datos de la primera fila
         // Variable de tiempo de sesion.
+        $row = mysqli_fetch_array($consulta,MYSQLI_ASSOC); 
         $_SESSION['tlogon'] = time();
         $_SESSION['minsesion'] = 10;
         $_SESSION['usuario'] = $row['usuario'];
         $_SESSION['nivel'] = $row['nivel'];
         $_SESSION['idserver'] = $row['idserver'];
         $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['tlogon'];
+        //echo $_SESSION['usuario'];
         return 1;
     }else {
         $_SESSION['textsesion'] = 'Los datos introducidos no corresponden con ninguna instalación.';
@@ -87,18 +76,18 @@ function checkuserdb($vuser,$vpass)
 function CheckLogin()
 {
      session_start();
-     
      if(empty($_SESSION['usuario']))
      {
         $_SESSION['textsesion'] = "Sesión no iniciada.";
-         return false;
+        return false;
      }
       if ($_SESSION['tlogon'] + $_SESSION['minsesion'] * 60 < time()) {
           $_SESSION['textsesion'] = "Por razones de seguridad su sesión ha espirado, vuelva a ingresar sus datos en el sistema.";
+          echo $_SESSION['textsesion'];
           return false;
           // session timed out
       }
       // Añadimos tiempo a la sesion
       $_SESSION['tlogon'] = time();
-     return true;
+      return true;
 }
