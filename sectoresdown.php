@@ -22,9 +22,9 @@ $namedb = $_SESSION['dbname'];  // MySQL database name
 //$userdb = 'riegosql';
 //$passdb = 'riegoprod15';
 //$namedb = 'riegosolar';
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
 // Establish a connection to the database
 $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+mysqli_set_charset($dbhandle, "utf8");
 
 
 /*Render an error message, to avoid abrupt failure, if the database connection parameters are incorrect */

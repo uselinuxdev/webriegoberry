@@ -136,18 +136,23 @@ class UserClass {
      
     public function cargacomboserver($name,$idparam)
         {
-            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-            
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+            }
+            mysqli_set_charset($cndb, "utf8");
+        
             $sql = "SELECT idserver,nombreserver from server_instalacion where estado > 0 ";
             
             // Pintar combo
             echo '<select name="'.$name.'" style="width: 115px;">'; 
             // No definido
-            $resparametros = mysql_query($sql);
+            $resparametros = mysqli_query($cndb,$sql);
             // Parametros de la select
-            while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+            while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                 $id = $row["idserver"] ; //Asignamos el id del campo que quieras mostrar
                 $vparametro = substr($row["nombreserver"],0,50); // Asignamos el nombre del campo que quieras mostrar
                 //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 

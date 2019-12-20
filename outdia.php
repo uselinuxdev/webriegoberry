@@ -10,13 +10,13 @@ $hostdb = $_SESSION['serverdb'];  // MySQl host
 $userdb = $_SESSION['dbuser'];  // MySQL username
 $passdb = $_SESSION['dbpass'];  // MySQL password
 $namedb = $_SESSION['dbname'];  // MySQL database name
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
 
 // Definir el titulo para la exportacion
 $_SESSION['expnombre'] = 'exphoras';
 
 // Establish a connection to the database
 $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+mysqli_set_charset($dbhandle, "utf8");
 
 // Array de meses.
 $vtiposalida = 0; // 1 dia,2 mes, 3 año, 4 total.

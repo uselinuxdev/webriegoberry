@@ -6,10 +6,14 @@ and open the template in the editor.
 -->
 <?php
 //Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-//mysql_set_charset('latin1_spanish_ci');
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+if (!$cndb) {
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+mysqli_set_charset($cndb, "utf8");
 
 // Combo dependiente
 //$sql = "SELECT idparametro, parametro FROM parametros_server where tipo='H' and estado=1 order by idparametro";
@@ -26,8 +30,6 @@ $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 // Cargar la máx fecha para el valor
 //if ($_POST['cbvalor'] > 0 ){
 //    $sqlf ="select max(flectura) FMAX from lectura_parametros where idparametro=".$_POST['cbvalor'];
-//    $rfecha = mysql_query($sqlf);
-//    $row = mysql_fetch_array($rfecha);
 //    $vfecha =$row["FMAX"];
 //}
 
@@ -103,9 +105,9 @@ $vhora = $_POST["nhora"];
                             <!--<select name="cbvalor" onchange='submit()'> Creamos el select con el atributo name "combo" que identificara el archivo -->
                             <select name="cbvalor"> 
                             <?php
-                                $resparametros = mysql_query($sql);
+                                $resparametros = mysqli_query($cndb,$sql);  
                                 echo "<option value=0> ( Seleccionar un Parámetro ) </option>"; 
-                                while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                                while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                     $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                     $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                     //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 

@@ -129,9 +129,14 @@ class AlertClass {
     }
     public function cargacomboparam($name,$idparam)
         {
-            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+            }
+            mysqli_set_charset($cndb, "utf8");
             
             $sql = "SELECT parametros_server.idparametro, parametros_server.parametro FROM parametros_server,server_instalacion";
             $sql.=" where server_instalacion.idserver = parametros_server.idserver " ;
@@ -144,9 +149,9 @@ class AlertClass {
             echo '<select name="'.$name.'" style="width: 180px;">'; 
             echo "<option value=0>Seleccionar parámetro</option>"; 
             // No definido
-            $resparametros = mysql_query($sql);
+            $resparametros = mysqli_query($cndb,$sql);  
             // Parametros de la select
-            while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+            while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                 $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                 $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                 //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
@@ -160,9 +165,14 @@ class AlertClass {
         }
     public function cargacombouser($name,$iduser)
         {
-            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+            }
+            mysqli_set_charset($cndb, "utf8");
             
             $sql = "SELECT idusuario,usuario from usuarios ";
             $sql.=" where idserver = ".$_SESSION['idserver'];
@@ -171,9 +181,9 @@ class AlertClass {
             // Pintar combo
             echo '<select name="'.$name.'" style="width: 90px;">'; 
             // No definido
-            $resuser= mysql_query($sql);
+            $resuser = mysqli_query($cndb,$sql); 
             // Parametros de la select
-            while($row = mysql_fetch_array($resuser)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+            while($row = mysqli_fetch_array($resuser,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                 $id = $row["idusuario"] ; //Asignamos el id del campo que quieras mostrar
                 $vparametro = substr($row["usuario"],0,50); // Asignamos el nombre del campo que quieras mostrar
                 //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 

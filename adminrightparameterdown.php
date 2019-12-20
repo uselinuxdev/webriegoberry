@@ -44,8 +44,16 @@ and open the template in the editor.
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname where idparametro=".$_POST['cbvalorbit']." order by idparametro,posicion");     
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+           if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+           }
+           mysqli_set_charset($cndb, "utf8");
+           $result = mysqli_query($cndb,"SELECT idbit,idparametro,posicion,nombrebit from parametros_bitname where idparametro=".$_POST['cbvalorbit']." order by idparametro,posicion");   
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
                $iddelete = $row['idbit'];
            ?>
            <input type="hidden" name="idbit[]" value="<?php echo $row['idbit'];?>">

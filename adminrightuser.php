@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <?php
 //Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+if (!$cndb) {
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+mysqli_set_charset($cndb, "utf8");
 ?>
 <html>
     <head>
@@ -70,8 +74,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idusuario,usuario,password,email,nivel,descripcion,falta,idserver from usuarios order by usuario");
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $result = mysqli_query($cndb,"SELECT idusuario,usuario,password,email,nivel,descripcion,falta,idserver from usuarios order by usuario");  
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
            ?>
            <input type="hidden" name="idusuario[]" value="<?php echo $row['idusuario'];?>">
            <tr>

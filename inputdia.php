@@ -6,9 +6,14 @@ and open the template in the editor.
 -->
 <?php
 //Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+if (!$cndb) {
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+mysqli_set_charset($cndb, "utf8");
 
 $ameses = array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio', 'Agosto','Septiembre','Octubre','Noviembre','Diciembre');
 //hacemos la consulta de los valores que llenaran los combos
@@ -27,8 +32,6 @@ $sql.=" order by parametros_server.estado,parametros_server.parametro ";
 // Quitar este if cuando este en producción
 //if ($_POST['cbvalor'] > 0){
 //    $sqlf ="select max(flectura) FMAX from lectura_parametros where idparametro=".$_POST['cbvalor'];
-//    $rfecha = mysql_query($sqlf);
-//    $row = mysql_fetch_array($rfecha);
 //    $vfecha = $row["FMAX"];   
 //}
 if (empty($_POST['fhasta'])){
@@ -152,8 +155,8 @@ function checktab() {
                                 <p> <label for="cbvalor">Elegir primer parámetro</label></p>
                                 <select name="cbvalor[]" multiple id="cbvalor"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
-                                    $resparametros = mysql_query($sql);
-                                    while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                                    $resparametros = mysqli_query($cndb,$sql); 
+                                    while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                         $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                         $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                         //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
@@ -164,8 +167,8 @@ function checktab() {
                                     $vcombo = $vcombo.">";
                                     $vcombo = $vcombo.$vparametro."</option>"; 
                                     echo $vcombo;
-                                    } //Cerramos el ciclo 
-                                    mysql_free_result($resparametros);
+                                    } //Cerramos el ciclo
+                                    mysqli_free_result();
                                 ?>
                                 </select>
                                 <label><input type="checkbox" name="ckgroup" value="checked" 
@@ -205,8 +208,8 @@ function checktab() {
                                 <p> <label for="cbvalorm">Elegir primer parámetro</label></p>
                                 <select name="cbvalorm[]" multiple id="cbvalorm"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                 <?php
-                                    $resparametros = mysql_query($sql);
-                                    while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                                    $resparametros = mysqli_query($cndb,$sql);  
+                                    while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                         $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                         $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                         //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
@@ -217,8 +220,8 @@ function checktab() {
                                     $vcombo = $vcombo.">";
                                     $vcombo = $vcombo.$vparametro."</option>"; 
                                     echo $vcombo;
-                                    } //Cerramos el ciclo 
-                                    mysql_free_result($resparametros);
+                                    } //Cerramos el ciclo
+                                    mysqli_free_result();
                                 ?>
                                 </select>
                                 <label><input type="checkbox" name="ckgroupm" value="checked" 
@@ -269,8 +272,8 @@ function checktab() {
                                     <p> <label for="cbvalory">Elegir primer parámetro</label></p>
                                     <select name="cbvalory[]" multiple id="cbvalory"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
-                                        $resparametros = mysql_query($sql);
-                                        while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                                        $resparametros = mysqli_query($cndb,$sql); 
+                                        while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                             $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                             $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                             //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
@@ -281,8 +284,8 @@ function checktab() {
                                         $vcombo = $vcombo.">";
                                         $vcombo = $vcombo.$vparametro."</option>"; 
                                         echo $vcombo;
-                                        } //Cerramos el ciclo 
-                                        mysql_free_result($resparametros);
+                                        } //Cerramos el ciclo
+                                        mysqli_free_result();
                                     ?>
                                     </select>
                                     <label><input type="checkbox" name="ckgroupy" value="checked" 
@@ -322,8 +325,8 @@ function checktab() {
                                     <p> <label for="cbvalort">Elegir primer parámetro</label></p>
                                     <select name="cbvalort[]" multiple id="cbvalort"> <!--Creamos el select con el atributo name "combo" que identificara el archivo -->
                                     <?php
-                                        $resparametros = mysql_query($sql);
-                                        while($row = mysql_fetch_array($resparametros)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+                                        $resparametros = mysqli_query($cndb,$sql);  
+                                        while($row = mysqli_fetch_array($resparametros,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
                                             $id = $row["idparametro"] ; //Asignamos el id del campo que quieras mostrar
                                             $vparametro = substr($row["parametro"],0,50); // Asignamos el nombre del campo que quieras mostrar
                                             //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
@@ -335,7 +338,7 @@ function checktab() {
                                         $vcombo = $vcombo.$vparametro."</option>"; 
                                         echo $vcombo;
                                         } //Cerramos el ciclo 
-                                        mysql_free_result($resparametros);
+                                        mysqli_free_result();
                                     ?>
                                     </select>
                                     <label><input type="checkbox" name="ckgroupt" value="checked" 

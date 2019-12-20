@@ -50,10 +50,16 @@
         </thead>
         <tbody>
            <?php
-           //$result = mysql_query("SELECT idparametro,idserver,parametro,tipo,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server where idserver=".$_SESSION['idserver']." order by tipo,pmemoria,parametro,estado");
-           //$result = mysql_query("SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by CAST(pmemoria as decimal),parametro,estado");
-           $result = mysql_query("SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by idserver,tipo,CAST(pmemoria as decimal),parametro,estado");
-           while( $row = mysql_fetch_assoc( $result ) ){
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+            }
+           mysqli_set_charset($cndb, "utf8");
+           $result = mysqli_query($cndb,"SELECT idparametro,idserver,parametro,TIPO,posiciones,lectura,pmemoria,estado,prefijonum,posdecimal,falta,comentario,estlink,nivel,color from parametros_server order by idserver,tipo,CAST(pmemoria as decimal),parametro,estado"); 
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC)){
            ?>
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>">
            <tr>

@@ -15,9 +15,14 @@
         <?php
             //echo $_SESSION['pag'];
             //Primero hacemos las conexiones
-            mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-            mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-            mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            if (!$cndb) {
+                echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+                echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+                echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+                exit;
+            }
+            mysqli_set_charset($cndb, "utf8");
         ?>
         <div id="menuacordeon">
             <h4>
@@ -29,8 +34,8 @@
                             . "where nivel <= ".$_SESSION['nivel'].";";
                     //echo $vsql;
                     // Recorrer los resultados
-                    $resmenu = mysql_query($vsql);
-                    while($row = mysql_fetch_array($resmenu)) {
+                    $resmenu = mysqli_query($cndb,$vsql); 
+                    while($row = mysqli_fetch_array($resmenu,MYSQLI_ASSOC)) {
                         $vdescripcion = $row['descripcion'];
                         $vphp = $row['php'];
                         echo "<br>";
@@ -46,7 +51,7 @@
                         echo "</pos>";
                         echo "<npos>";
                     }
-                    mysql_free_result($resmenu);       
+                    mysqli_free_result();     
                     ?>  
 <!--                Dejar último br.-->
                     <br>

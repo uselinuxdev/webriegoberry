@@ -25,16 +25,22 @@ function exportMysqlToexcel($filename = 'export')
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
-    mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexiÃ³n a B.D.");
-    mysql_select_db($namedb,$conn);
+    
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+    if (!$cndb) {
+        echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+        echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+        echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+        exit;
+    }
+    mysqli_set_charset($cndb, "utf8");
     
     // La sentencia pasada por sesion.
-    $sql = mysql_query($_SESSION['ssql']) or die ("Error en SQL:".$_SESSION['ssql'].". ".mysql_error()); 
+    $sql = mysqli_query($cndb,$_SESSION['ssql']); 
     
     if ($sql) {
         // Cargar array por Ã­ndice, para obtener el primer valor
-        $row = mysql_fetch_row($sql);
+        $row = mysqli_fetch_array($sql,MYSQLI_ASSOC); 
         // Fichero a generar
         $filename=$row[0];
         $filename= $filename.'_'.date("Y-m-d");
@@ -54,8 +60,8 @@ function exportMysqlToexcel($filename = 'export')
         // Crear array de columnas
         $aletras = range("A","Z");
         // Volver a primera fila para obtener sus valores
-        mysql_data_seek($sql,0);
-        $row = mysql_fetch_assoc($sql);
+        mysqli_data_seek($sql, 0);
+        $row = mysqli_fetch_array($sql,MYSQLI_ASSOC); 
         // Pintamos la primera fila de nombres de columnas
         foreach($row as $name => $value)
         {
@@ -68,10 +74,10 @@ function exportMysqlToexcel($filename = 'export')
             }
         }    
         // Volver a primera fila para obtener sus valores
-        mysql_data_seek($sql,0);
+        mysqli_data_seek($sql, 0);
 
         // Detalles de filas, pintar valores
-        while($row = mysql_fetch_assoc($sql))
+        while($row = mysqli_fetch_array($sql,MYSQLI_ASSOC))
         {
             // Realizar la divisiÃ³n del valor
             $row["VALOR"] = posdecimal($row["VALOR"],$row["POSDECIMAL"]);
@@ -107,17 +113,21 @@ function exportMysqlToCsv($filename = 'export')
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
-    mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-    $conn = mysql_connect($hostdb,$userdb,$passdb) or die("Error en conexiÃ³n a B.D.");
-    mysql_select_db($namedb,$conn);
     
-    
-    // La sentencia pasada por sesion.
-    $sql = mysql_query($_SESSION['ssql']) or die ("Error en SQL:".$_SESSION['ssql'].". ".mysql_error()); 
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+    if (!$cndb) {
+        echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+        echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+        echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+        exit;
+    }
+    mysqli_set_charset($cndb, "utf8");
+    // La sentencia pasada por sesion. 
+    $sql = mysqli_query($cndb,$_SESSION['ssql']);  
     
     if ($sql) {
         // Cargar array por Ã­ndice, para obtener el primer valor
-        $row = mysql_fetch_row($sql);
+        $row = mysqli_fetch_array($sql,MYSQLI_ASSOC); 
         // echo $row;
         // Crear puntero a ficheros uploads (relativo al php
         //$filename= 'export/uploads/'.$filename.'_'.strtotime("now").'.csv';    
@@ -128,8 +138,8 @@ function exportMysqlToCsv($filename = 'export')
         $filename= 'export/uploads/'.$filename.'.csv';
         
         // Poner el puntero en la primera fila y cargar array asociativo.
-        mysql_data_seek($sql,0);
-        $row = mysql_fetch_assoc($sql);
+        mysqli_data_seek($sql, 0);
+        $row = mysqli_fetch_array($sql,MYSQLI_ASSOC); 
 
         // Variables del CSV
         $separador = "";
@@ -159,9 +169,9 @@ function exportMysqlToCsv($filename = 'export')
 
 
         // Volver a primera fila para obtener sus valores
-        mysql_data_seek($sql,0);
+        mysqli_data_seek($sql, 0);
         // Detalles de filas
-        while($row = mysql_fetch_assoc($sql))
+        while($row = mysqli_fetch_array($sql,MYSQLI_ASSOC))
         {
             // Variables del CSV
             $separador = "";

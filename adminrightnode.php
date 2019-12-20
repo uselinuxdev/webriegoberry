@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <?php
 //Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+if (!$cndb) {
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+mysqli_set_charset($cndb, "utf8");
 
 ?>
 <html>
@@ -94,8 +99,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,rssi,battery_voltage,falta,fmodif,fbaja FROM nodos");
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $result = mysqli_query($cndb,"SELECT idnodo,nombre_nodo,source_addr,source_addr_long,node_identifier,parent_address,device_type,estado,rssi,battery_voltage,falta,fmodif,fbaja FROM nodos");  
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
            ?>
            <input type="hidden" name="idnodo[]" value="<?php echo $row['idnodo'];?>">
            <tr>
@@ -148,8 +153,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
         </thead>
         <tbody>
            <?php
-           $result = mysql_query("SELECT idsector,num_sector,nombre_sector,idnodo,num_salida,time_latch,reintentos,falta,fmodif,fbaja FROM sectores where idnodo=".$_POST['cbnodos']." order by num_sector");
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $result = mysqli_query($cndb,"SELECT idsector,num_sector,nombre_sector,idnodo,num_salida,time_latch,reintentos,falta,fmodif,fbaja FROM sectores where idnodo=".$_POST['cbnodos']." order by num_sector");
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC)){
            ?>
            <input type="hidden" name="idsector[]" value="<?php echo $row['idsector'];?>">
            <tr>

@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <?php
 //Primero hacemos las conexiones
-mysql_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass']) or die ("No se puede establecer la conexion!!!!"); 
-mysql_select_db($_SESSION['dbname']) or die ("Imposible conectar a la base de datos!!!!"); //Selecionas tu base
-mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
-
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+if (!$cndb) {
+    echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+    echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+    echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+    exit;
+}
+mysqli_set_charset($cndb, "utf8");
 ?>
 <html>
     <head>
@@ -110,8 +114,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
            // Declarar clase
            $ClassResumen = new riegoresumenClass();
            $icont = 0;
-           $result = mysql_query("SELECT idresumen,divid,tipolectura,idparametroa,idparametrob,idparametroc,falta from admresumen order by idresumen");
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $result = mysqli_query($cndb,"SELECT idresumen,divid,tipolectura,idparametroa,idparametrob,idparametroc,falta from admresumen order by idresumen");  
+           while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
                $icont +=1;
            ?>
            <input type="hidden" name="idresumen[]" value="<?php echo $row['idresumen'];?>">
@@ -187,8 +191,8 @@ mysql_set_charset('utf8'); // Importante juego de caracteres a utilizar.
                    . "from admestimacion a,parametros_server p"
                    . " where p.idparametro = a.idparametro"
                    . " and p.idparametro=".$_POST['comboestimado']." order by idparametro,valorx";
-           $result = mysql_query($sql);
-           while( $row = mysql_fetch_assoc( $result ) ){
+           $result = mysqli_query($cndb,$sql); 
+           while( mysqli_fetch_array($result,MYSQLI_ASSOC)){
            ?>
            <input type="hidden" name="idestimacion[]" value="<?php echo $row['idestimacion'];?>" />
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>" />
