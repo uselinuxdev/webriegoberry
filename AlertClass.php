@@ -16,9 +16,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
+require dirname(__FILE__).'/PHPMailer/src/Exception.php';
+require dirname(__FILE__).'/PHPMailer/src/PHPMailer.php';
+require dirname(__FILE__).'/PHPMailer/src/SMTP.php';
 class AlertClass {
     // Actualizar Usuarios
     public function updatealert()
