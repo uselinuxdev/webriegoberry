@@ -43,9 +43,9 @@ class AlertClass {
             {
                 $_POST['horaminbit'][$i] = '00:00';
             }
-            if (is_null($_POST['horamanbit'][$i]))
+            if (is_null($_POST['horamaxbit'][$i]))
             {
-                $_POST['horaminbit'][$i] = '23:59';
+                $_POST['horamaxbit'][$i] = '23:59';
             }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE alertserver SET idparametro = ?,
