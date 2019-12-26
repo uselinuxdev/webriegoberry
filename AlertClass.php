@@ -38,15 +38,6 @@ class AlertClass {
         for($i=0;$i <count($_POST['idalert']);$i++)
         {
             // Controlar password si tiene datos se pinta
-            // Check horamin and horamax
-            if (is_null($_POST['horaminbit'][$i]))
-            {
-                $_POST['horaminbit'][$i] = '00:00';
-            }
-            if (is_null($_POST['horamaxbit'][$i]))
-            {
-                $_POST['horamaxbit'][$i] = '23:59';
-            }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE alertserver SET idparametro = ?,
                 idusuario = ?, 
@@ -72,7 +63,7 @@ class AlertClass {
             $_POST['horaminbit'][$i],
             $_POST['horamaxbit'][$i],
             $_POST['idalert'][$i]);
-            print_r($_POST);
+            //print_r($_POST);
             
             //echo "stmt bind_param correcto.";
             // Ejecutar
@@ -126,7 +117,7 @@ class AlertClass {
             exit();
         }
         
-        $sinsert = "INSERT INTO alertserver (idserver) VALUES (".$_SESSION['idserver'].")";
+        $sinsert = "INSERT INTO alertserver (idserver,horaminbit,horamaxbit,operacion) VALUES (".$_SESSION['idserver'].",'00:00:00','23:45:00','<')";
        
         if ($mysqli->query($sinsert) === TRUE)
         {
@@ -233,13 +224,16 @@ class AlertClass {
               // Por cada parametero recuperar la select
               switch ($rowalert['tipo']) {
                   case 0:
+                    $vnow = date("H:i:s"); 
+                    //echo $vnow;
                     $aalert[$icont]['desctipo'] = 'Última';
                     $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    //print_r($rowdb);
                     break;  
                   case 1:
                     // Fecha del día anterior
                     $vnow = date("H:i:s"); // 17:16:18 
-                    echo $vnow;
+                    //echo $vnow;
                     if ($vnow > '08:00:00' and $vnow < '08:05:00')
                     //if ($vnow > '08:00:00' and $vnow < '23:05:00')
                     {
@@ -253,7 +247,7 @@ class AlertClass {
                   case 2:
                     // Fecha del mes anterior
                     $vnow = date("d H:i:s"); // 17:16:18
-                    echo $vnow;
+                    //echo $vnow;
                     if ($vnow > '01 09:00:00' and $vnow < '01 09:05:00')
                     //if ($vnow > '29 09:00:00' and $vnow < '30 09:05:00')
                     {
@@ -279,7 +273,7 @@ class AlertClass {
                     }
                     break;
               }
-
+              //print_r($rowdb);
               // Calcular el valor descontando decimales  
               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
               if(!empty($rowdb))
@@ -330,7 +324,7 @@ class AlertClass {
                               $bmail = true;
                           }
                           break;
-                      case "<":  
+                      default:  
                           if ($valorcal < $rowalert['valor']){
                               $rowalert['operacion'] ="Menor";
                               // Mail alerta
@@ -338,6 +332,7 @@ class AlertClass {
                           }
                           break;
                   }
+                  //print_r($rowalert);
                   // Control de filtro de horas
                   if($rowalert['horaminbit'] > time('00:00:00') or $rowalert['horamaxbit'] > time('00:00:00'))
                   {

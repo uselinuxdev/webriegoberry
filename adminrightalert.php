@@ -116,7 +116,7 @@ mysqli_set_charset($cndb, "utf8");
                 </select>
               </td>
               <td><input type="time" name="horaminbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horaminbit'];?>" /> </td>
-              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horamaxbit'];?>" /> </td>
+              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:59 step=900 value="<?php echo $row['horamaxbit'];?>" /> </td>
               <td>
                   <?php
                     $ClassAlert->cargacombouser("idusuario[]",$row['idusuario']);
