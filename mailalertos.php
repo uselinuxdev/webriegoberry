@@ -4,6 +4,7 @@
  * This php is used to send sumary mail from crontab scheduler
  */
 // Controlar que exista sesion iniciada
+
 require('adminsession.php');
 require("AlertClass.php");
 $_SESSION['pag'] = "mailalertos.php";

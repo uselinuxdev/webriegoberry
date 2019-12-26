@@ -519,7 +519,7 @@ class AlertClass {
         // Crear un array con los detalles del correo.
         // Recorrer todas las filas del array y pintar array final
         $afinal = array();
-        $iduser = null;
+        $iduser = 0;
         $icont = 0;
         // Variables de proceso
         $toemail ="";
@@ -606,7 +606,7 @@ class AlertClass {
         $phpmailer->CharSet = 'UTF-8';
         $phpmailer->Send();
        
-        $this->logmail($toemail,$sub);
+        $this->logmail($toemail,$subject);
         return 1;
     }
  
