@@ -38,6 +38,15 @@ class AlertClass {
         for($i=0;$i <count($_POST['idalert']);$i++)
         {
             // Controlar password si tiene datos se pinta
+            // Check horamin and horamax
+            if (is_null($_POST['horaminbit'][$i]))
+            {
+                $_POST['horaminbit'][$i] = '00:00';
+            }
+            if (is_null($_POST['horamanbit'][$i]))
+            {
+                $_POST['horaminbit'][$i] = '23:59';
+            }
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE alertserver SET idparametro = ?,
                 idusuario = ?, 
@@ -63,6 +72,7 @@ class AlertClass {
             $_POST['horaminbit'][$i],
             $_POST['horamaxbit'][$i],
             $_POST['idalert'][$i]);
+            print_r($_POST);
             
             //echo "stmt bind_param correcto.";
             // Ejecutar
