@@ -334,9 +334,9 @@ class AlertClass {
                   }
                   //print_r($rowalert);
                   // Control de filtro de horas
-                  if($rowalert['horaminbit'] > time('00:00:00') or $rowalert['horamaxbit'] < time('23:45:00'))
+                  if($rowalert['horaminbit'] > '00:00:00' or $rowalert['horamaxbit'] < '23:45:00')
                   {
-                      if(time() < time($rowalert['horaminbit']) or time() >time($rowalert['horamaxbit']))
+                      if(date('H:i:s') < time($rowalert['horaminbit']) or date('H:i:s') >time($rowalert['horamaxbit']))
                       {
                           $bmail = false;
                       }
