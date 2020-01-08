@@ -115,8 +115,8 @@ mysqli_set_charset($cndb, "utf8");
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>No activa</option>
                 </select>
               </td>
-              <td><input type="time" name="horaminbit[]" min=00:00 max=23:45 step=900 value="<?php echo $row['horaminbit'];?>" /> </td>
-              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:59 step=900 value="<?php echo $row['horamaxbit'];?>" /> </td>
+              <td><input type="time" name="horaminbit[]" min=00:00 max=23:58 step=60 value="<?php echo $row['horaminbit'];?>" /> </td>
+              <td><input type="time" name="horamaxbit[]" min=00:00 max=23:59 step=60 value="<?php echo $row['horamaxbit'];?>" /> </td>
               <td>
                   <?php
                     $ClassAlert->cargacombouser("idusuario[]",$row['idusuario']);
