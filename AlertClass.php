@@ -334,9 +334,9 @@ class AlertClass {
                   }
                   //print_r($rowalert);
                   // Control de filtro de horas
-                  if($rowalert['horaminbit'] > '00:00:00' or $rowalert['horamaxbit'] < '23:45:00')
+                  if($rowalert['horaminbit'] > '00:00:00' or $rowalert['horamaxbit'] < '23:59:00')
                   {
-                      if(date('H:i:s') < time($rowalert['horaminbit']) or date('H:i:s') >time($rowalert['horamaxbit']))
+                      if(date('H:i:s') < $rowalert['horaminbit'] or date('H:i:s') >$rowalert['horamaxbit'])
                       {
                           $bmail = false;
                       }
@@ -354,12 +354,13 @@ class AlertClass {
                       $aalert[$icont]['vporcent']="";
                       $icont++;
                   }
-
+                  //print_r($aalert[0]);
               }
           }
           //print_r($aalert);
           // Llamar a la función
-          if (sizeof($aalert) > 0) {
+          if ($bmail) {
+              //print_r($aalert);
               $this->mailalert($aalert);
           }else{
              // echo "No existen filas a tratar.";
@@ -408,7 +409,7 @@ class AlertClass {
                {
                 // Variables de calculo por %
 
-//                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
+                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
 //                //// Calculo : Valor estamado --- 100 como valorreal ----x x=valorreal*100/valor estamado
                   //// Si valorporcent operador 100-x --> mail
                   
@@ -522,6 +523,7 @@ class AlertClass {
         $iduser = 0;
         $icont = 0;
         // Variables de proceso
+        $simageninstall="";
         $toemail ="";
         $subject="";
         $message="";
@@ -558,8 +560,15 @@ class AlertClass {
                 // Datos del correo.
                 $toemail = $row['email'];
                 $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                // Check apache path
+                $simageninstall= '/var/www/html/riegosolar/'.$row["imagen"];   
                 //Pegar full path de imagen
-                $phpmailer->AddEmbeddedImage('/var/www/html/riegosolar/'.$row["imagen"],'imginstall','instalacion.jpg');
+                if (!file_exists($simageninstall)) {
+                    //Old servers
+                    $simageninstall= '/var/www/riegosolar'.$row["imagen"];
+                    //echo "The file $simageninstall exists";
+                }
+                $phpmailer->AddEmbeddedImage($simageninstall,'imginstall','instalacion.jpg');
                 
                 // Always set content-type when sending HTML email
                 $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
