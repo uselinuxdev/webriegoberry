@@ -117,7 +117,7 @@ class AlertClass {
             exit();
         }
         
-        $sinsert = "INSERT INTO alertserver (idserver,horaminbit,horamaxbit,operacion) VALUES (".$_SESSION['idserver'].",'00:00:00','23:45:00','<')";
+        $sinsert = "INSERT INTO alertserver (idserver,horaminbit,horamaxbit,operacion) VALUES (".$_SESSION['idserver'].",'00:00:00','23:59:00','<')";
        
         if ($mysqli->query($sinsert) === TRUE)
         {
