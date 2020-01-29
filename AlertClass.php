@@ -565,7 +565,7 @@ class AlertClass {
                 //Pegar full path de imagen
                 if (!file_exists($simageninstall)) {
                     //Old servers
-                    $simageninstall= '/var/www/riegosolar'.$row["imagen"];
+                    $simageninstall= '/var/www/riegosolar/'.$row["imagen"];
                     //echo "The file $simageninstall exists";
                 }
                 $phpmailer->AddEmbeddedImage($simageninstall,'imginstall','instalacion.jpg');
