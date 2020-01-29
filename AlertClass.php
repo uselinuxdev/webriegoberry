@@ -681,6 +681,7 @@ class AlertClass {
         $subject="";
         $message="";
         $headers="";
+        $simageninstall="";
         foreach ($auser as $vfila) {
             
             if($iduser <> $vfila['idusuario'])
@@ -735,7 +736,15 @@ class AlertClass {
                 $message .='<p/>Resumen diario instalación<p/>';
                 // Recorrer todas las lineas de detalle
                 //Pegar full path de imagen
-                $phpmailer->AddEmbeddedImage('/var/www/html/riegosolar/'.$row["imagen"],'imginstall','instalacion.jpg');
+                $simageninstall='/var/www/html/riegosolar/'.$row["imagen"];   
+                //Pegar full path de imagen
+                if (!file_exists($simageninstall)) {
+                    //Old servers
+                    $simageninstall='/var/www/riegosolar/'.$row["imagen"];
+                    //echo "The file $simageninstall exists";
+                }
+                //echo $simageninstall;
+                $phpmailer->AddEmbeddedImage($simageninstall,'imginstall','instalacion.jpg');
                 
                 $message .='<img src="cid:imginstall" width="300">';
                 $message .='<table>
