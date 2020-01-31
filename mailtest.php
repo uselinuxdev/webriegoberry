@@ -8,7 +8,7 @@ require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 
 $email_user = "alarmas@riegosolar.net";
-$email_password = "Riegosolar_77";
+$email_password = "Riegosolar77_";
 $the_subject = "Phpmailer prueba by Use";
 $address_to = "eusebio.antonio.castro@gmail.com";
 $from_name = "Prueba Justino1";

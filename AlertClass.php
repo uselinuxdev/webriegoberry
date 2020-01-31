@@ -487,7 +487,7 @@ class AlertClass {
     {
         $phpmailer = new PHPMailer();
         $phpmailer->Username = "alarmas@riegosolar.net";
-        $phpmailer->Password = "Riegosolar_77";
+        $phpmailer->Password = "Riegosolar77_";
         //$phpmailer->SMTPDebug = 1;
         $phpmailer->Host = "smtp.riegosolar.net";
         $phpmailer->Port = '587';
