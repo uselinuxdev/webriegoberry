@@ -747,13 +747,13 @@ class AlertClass {
                 $phpmailer->AddEmbeddedImage($simageninstall,'imginstall','instalacion.jpg');
                 
                 $message .='<img src="cid:imginstall" width="300" style="background-color:#3A72A5;>';
+                $message .='<hr style="color: #3A72A5;" />';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
-                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>
-                <tr><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td><td><hr style="color: #3A72A5;" /></td></tr>';
+                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
                 $message .='<tr>
                             <td align="left">'.$asumaryprod[0]['hoy'].'</td>
                             <td align="left">'.$asumaryprod[0]['month'].'</td>
