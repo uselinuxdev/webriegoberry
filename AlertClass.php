@@ -587,6 +587,7 @@ class AlertClass {
                 $message .='<p/>Listado de alertas instalación<p/>';
                 // Recorrer todas las lineas de detalle
                 $message .='<img src="cid:imginstall" width="300" style="background-color:#3A72A5;>';
+                $message .='<hr style="color: #3A72A5;" />';
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
