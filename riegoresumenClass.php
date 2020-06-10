@@ -21,7 +21,13 @@ class riegoresumenClass
                     FROM admresumen
                     where divid ='".$this->divid."'";
         // Execute the query, or else return the error message.
-     	$link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+        //printf($dsn);
+        $options = array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ); 
+
+        $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
 	$result = $link->query($strQuery);
 	$this->aparam= $result->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -37,7 +43,13 @@ class riegoresumenClass
         // Recorrer array de parametros 1 fila hasta 3 parametros
             
         // Conexión
-        $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+        //printf($dsn);
+        $options = array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ); 
+
+        $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
         // Controlar 3 array de parametros asociativo
         array_push($parametros,$this->aparam[0]['idparametroa']);
         array_push($parametros,$this->aparam[0]['idparametrob']);
@@ -98,7 +110,14 @@ class riegoresumenClass
         // Tengo la select cargar el array en un Fetch assoc
         //echo $sselect;
         //return $sselect;
-        $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        // Cargar datos en array
+        $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+        //printf($dsn);
+        $options = array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ); 
+
+        $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
         $result = $link->query($sselect);
 	return $result->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -113,7 +132,13 @@ class riegoresumenClass
         $sselect .=" and a.idparametro = p.idparametro ";
         $sselect .=" order by CAST(a.valorx AS SIGNED)";
         // Cargar datos estimados
-        $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+        $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+        //printf($dsn);
+        $options = array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ); 
+
+        $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
         $result = $link->query($sselect);
         //echo $sselect;
 	return $result->fetchAll(PDO::FETCH_ASSOC);
@@ -171,7 +196,7 @@ class riegoresumenClass
     
     public function updateresumen()
         {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -216,8 +241,7 @@ class riegoresumenClass
     }
     public function deleteresumen()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
-        if ($mysqli->connect_errno)
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         {
             echo $mysqli->host_info."\n";
             return -1;
@@ -246,7 +270,7 @@ class riegoresumenClass
     }
     public function insertresumen()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -284,7 +308,7 @@ class riegoresumenClass
  
    public function updateestimacion()
         {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -329,7 +353,7 @@ class riegoresumenClass
     }
     public function deleteestimacion()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -359,7 +383,7 @@ class riegoresumenClass
     }
     public function insertestimacion($idparametro)
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -426,7 +450,7 @@ class riegoresumenClass
     {
         $aparamf = $this->verParam();
         // Establish a connection to the database
-        $dbhandle = new mysqli($_SESSION['serverdb'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname']);
+        $dbhandle = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if (!$dbhandle->set_charset("utf8")) {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", $mysqli->error);
             exit();

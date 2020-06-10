@@ -10,12 +10,12 @@ $hostdb = $_SESSION['serverdb'];  // MySQl host
 $userdb = $_SESSION['dbuser'];  // MySQL username
 $passdb = $_SESSION['dbpass'];  // MySQL password
 $namedb = $_SESSION['dbname'];  // MySQL database name
-
+$portdb = $_SESSION['dbport'];
 $sqlexp = $sql;
 
 //mysqli_set_charset('latin1_spanish_ci');
 // Establish a connection to the database
-$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb,$portdb);
 mysqli_set_charset($dbhandle, "utf8");
 
 // Definir el titulo para la exportacion

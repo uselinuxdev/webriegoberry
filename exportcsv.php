@@ -25,8 +25,9 @@ function exportMysqlToexcel($filename = 'export')
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
+    $portdb = $_SESSION['dbport'];
     
-    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
     if (!$cndb) {
         echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
         echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -113,8 +114,9 @@ function exportMysqlToCsv($filename = 'export')
     $userdb = $_SESSION['dbuser'];  // MySQL username
     $passdb = $_SESSION['dbpass'];  // MySQL password
     $namedb = $_SESSION['dbname'];  // MySQL database name
+    $portdb = $_SESSION['dbport'];
     
-    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
     if (!$cndb) {
         echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
         echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

@@ -17,7 +17,8 @@ and open the template in the editor.
         //Si se ha dado al boton metemos variables
         $vuser=$_POST['user'];
         $vpass=$_POST['passuser'];
-        checkuserdb($vuser, $vpass);
+        $vport=$_POST['dbport'];
+        checkuserdb($vuser, $vpass,$vport);
     }
     ?>
     <head>
@@ -38,13 +39,16 @@ and open the template in the editor.
                     <tr>
                         <br>
                         <td><p>Usuario: </p>
-                        <input type="text" name="user"> <br> <br>
+                        <input type="text" name="user"> <br> <br> 
                         <p>Contraseña: </p>
-                        <input type="password" name="passuser">
+                        <input type="password" name="passuser"> 
                         </td>
                     </tr>
                     <tr>
-                        <td><input type="submit" value="Validar" name="btenviado">
+                        <td>
+                        <p>Puerto: </p>
+                        <input type="number" name="dbport" value="3306"> <br> <br>      
+                        <input type="submit" value="Validar" name="btenviado">
                         <br>
                         <p>
                         <?php

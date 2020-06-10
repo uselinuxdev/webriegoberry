@@ -29,9 +29,9 @@ and open the template in the editor.
         $userdb = $_SESSION['dbuser'];  // MySQL username
         $passdb = $_SESSION['dbpass'];  // MySQL password
         $namedb = $_SESSION['dbname'];  // MySQL database name
-
+        $portdb = $_SESSION['dbport'];
         // Establish a connection to the database
-        $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+        $dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb,$portdb);
         if (!$dbhandle->set_charset("utf8")) {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", $mysqli->error);
             exit();

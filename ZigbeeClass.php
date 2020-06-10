@@ -16,7 +16,7 @@ class ZigbeeClass {
     public function updatenodes()
     {
         // Control post
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -76,7 +76,7 @@ class ZigbeeClass {
     }
     public function deletenodes()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -106,7 +106,7 @@ class ZigbeeClass {
     }
     public function insertnodes()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -135,7 +135,7 @@ class ZigbeeClass {
     public function updatesector()
     {
         // Control post
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -171,7 +171,7 @@ class ZigbeeClass {
     
     public function deletesector()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -201,7 +201,7 @@ class ZigbeeClass {
     }
     public function insertsector()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -229,7 +229,7 @@ class ZigbeeClass {
     // Función combo
     function cargacombonodos()
     {
-        $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if (!$cndb) {
             echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
             echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

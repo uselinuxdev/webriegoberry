@@ -15,7 +15,7 @@
         <?php
             //echo $_SESSION['pag'];
             //Primero hacemos las conexiones
-            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

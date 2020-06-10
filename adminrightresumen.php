@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php
 //Primero hacemos las conexiones
-$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
 if (!$cndb) {
     echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
     echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -197,7 +197,7 @@ mysqli_set_charset($cndb, "utf8");
            <input type="hidden" name="idestimacion[]" value="<?php echo $row['idestimacion'];?>" />
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>" />
            <tr>
-              <td><?php echo $row['parametro'];?></td>
+              <td><input type="text" style="width: 40px;" name="parametro[]" value="<?php echo $row['parametro'];?>" required="required"/> </td>
               <td><input type="number" style="width: 40px;" name="valorx[]" value="<?php echo $row['valorx'];?>" required="required"/> </td>
               <td><input type="number" style="width: 100px;" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
               <td>

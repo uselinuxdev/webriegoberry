@@ -24,7 +24,7 @@ class AlertClass {
     public function updatealert()
     {
         // Control post
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -74,7 +74,7 @@ class AlertClass {
     }
     public function deletealert()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -104,7 +104,7 @@ class AlertClass {
     }
     public function insertalert()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -130,7 +130,7 @@ class AlertClass {
     }
     public function cargacomboparam($name,$idparam)
         {
-            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -166,7 +166,7 @@ class AlertClass {
         }
     public function cargacombouser($name,$iduser)
         {
-            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -200,7 +200,7 @@ class AlertClass {
     public function checkalert()
         {
          // Conexiones
-          $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+          $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
           if ($mysqli->connect_errno)
           {
               echo $mysqli->host_info."\n";
@@ -370,7 +370,7 @@ class AlertClass {
     public function checkstimate($idparametro = NULL)
         {
             // Conexiones
-            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if ($mysqli->connect_errno)
             {
                 echo $mysqli->host_info."\n";
@@ -503,7 +503,7 @@ class AlertClass {
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -623,7 +623,7 @@ class AlertClass {
     public function mailsumary($asumaryprod)
       {
         // Conexiones
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -658,7 +658,7 @@ class AlertClass {
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -786,7 +786,7 @@ class AlertClass {
     private function valorbd($vparam,$tipolectura)
         {
             // Conexiones
-            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if ($mysqli->connect_errno)
             {
                 echo $mysqli->host_info."\n";
@@ -844,7 +844,7 @@ class AlertClass {
     // Log de mail en mysql
     private function logmail($toemail,$subject)
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";

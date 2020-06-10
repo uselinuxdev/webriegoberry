@@ -10,12 +10,12 @@ $hostdb = $_SESSION['serverdb'];  // MySQl host
 $userdb = $_SESSION['dbuser'];  // MySQL username
 $passdb = $_SESSION['dbpass'];  // MySQL password
 $namedb = $_SESSION['dbname'];  // MySQL database name
-
+$portdb = $_SESSION['dbport'];
 // Definir el titulo para la exportacion
 $_SESSION['expnombre'] = 'exphoras';
 
 // Establish a connection to the database
-$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
+$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb,$portdb);
 mysqli_set_charset($dbhandle, "utf8");
 
 // Array de meses.
@@ -192,7 +192,14 @@ function configchar($arrayp,$vtiposalida,&$ilink)
     $vhasta = date("Y-m-d");
     
     // Cargar datos en array
-    $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);
+    // Cargar datos en array
+    $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+    //printf($dsn);
+    $options = array(
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+    ); 
+
+    $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
     // creating dataset object
     // General chart
     $adata = chart();

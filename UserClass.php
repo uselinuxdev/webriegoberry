@@ -16,7 +16,7 @@ class UserClass {
     public function updateuser()
     {
         // Control post
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -78,7 +78,7 @@ class UserClass {
     }
     public function deleteuser()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -108,8 +108,7 @@ class UserClass {
     }
     public function insertuser()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
-        if ($mysqli->connect_errno)
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         {
             echo $mysqli->host_info."\n";
             return -1;
@@ -136,7 +135,7 @@ class UserClass {
      
     public function cargacomboserver($name,$idparam)
         {
-            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

@@ -24,7 +24,7 @@ $_SESSION['serverdb'] = 'localhost';
 $_SESSION['dbuser'] = 'riegosql';
 $_SESSION['dbpass'] = 'riegoprod15';
 $_SESSION['dbname'] = 'riegosolar';
-$_SESSION['minsesion'] = 0;
+$_SESSION['dbport'] = 3306;
 require("AlertClass.php");
 $ClassAlert = new AlertClass();
 switch ($argv[1]) {

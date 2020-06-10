@@ -11,9 +11,17 @@ $hostdb = $_SESSION['serverdb'];  // MySQl host
 $userdb = $_SESSION['dbuser'];  // MySQL username
 $passdb = $_SESSION['dbpass'];  // MySQL password
 $namedb = $_SESSION['dbname'];  // MySQL database name
+$portdb = $_SESSION['dbport'];  
 // Establish a connection to the database
-$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb);
-mysqli_set_charset($dbhandle, "utf8");
+$dbhandle = new mysqli($hostdb, $userdb, $passdb, $namedb,$portdb);
+if (!$dbhandle->set_charset("utf8")) {
+    printf("Error cargando el conjunto de caracteres utf8: %s\n", $mysqli->error);
+    exit();
+}
+
+if ($dbhandle->connect_error) {
+   exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
+}
 
 // Definir el titulo para la exportacion
 $_SESSION['expnombre'] = 'expinstantaneos';
@@ -22,11 +30,6 @@ $vtiposalida = 0; // 1 dia,2 mes, 3 año, 4 total.
 $vlabelstep = 12;
 $vgroup = "checked";
 $sqlexp = $sql;
-
-/*Render an error message, to avoid abrupt failure, if the database connection parameters are incorrect */
-if ($dbhandle->connect_error) {
-   exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
-}
 
 // Incluir php de gráficas.
 include("fusioncharts/fusioncharts.php");
@@ -201,7 +204,14 @@ function configchar($arrayp,$vlabelstep,$textox,$vtiposalida)
     $afilas = array();
     
     // Cargar datos en array
-    $link = new PDO("mysql:host=".$_SESSION['serverdb'].";dbname=".$_SESSION['dbname'], $_SESSION['dbuser'], $_SESSION['dbpass']);  
+    $dsn = 'mysql:host='.$_SESSION['serverdb'].';port='.$_SESSION['dbport'].';dbname='.$_SESSION['dbname'];
+    //printf($dsn);
+    $options = array(
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+    ); 
+
+    $link = new PDO($dsn, $_SESSION['dbuser'],$_SESSION['dbpass'], $options);
+
     // General chart
     $adata = chart($vlabelstep,$textox); 
     // Recorrer el resto del array

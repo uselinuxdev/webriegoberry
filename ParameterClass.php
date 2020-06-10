@@ -8,7 +8,7 @@ class ParameterClass {
     // Lógica parametros_server    
     public function updateparameter()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -70,7 +70,7 @@ class ParameterClass {
     }
     public function deleteparameter()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -100,7 +100,7 @@ class ParameterClass {
     }
     public function insertparameter()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -151,7 +151,7 @@ class ParameterClass {
     // Logica parametros_bitname
     public function updatebit()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -189,7 +189,7 @@ class ParameterClass {
     }
     public function deletebit()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -219,7 +219,7 @@ class ParameterClass {
     }
     public function insertbit()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -260,7 +260,7 @@ class ParameterClass {
     }
     public function cargacomboserver($name,$idparam)
         {
-            $cndb = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -293,7 +293,7 @@ class ParameterClass {
     // Función combo
     public function cargacombobit()
         {
-            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+            $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if (!$cndb) {
                 echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
                 echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

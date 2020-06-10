@@ -18,7 +18,7 @@ class InstallClass {
     // Actualizar datos install
     public function updateinstall()
     {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
             echo $mysqli->host_info."\n";
@@ -102,7 +102,7 @@ class InstallClass {
         } else {
             if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
                 // Actualizar la tabla instalación
-                $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname']);
+                $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
                 if ($mysqli->connect_errno)
                 {
                     echo $mysqli->host_info."\n";
