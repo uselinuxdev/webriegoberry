@@ -43,6 +43,7 @@ function checkuserdb($vuser,$vpass,$vport)
     //do something for php7.1 and above.
     //mysqli_connect(host, username, password, dbname, port, socket)
     $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+    //$cndb=mysqli_connect($_SESSION['serverdb'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname']);
     if (!$cndb) {
         echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
         echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
@@ -70,8 +71,8 @@ function checkuserdb($vuser,$vpass,$vport)
         $_SESSION['usuario'] = $row['usuario'];
         $_SESSION['nivel'] = $row['nivel'];
         $_SESSION['idserver'] = $row['idserver'];
-        $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['tlogon'];
-        //echo $_SESSION['usuario'];
+        $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['idserver'].'.Puerto:'.$_SESSION['dbport'];
+        echo $_SESSION['usuario'];
         return 1;
     }else {
         $_SESSION['textsesion'] = 'Los datos introducidos no corresponden con ninguna instalación.';
