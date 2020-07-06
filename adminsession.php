@@ -30,7 +30,7 @@ function checkuserdb($vuser,$vpass,$vhostdb)
     $_SESSION['serverdb'] = $vhostdb;
     $_SESSION['dbport'] = 3306;
     //Primero hacemos las conexiones
-    $_SESSION['serverdb'] = 'localhost';
+    //$_SESSION['serverdb'] = 'localhost';
     $_SESSION['dbuser'] = 'riegosql';
     $_SESSION['dbpass'] = 'riegoprod15';
     $_SESSION['dbname'] = 'riegosolar';

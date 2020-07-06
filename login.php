@@ -17,7 +17,7 @@ and open the template in the editor.
         //Si se ha dado al boton metemos variables
         $vuser=$_POST['user'];
         $vpass=$_POST['passuser'];
-        $vport=$_POST['hostdb'];
+        $hostdb=$_POST['hostdb'];
         checkuserdb($vuser, $vpass,$hostdb);
     }
     ?>
