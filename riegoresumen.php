@@ -54,6 +54,7 @@ and open the template in the editor.
                    <?php
                        //echo 'El nivel del usuario es:'.$_SESSION['nivel'];
                        include 'menugrafica.php';
+                       //print_r($_SESSION);
                    ?>
                </div>
                <div id="resumenleft">

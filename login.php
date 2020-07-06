@@ -17,8 +17,8 @@ and open the template in the editor.
         //Si se ha dado al boton metemos variables
         $vuser=$_POST['user'];
         $vpass=$_POST['passuser'];
-        $vport=$_POST['dbport'];
-        checkuserdb($vuser, $vpass,$vport);
+        $vport=$_POST['hostdb'];
+        checkuserdb($vuser, $vpass,$hostdb);
     }
     ?>
     <head>
@@ -46,16 +46,17 @@ and open the template in the editor.
                     </tr>
                     <tr>
                         <td>
-                        <p>Puerto: </p>
-                        <input type="number" name="dbport" value="3306"> <br> <br>      
+                        <p>Host DB / IP: </p>
+                        <input type="text" name="hostdb" value="localhost"> <br> <br>      
                         <input type="submit" value="Validar" name="btenviado">
                         <br>
                         <p>
                         <?php
                             echo $_SESSION['textsesion'];
+                            //print_r($_SESSION);
                             if (CheckLogin() == true)
                             {  
-                                header("Location: riegoresumen.php");
+                               header("Location: riegoresumen.php");
                             }
                         ?>
                         </p>

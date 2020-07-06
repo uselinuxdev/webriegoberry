@@ -6,7 +6,7 @@ Tienes las variables de sesion como B.D. usuario, pass, tiempo logon ...
  */
 // Variables generales
 
-function checkuserdb($vuser,$vpass,$vport)
+function checkuserdb($vuser,$vpass,$vhostdb)
 {
     // creamos la sesion y comprobamos si el user ha dado al boton del form.
     session_start();
@@ -27,11 +27,8 @@ function checkuserdb($vuser,$vpass,$vport)
         return -1;
     }
     // Puerto por defecto 3306
+    $_SESSION['serverdb'] = $vhostdb;
     $_SESSION['dbport'] = 3306;
-    if(!empty($vport))
-    {
-        $_SESSION['dbport'] =$vport;
-    }
     //Primero hacemos las conexiones
     $_SESSION['serverdb'] = 'localhost';
     $_SESSION['dbuser'] = 'riegosql';
@@ -42,8 +39,8 @@ function checkuserdb($vuser,$vpass,$vport)
     $_SESSION['stabindex'] = 0;
     //do something for php7.1 and above.
     //mysqli_connect(host, username, password, dbname, port, socket)
-    //$cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
-    $cndb=mysqli_connect($_SESSION['serverdb'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname']);
+    $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+    //$cndb=mysqli_connect($_SESSION['serverdb'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname']);
     if (!$cndb) {
         echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
         echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;

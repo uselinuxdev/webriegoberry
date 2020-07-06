@@ -13,13 +13,14 @@ Php es llamado desde la web corporativa pasandole 2 parámetros:
             // Lectura de parametros desde get. Pasar en base64 permite codec y decodec.
             $vuser = addslashes(strip_tags($_GET["usuario"]));
             $vpass = addslashes(strip_tags($_GET["pass"]));
+            $vhostdb = addslashes(strip_tags($_GET["hostdb"]));
         ?>
     </head>
     <body>
         <?php
         // Pruebas
         //echo 'La password viene en Code64:'.addslashes(strip_tags($_GET["pass"]));
-        IF (checkuserdb($vuser, base64_decode($vpass)) == 1)
+        IF (checkuserdb($vuser, base64_decode($vpass),$vhostdb) == 1)
         {
             //echo 'Validación checkuserbd ==1.';
             if (CheckLogin())
