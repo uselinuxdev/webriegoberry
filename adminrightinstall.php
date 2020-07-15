@@ -29,6 +29,12 @@ and open the template in the editor.
                 $ClassAlert = new AlertClass();
                 $ClassAlert->mailsumary($asumaryprod);
             }
+            // Test db version
+            if(isset($_POST['testdb']))
+            {
+                $ClassInstall = new InstallClass();
+                $ClassInstall->getdbversion(); 
+            }
             // Cargar datos
             $hostdb = $_SESSION['serverdb'];  // MySQl host
             $userdb = $_SESSION['dbuser'];  // MySQL username
@@ -138,6 +144,7 @@ and open the template in the editor.
                 echo '</table>';
                 echo '<input type="submit" name="update_install" value="Actualizar"/>';
                 echo '<input type="submit" name="mail_install" value="Mail resumen"/>';
+                echo '<input type="submit" name="testdb" value="Check DB Ver."/>';
                 ?>
             </form>
         </div>
