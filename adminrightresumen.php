@@ -191,15 +191,16 @@ mysqli_set_charset($cndb, "utf8");
                    . "from admestimacion a,parametros_server p"
                    . " where p.idparametro = a.idparametro"
                    . " and p.idparametro=".$_POST['comboestimado']." order by idparametro,valorx";
+           //echo $sql;
            $result = mysqli_query($cndb,$sql); 
-           while( mysqli_fetch_array($result,MYSQLI_ASSOC)){
+           while($row = mysqli_fetch_array($result,MYSQLI_ASSOC)){
            ?>
            <input type="hidden" name="idestimacion[]" value="<?php echo $row['idestimacion'];?>" />
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>" />
            <tr>
-              <td><input type="text" style="width: 40px;" name="parametro[]" value="<?php echo $row['parametro'];?>" required="required"/> </td>
+              <td><input type="text" style="width: 140px;" name="parametro[]" value="<?php echo $row['parametro'];?>" readonly/> </td>
               <td><input type="number" style="width: 40px;" name="valorx[]" value="<?php echo $row['valorx'];?>" required="required"/> </td>
-              <td><input type="number" style="width: 100px;" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
+              <td><input type="number" style="width: 70px;" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
               <td>
                   <?php
                     $ClassAlertres->cargacombouser("idusuario[]",$row['idusuario']);
