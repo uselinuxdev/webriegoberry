@@ -198,7 +198,7 @@ mysqli_set_charset($cndb, "utf8");
            <input type="hidden" name="idestimacion[]" value="<?php echo $row['idestimacion'];?>" />
            <input type="hidden" name="idparametro[]" value="<?php echo $row['idparametro'];?>" />
            <tr>
-              <td><input type="text" style="width: 140px;" name="parametro[]" value="<?php echo $row['parametro'];?>" readonly/> </td>
+              <td><input type="text" style="width: 160px;" name="parametro[]" value="<?php echo $row['parametro'];?>" readonly/> </td>
               <td><input type="number" style="width: 40px;" name="valorx[]" value="<?php echo $row['valorx'];?>" required="required"/> </td>
               <td><input type="number" style="width: 70px;" name="valory[]" value="<?php echo $row['valory'];?>" required="required"/> </td>
               <td>

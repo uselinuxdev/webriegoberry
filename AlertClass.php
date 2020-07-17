@@ -388,11 +388,12 @@ class AlertClass {
             $vmes = (int)date('m', strtotime('-1 month') );
             // Todas las lineas del mes pasado
             if (!empty($idparametro)) {
-                $sselect ="select * from admestimacion where idparametro = ".$idparametro." and valorx=".$vmes;
+                $sselect ="select p.parametro,p.prefijonum,a.idparametro,a.valorx,a.valory,a.idusuario,a.operacion,a.poralert from admestimacion a,parametros_server p where a.idparametro = ".$idparametro." and a.valorx=".$vmes;
             }else {
-                $sselect ="select * from admestimacion where valorx=".$vmes;
+                $sselect ="select p.parametro,p.prefijonum,a.idparametro,a.valorx,a.valory,a.idusuario,a.operacion,a.poralert from admestimacion a,parametros_server p where a.valorx=".$vmes;
             }
-            $sselect .= " ORDER BY idusuario,idparametro,valorx";
+            $sselect .= " and p.idparametro = a.idparametro";
+            $sselect .= " ORDER BY a.idusuario,a.idparametro,a.valorx";
             //echo $sselect;
 
             $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
@@ -408,8 +409,6 @@ class AlertClass {
                if(!empty($rowdb))
                {
                 // Variables de calculo por %
-
-                echo 'Valor de diferencia:'.$vdif." / Valor de la alerta:".$vporcent;
 //                //// Calculo : Valor estamado --- 100 como valorreal ----x x=valorreal*100/valor estamado
                   //// Si valorporcent operador 100-x --> mail
                   
@@ -463,14 +462,14 @@ class AlertClass {
                     if($bmail) {
                         // Array con string keys.
                         $aalert[$icont]['idusuario']=$rowalert['idusuario'];
-                        $aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];
-                        $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
+                        $aalert[$icont]['TEXTOALERTA']=$rowalert['parametro'];
+                        $aalert[$icont]['desctipo']='Desviación mensual';
+                        $aalert[$icont]['PREFIJO']=$rowalert['prefijonum'];
                         $aalert[$icont]['VALOR']=$rowdb['VALOR'];
                         $aalert[$icont]['valory']=$rowalert['valory'];
                         $aalert[$icont]['operacion']=$rowalert['operacion'];
                         $aalert[$icont]['poralert']=$rowalert['poralert'];
-                        $aalert[$icont]['vdif']=$vdif;
-                        $aalert[$icont]['vporcent']=$vporcent;
+                        $aalert[$icont]['vdif']=$porcentreal;
                         $icont++;
                     }
                 }
