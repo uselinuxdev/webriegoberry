@@ -345,6 +345,7 @@ class AlertClass {
                   if($bmail) {
                       // Array con string keys.
                       $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                      $aalert[$icont]['idparametro']=$rowalert['idparametro'];
                       $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
                       IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
                       $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
@@ -353,6 +354,7 @@ class AlertClass {
                       $aalert[$icont]['operacion']=$rowalert['operacion'];
                       $aalert[$icont]['vporcent']="";
                       $icont++;
+                      
                   }
                   //print_r($aalert[0]);
               }
@@ -360,8 +362,11 @@ class AlertClass {
           //print_r($aalert);
           // Llamar a la función
           if ($bmail) {
-              //print_r($aalert);
-              $this->mailalert($aalert);
+              //Comprobar si es el primer mail. Sólo generar 1 mail
+              if(checkmailday($aalert[0]['idparametro'])<=0)
+              {
+                $this->mailalert($aalert);
+              }
           }else{
              // echo "No existen filas a tratar.";
           }
@@ -462,6 +467,7 @@ class AlertClass {
                     if($bmail) {
                         // Array con string keys.
                         $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                        $aalert[$icont]['idparametro']=$rowalert['idparametro'];
                         $aalert[$icont]['TEXTOALERTA']=$rowalert['parametro'];
                         $aalert[$icont]['desctipo']='Desviación mensual';
                         $aalert[$icont]['PREFIJO']=$rowalert['prefijonum'];
@@ -542,6 +548,7 @@ class AlertClass {
                     $phpmailer->AddAddress($toemail); // recipients email
                     $phpmailer->Subject = $subject;	
                     $phpmailer->Body .= $message;
+                    $phpmailer->CharSet = 'UTF-8';
                     $phpmailer->Send();
                     // Log de mail enviado.
                     $this->logmail($toemail,$subject);
@@ -615,7 +622,7 @@ class AlertClass {
         $phpmailer->CharSet = 'UTF-8';
         $phpmailer->Send();
        
-        $this->logmail($toemail,$subject);
+        $this->logmail($toemail,$subject,$parametro,$intvalor,$bmailday);
         return 1;
     }
  
@@ -840,8 +847,8 @@ class AlertClass {
             // Retorna un array.
             return $rowvalor;
         }
-    // Log de mail en mysql
-    private function logmail($toemail,$subject)
+    // Check mail by day
+    private function checkmailday($parametro)
     {
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
@@ -852,7 +859,30 @@ class AlertClass {
         // Importante juego de caracteres
         //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
         if (!mysqli_set_charset($mysqli, "utf8")) {
-            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            printf("Error cargando el conjunto de caracteres deutf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $vfecha =date('Y-m-d'); 
+        $vdesde = date("Y-m-d H:i:s", strtotime('-1 days', strtotime($vfecha)));
+        $sql = "select count(1) countp from alertserverlog where falta > '".date($vdesde)."' and idparametro=".$parametro;
+        
+        $result = $mysqli->query($sql) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        $row = mysqli_fetch_array($result); 
+        return $row['countp'];
+    }
+    // Log de mail en mysql
+    private function logmail($toemail,$subject,$parametro,$intvalor,$bmailday)
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres deutf8: %s\n", mysqli_error($mysqli));
             exit();
         }
         
@@ -867,7 +897,8 @@ class AlertClass {
         $mysqli->close();
         return 0; 
     }
-    //public function getfecha($tipolectura) 
+    // public function getfecha($tipolectura)
+    
     private function getfecha($tipolectura) 
     {
         // La función con la tipo lectura, returna un rango de fechas
