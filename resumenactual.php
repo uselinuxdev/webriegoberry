@@ -30,6 +30,10 @@ and open the template in the editor.
             }
             // Cerrar in
             $ssql .= ")";
+            // Ultimos 10 min
+            $vfecha =date('Y-m-d H:i:s'); 
+            $vhasta = date("Y-m-d H:i:s", strtotime('-15 minutes',strtotime($vfecha)));
+            $ssql .=" AND flectura > '".date($vhasta)."'";
             // Cargar valores
             //echo $ssql;
             $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");

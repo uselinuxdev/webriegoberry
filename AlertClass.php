@@ -354,7 +354,6 @@ class AlertClass {
                       $aalert[$icont]['operacion']=$rowalert['operacion'];
                       $aalert[$icont]['vporcent']="";
                       $icont++;
-                      
                   }
                   //print_r($aalert[0]);
               }
@@ -362,11 +361,7 @@ class AlertClass {
           //print_r($aalert);
           // Llamar a la función
           if ($bmail) {
-              //Comprobar si es el primer mail. Sólo generar 1 mail
-              if(checkmailday($aalert[0]['idparametro'])<=0)
-              {
-                $this->mailalert($aalert);
-              }
+              $this->mailalert($aalert,1);
           }else{
              // echo "No existen filas a tratar.";
           }
@@ -482,7 +477,7 @@ class AlertClass {
             }
             // Llamar a la función
             if (sizeof($aalert) > 0) {
-                $this->mailalert($aalert);
+                $this->mailalert($aalert,0);
             }else{
                // echo "No existen filas a tratar.";
             }
@@ -504,7 +499,7 @@ class AlertClass {
         $phpmailer->setFrom($phpmailer->Username,"Alarmas automaticas.");
         return $phpmailer;
     }
-    private function mailalert($aalert)
+    private function mailalert($aalert, $checkmailday = 0)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -534,10 +529,16 @@ class AlertClass {
         $message="";
         $headers="";
         foreach ($aalert as $vfila) {
+            // Check 1 mail de alertas/ día
+            if($checkmail==1)
+            {
+              //Comprobar si es el primer mail. Sólo generar 1 mail
+              $checkmail=checkmailday($aalert[0]['idparametro']);
+            }
             if($iduser <> $vfila['idusuario'])
             {
                 // Si icont > 0 mandar correo del usuario anterior. Y procede envio
-                if($icont > 0)
+                if($icont > 0 and $checkmail==0 )
                 {
                     // Final tabla
                     $message .='<tr></tr></table>
@@ -550,9 +551,14 @@ class AlertClass {
                     $phpmailer->Body .= $message;
                     $phpmailer->CharSet = 'UTF-8';
                     $phpmailer->Send();
-                    // Log de mail enviado.
-                    $this->logmail($toemail,$subject);
                     $phpmailer=$this->newPHPMailer();
+                    // Log de mail enviado.
+                    $this->logmail($toemail,$subject,$vfila['idparametro'],$vfila['VALOR'],1);
+                }
+                else
+                {
+                    // Log de mail enviado.
+                    $this->logmail($toemail,$subject,$vfila['idparametro'],$vfila['VALOR'],0);                    
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
@@ -615,14 +621,21 @@ class AlertClass {
         <p>Final de listado de alertas.</p>
         </body>
         </html>';
-	//echo $message;
-        $phpmailer->AddAddress($toemail); // recipients email
-        $phpmailer->Subject = $subject;	
-        $phpmailer->Body .= $message;
-        $phpmailer->CharSet = 'UTF-8';
-        $phpmailer->Send();
-       
-        $this->logmail($toemail,$subject,$parametro,$intvalor,$bmailday);
+        // Sólo si la alerta se tiene que mandar
+        if($checkmail==0 )
+        {
+            //echo $message;
+            $phpmailer->AddAddress($toemail); // recipients email
+            $phpmailer->Subject = $subject;	
+            $phpmailer->Body .= $message;
+            $phpmailer->CharSet = 'UTF-8';
+            $phpmailer->Send();
+            $this->logmail($toemail,$subject,$parametro,$intvalor,1);
+        }
+        else
+        {
+            $this->logmail($toemail,$subject,$parametro,$intvalor,0);
+        }
         return 1;
     }
  
@@ -708,7 +721,7 @@ class AlertClass {
                     $phpmailer->CharSet = 'UTF-8';
                     $phpmailer->Send();
                     // Log de mail enviado.
-                    $this->logmail($toemail,$subject);
+                    $this->logmail($toemail,$subject,0,0,1);
                     // Create new mail for the next user
                     $phpmailer=$this->newPHPMailer();
                 }
@@ -886,7 +899,7 @@ class AlertClass {
             exit();
         }
         
-        $sinsert = "INSERT INTO alertserverlog (toemail,subject) VALUES ('".$toemail."','".$subject."')";
+        $sinsert = "INSERT INTO alertserverlog (toemail,subject,idparametro,intvalor,mailday) VALUES ('".$toemail."','".$subject."',".$parametro.",".$intvalor.",".$bmailday.")";
         //echo $sinsert;
         if ($mysqli->query($sinsert) === TRUE)
         {
