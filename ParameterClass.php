@@ -38,6 +38,14 @@ class ParameterClass {
                          . "color=?"
                          . " WHERE idparametro = ?");
 
+                if(is_null($_POST['estlink'][$i]))
+                {
+                    $_POST['estlink'][$i]=0;
+                }
+                if(is_null($_POST['nivel'][$i]))
+                {
+                    $_POST['nivel'][$i]=0;
+                }
                 // Vincular variables
                 if (!$stmt->bind_param("ississisiiisi",
                          $_POST['idserver'][$i],

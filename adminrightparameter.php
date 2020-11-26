@@ -21,7 +21,7 @@
         {
             $ClassParam->deleteparameter(); 
         }
-        if(isset($_POST['update_bitname']))
+        if(isset($_POST['updateexportparm']))
         {
             $ClassParam->updatebit(); 
         }

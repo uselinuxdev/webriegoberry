@@ -13,11 +13,15 @@ require("ParameterClass.php");
 require("UserClass.php");
 require("AlertClass.php");
 require("riegoresumenClass.php");
+require("ExportClass.php");
 
 function checktab() {
     // Control de tab seleccionadas
     // Control parametros
-    if (!empty($_POST['update_p']) or !empty($_POST['delete_p']) or !empty($_POST['insert_p']) or !empty($_POST['update_bitname'])or !empty($_POST['delete_bit']) or !empty($_POST['cbvalorbit']) or !empty($_POST['insert_bitname'])) {
+    if (!empty($_POST['update_install']) or !empty($_POST['mail_install']) or !empty($_POST['testdb']) ) {
+        $_SESSION['stabindex'] = 0;
+    }
+    if (!empty($_POST['update_p']) or !empty($_POST['insert_p']) or !empty($_POST['delete_p']) or !empty($_POST['update_bitname']) or !empty($_POST['delete_bit'])  or !empty($_POST['insert_bitname']) ) {
         $_SESSION['stabindex'] = 1;
     }
     // Control resumen
@@ -32,6 +36,9 @@ function checktab() {
     }
     if (!empty($_POST['update_alert']) or !empty($_POST['insert_alert']) or !empty($_POST['delete_alert'])  or !empty($_POST['check_alert']) or !empty($_POST['check_email'])) {
         $_SESSION['stabindex'] = 5;
+    }
+    if (!empty($_POST['update_exp']) or !empty($_POST['gentcalc_exp']) or !empty($_POST['upload_exp']) or !empty($_POST['delete_parmexp']) or !empty($_POST['update_parmexp']) or !empty($_POST['insert_parmexp']) ) {
+        $_SESSION['stabindex'] = 6;
     }
 }
 ?>
@@ -58,6 +65,7 @@ function checktab() {
               <li><a href="#form_zigbee">Zigbee</a></li>
               <li><a href="#form_user">Usuarios</a></li>
               <li><a href="#form_alert">Alertas</a></li>
+              <li><a href="#form_export">Exportación</a></li>
         </ul>
         <div id="form_install"> 
             <?php
@@ -87,6 +95,11 @@ function checktab() {
         <div id="form_alert"> 
             <?php
                 include 'adminrightalert.php';
+            ?>
+        </div>
+        <div id="form_export"> 
+            <?php
+                include 'adminrightexport.php';
             ?>
         </div>
         </div>
