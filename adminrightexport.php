@@ -34,6 +34,14 @@
             //echo "Delete funtion parm called.".$_POST['idparmdelete'];
             $ClassExp->deleteparameter(); 
         }
+        // Calc funtions
+        if(isset($_POST['gentcalc_exp']))
+        {
+            //$pdate=date("Y-m-d", strtotime( '-1 days' ) ); 
+            $pdate='2019-09-03';           
+            //echo "Gentcalc_exp funtion parm called.".$pdate;
+            $ClassExp->GenCalcExp($pdate); 
+        }       
         ?>
     </head>
     <body>

@@ -9,7 +9,7 @@
 /**
  * Description of InstallClass
  *
- * @author Administrador
+ * @author UseFilm
  */
 class ExportClass {
     // Private vars
@@ -298,7 +298,134 @@ class ExportClass {
         }
         $stmt->close();
         return 0;
-    }    
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Seciones de cálculo CHE
+    public function GenCalcExp($pdate)
+    {
+        //Si no se pasa fecha coger la fecha de ayer
+        //echo $pdate;
+        if (DateTime::createFromFormat('Y-m-d', $pdate) == FALSE) 
+        {
+            // Set yesterday
+            $pdate=date('Y-m-d');
+        }
+        $fcalc = new DateTime($pdate);
+        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
+        //echo $fcalc->format('Y-m-d') . "\n";
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $sql = "select idparametro,grouptime from exportdataparm,exportdata where exportdataparm.idexport=exportdata.id";
+        $consulta = mysqli_query($mysqli, $sql);
+        if ($consulta->num_rows>0) 
+        {
+            //Tiene que pasar por aqui para ser correcto
+            //echo $consulta->num_rows;
+            while ($fila = mysqli_fetch_array($consulta,MYSQLI_ASSOC)) 
+            {
+                // Borrar registros de calculo del día
+                if($this->CleanExpCalc($mysqli, $fcalc, $fila["idparametro"])<0)
+                {
+                    return 0;
+                }
+                //echo $fila["grouptime"];
+                if($this->GenCalcExpParm($mysqli,$fcalc, $fila["idparametro"],$fila["grouptime"]) < 0)
+                {
+                    return 0;
+                }
+                
+            }
+        }
+        // Bien
+        return 1;
+    }
+    
+    private function GenCalcExpParm($mysqli,$pdate,$idparm,$grouptime)
+    {
+        $sql = "select idparametro,intvalor,flectura from lectura_parametros where idparametro=".$idparm.' and DATE_FORMAT(flectura,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+        //echo $sql;
+        //return 0;
+        
+        $consultadet = mysqli_query($mysqli, $sql);
+        if ($consultadet->num_rows>0) 
+        {
+            //Tiene que pasar por aqui para ser correcto
+            $rowant = mysqli_fetch_array($consultadet,MYSQLI_ASSOC);
+            $datestep =  new DateTime($rowant["flectura"]);
+            $datestep->modify("+{$grouptime} minutes");
+            //echo $datestep->format('Y-m-d H:i:s'); 
+            $intvalor=$rowant["intvalor"];
+            //echo $consulta->num_rows;
+            while ($rowact = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
+            {
+                //echo $filadet["idparametro"].":Valor int:".$filadet["intvalor"]."Group time:".$grouptime;
+                $intvalor= $rowact["intvalor"]-$rowant["intvalor"]; 
+                if($intvalor<0)
+                {
+                    echo "Detectado reset de contador en fecha:".$rowact["flectura"];
+                    $intvalor=0;
+                }
+                // Control de Step
+                if($datestep->format('Y-m-d H:i:s')<$rowact["flectura"])
+                {
+                    //echo "Salto de valor ".$rowact["flectura"].". Diferencia valor int:".$intvalor;
+                    if($this->InsertExpCalc($mysqli, $rowact["flectura"], $idparm, $intvalor)<0)
+                    {
+                        return 0;
+                    }
+                    // Calcular nuevo step
+                    $datestep =  new DateTime($rowact["flectura"]);
+                    $datestep->modify("+{$grouptime} minutes");
+                    //echo $datestep->format('Y-m-d H:i:s'); 
+                }
+                // Grabar fila anterior
+                $rowant=$rowact;
+            }
+            //Insert final
+        }
+        
+    }
+    
+    // Borrar cálculos previos del día de cálculo
+    private function CleanExpCalc($mysqli,$pdate,$idparm)
+    {
+        $sql = 'delete from exportday where idparametro='.$idparm.' and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+        //echo $sql;
+        if(!mysqli_query($mysqli, $sql))
+        {
+            echo "ERROR: No se pudo eliminar los registros de ExportDay: " . $mysqli -> error;
+            return -1;
+        }
+        // Bien
+        return 1;
+    }
+    // Insertar calc
+    private function InsertExpCalc($mysqli,$pdate,$idparm,$intvalor) 
+    {
+        // Insertar rows 
+        $sql = "insert into exportday (idparametro,datecalc,intvalor) 
+                values(".$idparm.",";
+        $sql.= "'".$pdate."',";
+        $sql.= $intvalor.")";
+        //echo $sql;
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error al insertar filas en exportday: " . $mysqli->error;
+            return 0;
+        }
+        // Bien
+        return 1;
+    }
     
 //End class
 }
