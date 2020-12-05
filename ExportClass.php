@@ -439,7 +439,8 @@ class ExportClass {
                 . 'from exportday e,parametros_server p,exportdataparm ep '
                 . 'where e.idparametro=p.idparametro '
                 . 'and e.idparametro=ep.idparametro '
-                . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+                . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'"
+                . ' order by p.parametro,datecalc';
         //echo $sql;
         $consultadet = mysqli_query($mysqli, $sql);
         if ($consultadet->num_rows>0) 
