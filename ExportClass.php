@@ -479,30 +479,7 @@ class ExportClass {
         date_add($fcalc, date_interval_create_from_date_string('-1 days'));
         $fileche= 'CHE_'.$fcalc->format('Ymd').'.txt';
         $fileche= 'export/uploads/'.$fileche;
-        
-        
-        //Download the file using file_get_contents.
-        $downloadedFileContents = file_get_contents($fileche);
-
-        //Check to see if file_get_contents failed.
-        if($downloadedFileContents === false){
-            throw new Exception('Failed to download file at: ' . $fileche);
-        }
-
-        //The path and filename that you want to save the file to.
-        $fileName = basename($fileche);
-
-        //Save the data using file_put_contents.
-        $save = file_put_contents($fileName, $downloadedFileContents);
-
-        //Check to see if it failed to save or not.
-        if($save === false){
-            throw new Exception('Failed to save file to: ' , $fileName);
-        }
-        
-        
-        
-        //echo $fileche;   
+      //echo $fileche;   
         if(file_exists($fileche)) {
             //echo $fileche; 
             header("Content-Type: application/force-download");
