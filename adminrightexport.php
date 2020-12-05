@@ -41,6 +41,7 @@
             $pdate='2019-09-03';           
             //echo "Gentcalc_exp funtion parm called.".$pdate;
             $ClassExp->GenCalcExp($pdate); 
+            $ClassExp->openexpfile($pdate);
         }       
         ?>
     </head>

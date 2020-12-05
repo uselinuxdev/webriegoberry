@@ -40,6 +40,7 @@ and open the template in the editor.
         <thead>
            <tr>
              <th>Parametro</th>
+             <th>Divisor</th>
              <th>Alta</th>
              <th>Borrar</th>
            </tr>
@@ -55,6 +56,9 @@ and open the template in the editor.
                 echo '<td>';
                 $ClassExp->cargacomboparam("idparametro[]",$row['idparametro']);
                 echo '</td>';
+                echo '<td>';
+                echo '<input type="number" name="divisor[]" min="1" max="99999" value="'.$row['divisor'].'" required="required" /> ';
+                echo "</td>";
                 echo '<td>'.date("d/m/Y", strtotime($row['falta'])).'</td>';
                 echo '<form name="fdeleteparm" method="post">';
                 echo '<input type="hidden" name="idparmdelete" value="'.$row['id'].'">';

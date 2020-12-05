@@ -206,8 +206,8 @@ class ExportClass {
             exit();
         }
         // Insertar rows 
-        $sql = "insert into exportdataparm (idexport,idparametro) 
-                select id,0 from exportdata ";
+        $sql = "insert into exportdataparm (idexport,idparametro,divisor) 
+                select id,0,3600 from exportdata ";
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al actualizar B.D. " . $mysqli->error;
             return 0;
@@ -249,10 +249,11 @@ class ExportClass {
                 $_POST['id'][$i]=$newid;
             }
             // Preparar sentencia
-            $stmt = $mysqli->prepare("UPDATE exportdataparm SET idparametro = ?
+            $stmt = $mysqli->prepare("UPDATE exportdataparm SET idparametro = ?,divisor = ?
                 WHERE id = ?");
-            if (!$stmt->bind_param('ii',
+            if (!$stmt->bind_param('iii',
                 $_POST['idparametro'][$i],
+                $_POST['divisor'][$i],
                 $_POST['id'][$i])){
                      echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
                      return -1;
@@ -392,7 +393,11 @@ class ExportClass {
                 // Grabar fila anterior
                 $rowant=$rowact;
             }
-            //Insert final
+            //Insert final. Siempre es 0
+            if($this->CreateFileExport($mysqli,$pdate)<0)
+            {
+                return 0;
+            }
         }
         
     }
@@ -422,6 +427,97 @@ class ExportClass {
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al insertar filas en exportday: " . $mysqli->error;
             return 0;
+        }
+        // Bien
+        return 1;
+    }
+    
+    // Generar fichero
+    private function CreateFileExport($mysqli,$pdate)
+    {
+        $sql = 'select e.*,p.parametro,ep.divisor '
+                . 'from exportday e,parametros_server p,exportdataparm ep '
+                . 'where e.idparametro=p.idparametro '
+                . 'and e.idparametro=ep.idparametro '
+                . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+        //echo $sql;
+        $consultadet = mysqli_query($mysqli, $sql);
+        if ($consultadet->num_rows>0) 
+        {
+            //Create file
+            $filename= 'CHE_'.$pdate->format('Ymd').'.txt';
+            $filename= 'export/uploads/'.$filename;
+            $separador=";";
+            // Puntero a fichero
+            $fp = fopen($filename, 'w');
+            while ($fila = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
+            {
+                $sfila="A".$separador;
+                $sfila.=$fila['parametro'].$separador;
+                $datecalc=new DateTime($fila['datecalc']);
+                //echo $datecalc->format('d/m/Y H:i:s');
+                $sfila.=$datecalc->format('d/m/Y H:i:s').$separador;
+                $sfila.=round($fila['intvalor']/$fila['divisor'],2).$separador;
+                $sfila.='BUENA';
+                $sfila.= "\n";
+                // Grabar a fichero
+                fputs($fp,$sfila);
+            }
+            // Cerrar fichero.
+            fclose($fp);
+        }
+    }
+    
+    public function openexpfile($pdate) 
+    {
+        if (DateTime::createFromFormat('Y-m-d', $pdate) == FALSE) 
+        {
+            // Set yesterday
+            $pdate=date('Y-m-d');
+        }
+        $fcalc = new DateTime($pdate);
+        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
+        $fileche= 'CHE_'.$fcalc->format('Ymd').'.txt';
+        $fileche= 'export/uploads/'.$fileche;
+        
+        
+        //Download the file using file_get_contents.
+        $downloadedFileContents = file_get_contents($fileche);
+
+        //Check to see if file_get_contents failed.
+        if($downloadedFileContents === false){
+            throw new Exception('Failed to download file at: ' . $fileche);
+        }
+
+        //The path and filename that you want to save the file to.
+        $fileName = basename($fileche);
+
+        //Save the data using file_put_contents.
+        $save = file_put_contents($fileName, $downloadedFileContents);
+
+        //Check to see if it failed to save or not.
+        if($save === false){
+            throw new Exception('Failed to save file to: ' , $fileName);
+        }
+        
+        
+        
+        //echo $fileche;   
+        if(file_exists($fileche)) {
+            //echo $fileche; 
+            header("Content-Type: application/force-download");
+            header("Content-Type: application/octet-stream");
+            header("Content-Type: application/download");
+            header('Content-Disposition: attachment; filename="'.$fileche.'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($fileche));
+            //flush(); // Flush system output buffer
+            readfile($fileche);
+        } else {
+            http_response_code(404);
+	    return 0;
         }
         // Bien
         return 1;
