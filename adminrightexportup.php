@@ -89,6 +89,8 @@
                     echo '<tr>';
                     echo '<td align="left"><strong>','Comentario','</strong></td>';
                     echo '<td><input type="text" name="comment[]" size="30" value="'.$row['comment'].'"/> </td>';
+                    echo '<td align="left"><strong>','F.Calculo','</strong></td>';
+                    echo '<td><input type="date" name="fcalc[]" size="25" value=""/> </td>';
                     echo '</tr>';
                 echo '</table>';
                 echo '<input type="submit" name="update_exp" value="Actualizar"/>';

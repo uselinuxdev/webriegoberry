@@ -38,11 +38,12 @@
         if(isset($_POST['gentcalc_exp']))
         {
             //$pdate=date("Y-m-d", strtotime( '-1 days' ) ); 
-            $pdate='2019-09-03';           
+            $pdate=$_POST['fcalc'][0];           
             //echo "Gentcalc_exp funtion parm called.".$pdate;
             $ClassExp->GenCalcExp($pdate); 
             $ClassExp->openexpfile($pdate);
-        }       
+        } 
+        
         ?>
     </head>
     <body>

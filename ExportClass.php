@@ -365,7 +365,7 @@ class ExportClass {
             $rowant = mysqli_fetch_array($consultadet,MYSQLI_ASSOC);
             $datestep =  new DateTime($rowant["flectura"]);
             $datestep->modify("+{$grouptime} minutes");
-            //echo $datestep->format('Y-m-d H:i:s'); 
+            echo $datestep->format('Y-m-d H:i:s'); 
             $intvalor=$rowant["intvalor"];
             //echo $consulta->num_rows;
             while ($rowact = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
@@ -501,5 +501,64 @@ class ExportClass {
         return 1;
     }
     
+    // FTP funtions
+    
+    public function ftp_upload($pdate)
+    {
+        if (DateTime::createFromFormat('Y-m-d', $pdate) == FALSE) 
+        {
+            // Set yesterday
+            $pdate=date('Y-m-d');
+        }
+        $fcalc = new DateTime($pdate);
+        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Importante juego de caracteres
+        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $sql="select * from exportdata";
+        $row = mysqli_query($mysqli, $sql);
+        if ($consulta->num_rows>0) 
+        {
+            //Tiene que pasar por aqui para ser correcto
+            $ftp_server=$row['server'];
+            $ftp_user_name=$row['user'];
+            $ftp_user_pass=$row['pass'];
+            // Filename
+            $fileche= 'CHE_'.$fcalc->format('Ymd').'.txt';
+            $fileche= 'export/uploads/'.$fileche;
+            // Control de path
+            $remote_file = $row['path'];
+            if(strlen($remote_file)>0)
+            {
+                $varc = $remote_file[strlen($remote_file)-1];
+                if($varc!='/') $remote_file.='/';
+            }
+            $remote_file = $row['path'].$fileche;
+            // set up basic connection
+            $conn_id = ftp_connect($ftp_server);
+
+            // login with username and password
+            $login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
+            // upload a file
+            if (ftp_put($conn_id, $remote_file, $fileche, FTP_ASCII)) {
+                echo "successfully uploaded $file\n";
+                return 1;
+            } else {
+                echo "There was a problem while uploading $fileche\n";
+                return 0;
+                }
+            // close the connection
+            ftp_close($conn_id);
+        }
+    }
 //End class
 }
