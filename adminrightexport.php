@@ -46,9 +46,10 @@
         if(isset($_POST['upload_exp']))
         {
             //$pdate=date("Y-m-d", strtotime( '-1 days' ) ); 
+            $ftptype=$_POST['copytype'][0];   
             $pdate=$_POST['fcalc'][0];           
             //echo "Gentcalc_exp funtion parm called.".$pdate;
-            $ClassExp->ftp_upload($pdate); 
+            $ClassExp->expupload($ftptype,$pdate); 
         }
         
         ?>
