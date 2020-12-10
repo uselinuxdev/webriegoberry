@@ -11,7 +11,7 @@ function checkuserdb($vuser,$vpass,$vhostdb)
     // creamos la sesion y comprobamos si el user ha dado al boton del form.
     session_start();
     $_SESSION['textsesion'] = "Sesión no iniciada.";
-    //Validar las variables pasadas.
+    //Validar las variables pasadafs.
     if(!empty($vuser))
     {
         if(!empty($vpass))
@@ -69,7 +69,7 @@ function checkuserdb($vuser,$vpass,$vhostdb)
         $_SESSION['nivel'] = $row['nivel'];
         $_SESSION['idserver'] = $row['idserver'];
         $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['idserver'].'.Puerto:'.$_SESSION['dbport'];
-        echo $_SESSION['usuario'];
+        //echo $_SESSION['usuario'];
         return 1;
     }else {
         $_SESSION['textsesion'] = 'Los datos introducidos no corresponden con ninguna instalación.';

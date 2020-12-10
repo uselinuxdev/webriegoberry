@@ -40,7 +40,7 @@
             //$pdate=date("Y-m-d", strtotime( '-1 days' ) ); 
             $pdate=$_POST['fcalc'][0];           
             //echo "Gentcalc_exp funtion parm called.".$pdate;
-            $ClassExp->GenCalcExp($pdate); 
+            $ClassExp->GenCalcExp($pdate,false); 
             $ClassExp->openexpfile($pdate);
         } 
         if(isset($_POST['upload_exp']))

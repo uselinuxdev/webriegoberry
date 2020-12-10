@@ -303,7 +303,7 @@ class ExportClass {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // Seciones de cálculo CHE
-    public function GenCalcExp($pdate)
+    public function GenCalcExp($pdate,$bupload=true)
     {
         //Si no se pasa fecha coger la fecha de ayer
         //echo $pdate;
@@ -311,10 +311,12 @@ class ExportClass {
         {
             // Set yesterday
             $pdate=date('Y-m-d');
+            $copytype='F';
+        } else {
+            $pdate = new DateTime($pdate);
         }
-        $fcalc = new DateTime($pdate);
-        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
-        //echo $fcalc->format('Y-m-d') . "\n";
+        date_add($pdate, date_interval_create_from_date_string('-1 days'));
+        echo $pdate->format('Y-m-d') . "\n";
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
@@ -327,7 +329,7 @@ class ExportClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        $sql = "select idparametro,grouptime from exportdataparm,exportdata where exportdataparm.idexport=exportdata.id";
+        $sql = "select idparametro,grouptime,copytype from exportdataparm,exportdata where exportdataparm.idexport=exportdata.id";
         $consulta = mysqli_query($mysqli, $sql);
         if ($consulta->num_rows>0) 
         {
@@ -336,16 +338,31 @@ class ExportClass {
             while ($fila = mysqli_fetch_array($consulta,MYSQLI_ASSOC)) 
             {
                 // Borrar registros de calculo del día
-                if($this->CleanExpCalc($mysqli, $fcalc, $fila["idparametro"])<0)
+                if($this->CleanExpCalc($mysqli, $pdate, $fila["idparametro"])<0)
                 {
                     return 0;
                 }
                 //echo $fila["grouptime"];
-                if($this->GenCalcExpParm($mysqli,$fcalc, $fila["idparametro"],$fila["grouptime"]) < 0)
+                if($this->GenCalcExpParm($mysqli,$pdate, $fila["idparametro"],$fila["grouptime"]) < 0)
                 {
                     return 0;
                 }
-                
+                //Insert final. Siempre es 0
+                if($this->CreateFileExport($mysqli,$pdate)<0)
+                {
+                    return 0;
+                }
+                $copytype=$fila["copytype"];
+            }
+            // Sin no se pasa fecha se envía fichero por ftp
+            if($bupload)
+            {
+                date_add($pdate, date_interval_create_from_date_string('+1 days'));
+               /// echo 'Bupload date:'.$pdate->format('Y-m-d') . "\n";
+                if($this->expupload($copytype,$pdate->format('Y-m-d')) < 0)
+                {
+                    return 0;
+                }
             }
         }
         // Bien
@@ -365,13 +382,13 @@ class ExportClass {
             $rowant = mysqli_fetch_array($consultadet,MYSQLI_ASSOC);
             $datestep =  new DateTime($rowant["flectura"]);
             $datestep->modify("+{$grouptime} minutes");
-            echo $datestep->format('Y-m-d H:i:s'); 
-            $intvalor=$rowant["intvalor"];
+            //echo $datestep->format('Y-m-d H:i:s'); 
+            $intvalor=0;
             //echo $consulta->num_rows;
             while ($rowact = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
             {
                 //echo $filadet["idparametro"].":Valor int:".$filadet["intvalor"]."Group time:".$grouptime;
-                $intvalor= $rowact["intvalor"]-$rowant["intvalor"]; 
+                $intvalor+= $rowact["intvalor"]-$rowant["intvalor"]; 
                 if($intvalor<0)
                 {
                     echo "Detectado reset de contador en fecha:".$rowact["flectura"];
@@ -388,24 +405,20 @@ class ExportClass {
                     // Calcular nuevo step
                     $datestep =  new DateTime($rowact["flectura"]);
                     $datestep->modify("+{$grouptime} minutes");
+                    $intvalor=0;
                     //echo $datestep->format('Y-m-d H:i:s'); 
                 }
                 // Grabar fila anterior
                 $rowant=$rowact;
-            }
-            //Insert final. Siempre es 0
-            if($this->CreateFileExport($mysqli,$pdate)<0)
-            {
-                return 0;
             }
         }
         
     }
     
     // Borrar cálculos previos del día de cálculo
-    private function CleanExpCalc($mysqli,$pdate,$idparm)
+    private function CleanExpCalc($mysqli,$pdatedel,$idparm)
     {
-        $sql = 'delete from exportday where idparametro='.$idparm.' and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+        $sql = 'delete from exportday where idparametro='.$idparm.' and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdatedel->format('Y-m-d')."'";
         //echo $sql;
         if(!mysqli_query($mysqli, $sql))
         {
@@ -433,20 +446,21 @@ class ExportClass {
     }
     
     // Generar fichero
-    private function CreateFileExport($mysqli,$pdate)
+    private function CreateFileExport($mysqli,$pdatec)
     {
+        /////////$fcalc = date_add($pdate, date_interval_create_from_date_string('-1 days'));
         $sql = 'select e.*,p.parametro,ep.divisor '
                 . 'from exportday e,parametros_server p,exportdataparm ep '
                 . 'where e.idparametro=p.idparametro '
                 . 'and e.idparametro=ep.idparametro '
-                . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'"
+                . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdatec->format('Y-m-d')."'"
                 . ' order by p.parametro,datecalc';
         //echo $sql;
         $consultadet = mysqli_query($mysqli, $sql);
         if ($consultadet->num_rows>0) 
         {
             //Create file
-            $filename= 'CHE_'.$pdate->format('Ymd').'.txt';
+            $filename= 'CHE_'.$pdatec->format('Ymd').'.txt';
             $filename= 'export/uploads/'.$filename;
             $separador=";";
             // Puntero a fichero
@@ -477,7 +491,7 @@ class ExportClass {
             $pdate=date('Y-m-d');
         }
         $fcalc = new DateTime($pdate);
-        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
+        date_add($fcalc, date_interval_create_from_date_string('-1 days')); 
         $fileche= 'CHE_'.$fcalc->format('Ymd').'.txt';
         $fileche= 'export/uploads/'.$fileche;
       //echo $fileche;   
@@ -588,7 +602,7 @@ class ExportClass {
             $pdate=date('Y-m-d');
         }
         $fcalc = new DateTime($pdate);
-        date_add($fcalc, date_interval_create_from_date_string('-1 days'));
+        date_add($fcalc, date_interval_create_from_date_string('-1 days')); // Se genera el del día
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
@@ -642,6 +656,35 @@ class ExportClass {
             }
             return 1;
         }
+    }
+    // EVENT section
+    private function DropEventExp($mysqli)
+    {
+        $sql = "DROP EVENT IF EXISTS EventExport";
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error borrar evento  EventExport" . $mysqli->error;
+            return 0;
+        }
+        echo "Evento EventExport desactivado.";
+        return 1;
+    }
+    private function CreateEventExp($mysqli,$hour)
+    {
+        $fcalc = new DateTime($pdate);
+        date_add($fcalc, date_interval_create_from_date_string('+1 days'));
+        $fcalc = $fcalc->format('Y-m-d');
+        $sql = "CREATE OR REPLACE EVENT EventExport
+                ON SCHEDULE EVERY '1' DAY
+                STARTS '$fcalc $hour' -- should be in the future
+                DO
+                SELECT sys_exec('php /var/www/html/riegosolar/ExportEvent.php admin Riegosolar77 localhost')";
+        echo $sql;
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error borrar evento  EventExport" . $mysqli->error;
+            return 0;
+        }
+        echo "Evento EventExport desactivado.";
+        return 1;
     }
 //End class
 }
