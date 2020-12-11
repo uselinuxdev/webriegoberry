@@ -188,7 +188,17 @@ class ExportClass {
             //printf("Error: %s.\n", $sentencia->error);
             // Finalizar
             $stmt->close();
+            // Control de evento
+            if ($_POST['status'][$i]==0)
+            {
+                if($this->DropEventExp($mysqli)<0) return -1;
+            } else 
+            {
+               if($this->CreateEventExp($mysqli, $_POST['hoursend'][$i])) return -1; 
+            }
         }
+        // Bien
+        return 1;
     }
     public function insertexportparm()
     {
@@ -661,6 +671,7 @@ class ExportClass {
     private function DropEventExp($mysqli)
     {
         $sql = "DROP EVENT IF EXISTS EventExport";
+        //echo $sql;
         if ($mysqli->query($sql) === FALSE) {
             echo "Error borrar evento  EventExport" . $mysqli->error;
             return 0;
@@ -675,15 +686,15 @@ class ExportClass {
         $fcalc = $fcalc->format('Y-m-d');
         $sql = "CREATE OR REPLACE EVENT EventExport
                 ON SCHEDULE EVERY '1' DAY
-                STARTS '$fcalc $hour' -- should be in the future
+                STARTS '$fcalc $hour'
                 DO
-                SELECT sys_exec('php /var/www/html/riegosolar/ExportEvent.php admin Riegosolar77 localhost')";
-        echo $sql;
+                SELECT sys_exec('php /var/www/html/riegosolar/ExportEvent.php ".$_SESSION['usuario']." ". $_SESSION['passap'] ." ". $_SESSION['serverdb'] ."')";
+        //echo $sql;
         if ($mysqli->query($sql) === FALSE) {
             echo "Error borrar evento  EventExport" . $mysqli->error;
             return 0;
         }
-        echo "Evento EventExport desactivado.";
+        echo "Evento EventExport Activado desde la fecha: $fcalc $hour.";
         return 1;
     }
 //End class

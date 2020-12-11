@@ -50,12 +50,12 @@ function checkuserdb($vuser,$vpass,$vhostdb)
     mysqli_set_charset($cndb, "utf8");
     
     // En la columna password se ha grabado el valor con la funcion MD5. update campo=MD5('valor');
-    $vpass=md5($vpass); // Encrypted Password
+    $vpassmd5=md5($vpass); // Encrypted Password
     
     // Comprobar la tabla de usuarios.
     $sql = "select idusuario,usuario,nivel,idserver from usuarios";
     $sql.= " where usuario ='".$vuser."'";
-    $sql.= " and password ='".$vpass."'";
+    $sql.= " and password ='".$vpassmd5."'";
     //echo $sql;   
     $consulta = mysqli_query($cndb, $sql) or die( mysqli_error($cndb));
 
@@ -66,6 +66,7 @@ function checkuserdb($vuser,$vpass,$vhostdb)
         $_SESSION['tlogon'] = time();
         $_SESSION['minsesion'] = 10;
         $_SESSION['usuario'] = $row['usuario'];
+        $_SESSION['passap'] = $vpass;
         $_SESSION['nivel'] = $row['nivel'];
         $_SESSION['idserver'] = $row['idserver'];
         $_SESSION['textsesion'] = 'Conexión establecida '.$_SESSION['idserver'].'.Puerto:'.$_SESSION['dbport'];
