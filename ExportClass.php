@@ -320,13 +320,13 @@ class ExportClass {
         if (DateTime::createFromFormat('Y-m-d', $pdate) == FALSE) 
         {
             // Set yesterday
-            $pdate=date('Y-m-d');
+            $pdate= new DateTime(Date('Y-m-d'));
             $copytype='F';
         } else {
             $pdate = new DateTime($pdate);
         }
         date_add($pdate, date_interval_create_from_date_string('-1 days'));
-        echo $pdate->format('Y-m-d') . "\n";
+        //echo $pdate->format('Y-m-d') . "\n";
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
         {
@@ -420,6 +420,13 @@ class ExportClass {
                 }
                 // Grabar fila anterior
                 $rowant=$rowact;
+            }
+            // Último insert
+            //echo $datestep->format('Y-m-d H:i:s');
+            //echo $intvalor;
+            if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
+            {
+                return 0;
             }
         }
         
