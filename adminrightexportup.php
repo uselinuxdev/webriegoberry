@@ -13,7 +13,6 @@
         input[type=text] {
             width: 100%;
             margin: 0px 0;
-            border: none;
         }
         th {
             background-color: #3A72A5;

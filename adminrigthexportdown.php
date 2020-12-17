@@ -17,7 +17,6 @@ and open the template in the editor.
         input[type=text] {
             width: 100%;
             margin: 0px 0;
-            border: none;
         }
         th {
             background-color: #3A72A5;
@@ -40,6 +39,7 @@ and open the template in the editor.
         <thead>
            <tr>
              <th>Parametro</th>
+             <th>Nombre C.H.E.</th>
              <th>Divisor</th>
              <th>Alta</th>
              <th>Borrar</th>
@@ -56,6 +56,9 @@ and open the template in the editor.
                 echo '<td>';
                 $ClassExp->cargacomboparam("idparametro[]",$row['idparametro']);
                 echo '</td>';
+                echo '<td>';
+                echo '<input type="text" name="nombreche[]" value="'.$row['nombreche'].'" required="required" /> ';
+                echo "</td>";
                 echo '<td>';
                 echo '<input type="number" name="divisor[]" min="1" max="99999" value="'.$row['divisor'].'" required="required" /> ';
                 echo "</td>";

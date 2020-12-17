@@ -216,8 +216,8 @@ class ExportClass {
             exit();
         }
         // Insertar rows 
-        $sql = "insert into exportdataparm (idexport,idparametro,divisor) 
-                select id,0,3600 from exportdata ";
+        $sql = "insert into exportdataparm (idexport,idparametro,nombreche,divisor) 
+                select id,0,'Nombre C.H.E.',3600 from exportdata ";
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al actualizar B.D. " . $mysqli->error;
             return 0;
@@ -259,10 +259,11 @@ class ExportClass {
                 $_POST['id'][$i]=$newid;
             }
             // Preparar sentencia
-            $stmt = $mysqli->prepare("UPDATE exportdataparm SET idparametro = ?,divisor = ?
+            $stmt = $mysqli->prepare("UPDATE exportdataparm SET idparametro = ?,nombreche = ?,divisor = ?
                 WHERE id = ?");
-            if (!$stmt->bind_param('iii',
+            if (!$stmt->bind_param('isii',
                 $_POST['idparametro'][$i],
+                $_POST['nombreche'][$i],
                 $_POST['divisor'][$i],
                 $_POST['id'][$i])){
                      echo "Falló la vinculación de parámetros: (" . $stmt->errno . ") " . $stmt->error;
@@ -339,7 +340,10 @@ class ExportClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        $sql = "select idparametro,grouptime,copytype from exportdataparm,exportdata where exportdataparm.idexport=exportdata.id";
+        $sql = "select ps.idparametro,ps.lectura,grouptime,copytype "
+                . "from parametros_server ps,exportdataparm,exportdata "
+                . " where exportdataparm.idexport=exportdata.id"
+                . " and ps.idparametro=exportdataparm.idparametro";
         $consulta = mysqli_query($mysqli, $sql);
         if ($consulta->num_rows>0) 
         {
@@ -352,10 +356,19 @@ class ExportClass {
                 {
                     return 0;
                 }
-                //echo $fila["grouptime"];
-                if($this->GenCalcExpParm($mysqli,$pdate, $fila["idparametro"],$fila["grouptime"]) < 0)
+                //echo 'Tipo lectura: ('.$fila["lectura"].') ';
+                if($fila["lectura"]=='H')
                 {
-                    return 0;
+                    if($this->GenCalcExpParmHora($mysqli,$pdate, $fila["idparametro"],$fila["grouptime"]) < 0)
+                    {
+                        return 0;
+                    }
+                }else
+                {
+                    if($this->GenCalcExpParm($mysqli,$pdate, $fila["idparametro"],$fila["grouptime"]) < 0)
+                    {
+                        return 0;
+                    }
                 }
                 //Insert final. Siempre es 0
                 if($this->CreateFileExport($mysqli,$pdate)<0)
@@ -379,7 +392,7 @@ class ExportClass {
         return 1;
     }
     
-    private function GenCalcExpParm($mysqli,$pdate,$idparm,$grouptime)
+    private function GenCalcExpParmHora($mysqli,$pdate,$idparm,$grouptime)
     {
         $sql = "select idparametro,intvalor,flectura from lectura_parametros where idparametro=".$idparm.' and DATE_FORMAT(flectura,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
         //echo $sql;
@@ -408,7 +421,8 @@ class ExportClass {
                 if($datestep->format('Y-m-d H:i:s')<$rowact["flectura"])
                 {
                     //echo "Salto de valor ".$rowact["flectura"].". Diferencia valor int:".$intvalor;
-                    if($this->InsertExpCalc($mysqli, $rowact["flectura"], $idparm, $intvalor)<0)
+                    $datestep->modify("-{$grouptime} minutes");
+                    if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
                     {
                         return 0;
                     }
@@ -424,6 +438,8 @@ class ExportClass {
             // Último insert
             //echo $datestep->format('Y-m-d H:i:s');
             //echo $intvalor;
+            // Quitar el último valor
+            $datestep->modify("-{$grouptime} minutes");
             if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
             {
                 return 0;
@@ -431,7 +447,58 @@ class ExportClass {
         }
         
     }
-    
+
+    private function GenCalcExpParm($mysqli,$pdate,$idparm,$grouptime)
+    {
+        $sql = 'select idparametro,intvalor,flectura from lectura_parametros where idparametro='.$idparm.' and DATE_FORMAT(flectura,"%Y-%m-%d")='."'".$pdate->format('Y-m-d')."'";
+        //echo $sql;
+        //return 0;
+        
+        $consultadet = mysqli_query($mysqli, $sql);
+        if ($consultadet->num_rows>0) 
+        {
+            //Tiene que pasar por aqui para ser correcto
+            $datestep =  new DateTime($pdate->format('Y-m-d').' 00:00:00');
+            $datestep->modify("+{$grouptime} minutes");
+            //echo $datestep->format('Y-m-d H:i:s'); 
+            $intvalor=0;
+            $icontrow=0;
+            //echo $consulta->num_rows;
+            while ($rowact = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
+            {
+                // Control de Step
+                if($datestep->format('Y-m-d H:i:s')<$rowact["flectura"])
+                {
+                    //echo "Salto de valor ".$rowact["flectura"].". Diferencia valor int:".$intvalor;
+                    $intvalor=($intvalor/$icontrow);
+                    $datestep->modify("-{$grouptime} minutes");
+                    if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
+                    {
+                        return 0;
+                    }
+                    // Calcular nuevo step. Como hemos restado 1 sumamos 2
+                    $datestep->modify("+{$grouptime} minutes");
+                    $datestep->modify("+{$grouptime} minutes");
+                    $intvalor=0;
+                    $icontrow=0;
+                    ///echo $datestep->format('Y-m-d H:i:s'); 
+                }
+                //echo $rowact["idparametro"].":Valor int:".$rowact["intvalor"]."Group time:".$grouptime;
+                $intvalor+=$rowact["intvalor"]; 
+                $icontrow+=1;
+            }
+            // Último insert
+            //echo $intvalor;
+            $datestep->modify("-{$grouptime} minutes");
+            $intvalor=($intvalor/$icontrow);
+            ///echo 'Ultimo valor:'.$intvalor;
+            if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
+            {
+                return 0;
+            }
+        }
+        
+    }    
     // Borrar cálculos previos del día de cálculo
     private function CleanExpCalc($mysqli,$pdatedel,$idparm)
     {
@@ -466,7 +533,7 @@ class ExportClass {
     private function CreateFileExport($mysqli,$pdatec)
     {
         /////////$fcalc = date_add($pdate, date_interval_create_from_date_string('-1 days'));
-        $sql = 'select e.*,p.parametro,ep.divisor '
+        $sql = 'select e.*,p.parametro,ep.divisor,ep.nombreche '
                 . 'from exportday e,parametros_server p,exportdataparm ep '
                 . 'where e.idparametro=p.idparametro '
                 . 'and e.idparametro=ep.idparametro '
@@ -485,10 +552,10 @@ class ExportClass {
             while ($fila = mysqli_fetch_array($consultadet,MYSQLI_ASSOC)) 
             {
                 $sfila="A".$separador;
-                $sfila.=$fila['parametro'].$separador;
+                $sfila.=$fila['nombreche'].$separador;
                 $datecalc=new DateTime($fila['datecalc']);
                 //echo $datecalc->format('d/m/Y H:i:s');
-                $sfila.=$datecalc->format('d/m/Y H:i:s').$separador;
+                $sfila.=$datecalc->format('d/m/Y H:i').$separador;
                 $sfila.=round($fila['intvalor']/$fila['divisor'],2).$separador;
                 $sfila.='BUENA';
                 $sfila.= "\n";
