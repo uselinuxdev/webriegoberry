@@ -39,7 +39,7 @@ and open the template in the editor.
         <thead>
            <tr>
              <th>Parametro</th>
-             <th>Nombre C.H.E.</th>
+             <th>Identificador F.</th>
              <th>Divisor</th>
              <th>Alta</th>
              <th>Borrar</th>

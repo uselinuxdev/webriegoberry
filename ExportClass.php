@@ -217,7 +217,7 @@ class ExportClass {
         }
         // Insertar rows 
         $sql = "insert into exportdataparm (idexport,idparametro,nombreche,divisor) 
-                select id,0,'Nombre C.H.E.',3600 from exportdata ";
+                select id,0,'IDENTIFICADOR F.',3600 from exportdata ";
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al actualizar B.D. " . $mysqli->error;
             return 0;
@@ -540,7 +540,7 @@ class ExportClass {
                 . 'where e.idparametro=p.idparametro '
                 . 'and e.idparametro=ep.idparametro '
                 . 'and DATE_FORMAT(datecalc,"%Y-%m-%d")='."'".$pdatec->format('Y-m-d')."'"
-                . ' order by p.parametro,datecalc';
+                . ' order by datecalc,ep.nombreche';
         //echo $sql;
         $consultadet = mysqli_query($mysqli, $sql);
         if ($consultadet->num_rows>0) 
