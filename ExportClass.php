@@ -119,7 +119,7 @@ class ExportClass {
             $sql.=" and parametros_server.idserver = ".$_SESSION['idserver'];
             $sql.=" order by parametros_server.parametro,parametros_server.estado ";
             // Pintar combo
-            echo '<select name="'.$name.'" style="width: 300px;">'; 
+            echo '<select name="'.$name.'" style="width: 200px;">'; 
             echo "<option value=0>Seleccionar parámetro</option>"; 
             // No definido
             $resparametros = mysqli_query($cndb,$sql);  
@@ -483,13 +483,15 @@ class ExportClass {
                     $icontrow=0;
                     ///echo $datestep->format('Y-m-d H:i:s'); 
                 }
-                //echo $rowact["idparametro"].":Valor int:".$rowact["intvalor"]."Group time:".$grouptime;
+                //echo '|'.$intvalor.' '.$datestep->format('Y-m-d H:i:s').' |';
+                //echo "Salto de valor ".$rowact["flectura"].". Diferencia valor int:".$intvalor;
                 $intvalor+=$rowact["intvalor"]; 
                 $icontrow+=1;
             }
             // Último insert
             //echo $intvalor;
             $datestep->modify("-{$grouptime} minutes");
+            ///echo $intvalor.' '.$datestep->format('Y-m-d H:i:s').' |';
             $intvalor=($intvalor/$icontrow);
             ///echo 'Ultimo valor:'.$intvalor;
             if($this->InsertExpCalc($mysqli, $datestep->format('Y-m-d H:i:s'), $idparm, $intvalor)<0)
