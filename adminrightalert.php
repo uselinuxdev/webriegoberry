@@ -17,7 +17,7 @@ mysqli_set_charset($cndb, "utf8");
             background-color: white;
             overflow: hidden;
             overflow-y: scroll;
-            height: 350px;
+            height: 380px;
         }
         table {
             border-collapse: collapse;
@@ -59,18 +59,7 @@ mysqli_set_charset($cndb, "utf8");
         }
         if(isset($_POST['check_email']))
         {
-            $toemail = 'eusebio.antonio.castro@gmail.com';
-            $subject = "Alertas automáticas instalación ";
-            // Always set content-type when sending HTML email
-            $headers = "MIME-Version: 1.0" . "\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-
-            // More headers
-            $headers .= 'From: <alertas@riegosolar.net>' . "\r\n";
-            //$headers .= 'Cc: myboss@example.com' . "\r\n";
-
-            $message = 'Correo de pruebas';
-            mail($toemail,$subject,$message,$headers);
+            $ClassAlert->checkMail();
         }
         ?>
     </head>
@@ -83,7 +72,8 @@ mysqli_set_charset($cndb, "utf8");
            <tr>
              <th>Parametro</th>
              <th>Texto alerta</th>
-             <th>Estado</th>
+             <th>Activada</th>
+             <th>Último Estado</th>
              <th>Hora min.</th>
              <th>Hora max.</th>
              <th>Usuario</th>
@@ -97,7 +87,7 @@ mysqli_set_charset($cndb, "utf8");
         </thead>
         <tbody>
            <?php
-           $result = mysqli_query($cndb,"SELECT idalert,idparametro,idusuario,estado,tipo,operacion,valor,textalert,nbit,horaminbit,horamaxbit,falta from alertserver where idserver=".$_SESSION['idserver']." order by idusuario,idparametro");  
+           $result = mysqli_query($cndb,"SELECT idalert,idparametro,idusuario,estado,tipo,operacion,valor,textalert,nbit,horaminbit,horamaxbit,falta,iflag from alertserver where idserver=".$_SESSION['idserver']." order by idusuario,idparametro");  
 
            while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
            ?>
@@ -113,6 +103,12 @@ mysqli_set_charset($cndb, "utf8");
                 <select name = "estado[]" style="width: 7em;">
                     <option value="1" <?php if($row['estado'] == 1) {echo " SELECTED ";} echo">"; ?>Activa</option>
                     <option value="0" <?php if($row['estado'] == 0) {echo " SELECTED ";} echo">"; ?>No activa</option>
+                </select>
+              </td>
+              <td>
+                <select name = "iflag[]" style="width: 9em;">
+                    <option value="1" <?php if($row['iflag'] == 1) {echo " SELECTED ";} echo">"; ?>Alarma</option>
+                    <option value="0" <?php if($row['iflag'] == 0) {echo " SELECTED ";} echo">"; ?>Correcta</option>
                 </select>
               </td>
               <td><input type="time" name="horaminbit[]" min=00:00 max=23:58 step=60 value="<?php echo $row['horaminbit'];?>" /> </td>
@@ -153,7 +149,7 @@ mysqli_set_charset($cndb, "utf8");
         <input type="submit" name="update_alert" value="Actualizar">
         <input type="submit" name="insert_alert" value="Insertar">
         <input type="submit" name="check_alert" value="Comprobar">
-<!--        <input type="submit" name="check_email" value="Check Email">-->
+        <!-- <input type="submit" name="check_email" value="Check Email"> -->
         </form>
         </textarea>
     </body>

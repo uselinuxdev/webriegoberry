@@ -48,10 +48,11 @@ class AlertClass {
                 textalert = ?,
                 nbit = ?,
                 horaminbit = ?,
-                horamaxbit = ?
+                horamaxbit = ?,
+                iflag =?
                 WHERE idalert = ?");
             // Bind variables
-            $stmt->bind_param('iiiisisissi',
+            $stmt->bind_param('iiiisisissii',
             $_POST['idparametro'][$i],
             $_POST['idusuario'][$i],
             $_POST['estado'][$i],
@@ -62,7 +63,8 @@ class AlertClass {
             $_POST['nbit'][$i],
             $_POST['horaminbit'][$i],
             $_POST['horamaxbit'][$i],
-            $_POST['idalert'][$i]);
+            $_POST['iflag'][$i],
+            $_POST['idalert'][$i]);  // La alarma se restablece iflag = 0
             //print_r($_POST);
             
             //echo "stmt bind_param correcto.";
@@ -116,8 +118,8 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
-        
-        $sinsert = "INSERT INTO alertserver (idserver,horaminbit,horamaxbit,operacion) VALUES (".$_SESSION['idserver'].",'00:00:00','23:59:00','<')";
+        // Control de alertas con iflag
+        $sinsert = "INSERT INTO alertserver (idserver,horaminbit,horamaxbit,operacion,iflag) VALUES (".$_SESSION['idserver'].",'00:00:00','23:59:00','<',0)";
        
         if ($mysqli->query($sinsert) === TRUE)
         {
@@ -127,6 +129,34 @@ class AlertClass {
         }
         $mysqli->close();
         return 0;
+    }
+    // Actualiza flag de alarma. Retornando si se tiene que enviar mail o no
+    private function ActFlagAlarm($idalert,$iflag)
+    {
+        // Conexiones
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            exit();
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        // Control de alertas con iflag
+        $supdate = "UPDATE alertserver set iflag=".$iflag." WHERE idalert=".$idalert;
+        /////echo $supdate;
+        if ($mysqli->query($supdate) === TRUE)
+        {
+            //echo "Nuevo bitname creado.";
+        } else {
+            echo "Falló en actualización de Flag: (" . $mysqli->errno . ") " . $mysqli->error;
+            return -1;
+        }
+        $mysqli->close();
+        return 1;        
     }
     public function cargacomboparam($name,$idparam)
         {
@@ -196,6 +226,61 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
+    // Test mail funtion
+    public function checkMail()
+    {
+        $toemail = 'alarmas@riegosolar.net';
+        //$toemail = 'info@riegosolar.net';
+        $subject = "Alertas automáticas instalación ";
+        // Always set content-type when sending HTML email
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+        // More headers
+        $headers .= 'From: <alarmas@riegosolar.net>' . "\r\n";
+        //$headers .= 'Cc: myboss@example.com' . "\r\n";
+
+        $message = 'Correo de pruebas';
+        ///////////////////////////// mail($toemail,$subject,$message,$headers);
+        
+        $phpmailer=$this->newPHPMailer();
+        // Always set content-type when sending HTML email
+        $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
+        //$headers .= 'Cc: myboss@example.com' . "\r\n";
+        $headers .= "MIME-Version: 1.0"."\r\n"."Content-type: text/html; charset=UTF-8"."\r\n";
+        ///<meta charset="UTF-8">
+        $message = '
+        <html>
+        <head>
+        <title>'.$subject.'</title>
+        </head>
+        <body>
+        <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
+        <hr style="color: #3A72A5;" />';
+        // Cabecera del mensaje
+        $message .='<p/>Listado de alertas instalación<p/>';
+        // Recorrer todas las lineas de detalle
+        $message .='<img src="cid:imginstall" width="300" style="background-color:#3A72A5;>';
+        $message .='<hr style="color: #3A72A5;" />';
+        $message .='<table>
+        <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
+        <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
+        <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
+        <tr></tr><tr></tr>
+        <tr><td>Fecha</td><td>Alerta</td><td>Periodo</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td><td>Estado Alarma</td></tr>';   
+        $message .='<tr></tr></table>
+        <hr style="color: #3A72A5;" />
+        <p>Final de listado de alertas.</p>
+        </body>
+        </html>';				
+        $phpmailer->AddAddress($toemail); // recipients email
+        $phpmailer->Subject = $subject;	
+        $phpmailer->Body .= $message;
+        $phpmailer->CharSet = 'UTF-8';
+        echo "phpmail sending.";
+        $phpmailer->Send();
+    
+    }
     // Funcion publica, recorre las alertas por tipo: 0 última,1 diaria,2 mensual y 3 anual
     public function checkalert()
         {
@@ -218,6 +303,9 @@ class AlertClass {
           //printf($sselect);
           $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
           while($rowalert = mysqli_fetch_array($result)) {
+              // Coger flag de alerta: Correo al dispararse, correo al finalizar.
+              $aalert[$icont]['idalert'] = $rowalert['idalert'];
+              $aalert[$icont]['iflag'] = $rowalert['iflag'];
               // El diario 1 sólo se calcula a las 8am
               // Mensual 2 sólo el primer día del mes a las 9am
               // Anual 3 sólo el primer día del año
@@ -273,7 +361,7 @@ class AlertClass {
                     }
                     break;
               }
-              //print_r($rowdb);
+              //print_r($aalert);
               // Calcular el valor descontando decimales  
               // Controlar q $rowvalor tiene filas. Procesar la filas encontradas
               if(!empty($rowdb))
@@ -287,85 +375,129 @@ class AlertClass {
                   {
                       $valorcal = $this->posdecimal($rowdb['VALOR'],$rowdb['POSDECIMAL']);  
                   }
-                  $bmail = false;
-                  switch ($rowalert['operacion']) {
-                      case "=":
-                          if ($valorcal == $rowalert['valor']){
-                              $rowalert['operacion'] ="Igual";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
-                      case "!=":
-                          if ($valorcal != $rowalert['valor']){
-                              $rowalert['operacion'] ="Distinto";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
-                      case ">=":
-                          if ($valorcal >= $rowalert['valor']){
-                              $rowalert['operacion'] ="Mayor o igual";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
-                      case "<=": 
-                          if ($valorcal <= $rowalert['valor']){
-                              $rowalert['operacion'] ="Menor o igual";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
-                      case ">":  
-                          if ($valorcal > $rowalert['valor']){
-                              $rowalert['operacion'] ="Mayor";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
-                      default:  
-                          if ($valorcal < $rowalert['valor']){
-                              $rowalert['operacion'] ="Menor";
-                              // Mail alerta
-                              $bmail = true;
-                          }
-                          break;
+                  // Alarma activada
+                  $balarm = false;
+                  
+                  $valorop=$rowalert['operacion'];
+
+                  // Controlar el tipo de operación
+                  if($valorop=='=')
+                  {
+                      $aalert[$icont][operacion]='Igual';
+                      if($valorcal == $rowalert[valor])
+                      {
+                          $balarm = true;
+                      }
                   }
-                  //print_r($rowalert);
+                  if($valorop=='!=')
+                  {
+                    $aalert[$icont][operacion]='Distinto';
+                    if($valorcal != $rowalert[valor])
+                      {
+                          $balarm = true;
+                      }
+                  }
+                  
+                  if($valorop=='>=')
+                  {
+                    $aalert[$icont]['operacion']='Mayor o igual';
+                    if($valorcal >= $rowalert[valor])
+                    {
+                        $balarm = true;
+                    }
+                  }
+                  
+                  if($valorop=='<=')
+                  {
+                    $aalert[$icont]['operacion']='Menor o igual';
+                    if($valorcal <= $rowalert[valor])
+                    {
+                        $balarm = true;
+                    }
+                  }
+                  
+                  if($valorop=='>')
+                  {
+                    $aalert[$icont][operacion]='Mayor';
+                    if($valorcal > $rowalert[valor])
+                    {
+                        $balarm = true;
+                    }
+                  }
+                  if($valorop=='<')
+                  {
+                    $aalert[$icont][operacion]='Menor';
+                    if($valorcal < $rowalert[valor])
+                    {
+                        $balarm = true;
+                    }
+                  }
+                  ////////////////////////////////////////////////////////////////////////////////////////////////////
+                  //echo "Impresión aalert después de operacion:";
+                  //print_r($aalert);
+                  //return 0;
                   // Control de filtro de horas
                   if($rowalert['horaminbit'] > '00:00:00' or $rowalert['horamaxbit'] < '23:59:00')
                   {
                       if(date('H:i:s') < $rowalert['horaminbit'] or date('H:i:s') >$rowalert['horamaxbit'])
                       {
-                          $bmail = false;
+                          $balarm = false;
+                      }
+                  }
+                  ////////////////////////////////////////////////////////////////////////////////////////////////////
+                  // Control de iFlag
+                  // La alarma ya estaba activada y sigue la alarma. No mandar mail
+                  if($balarm == true)
+                  {
+                      //Control IFLAG
+                      if($aalert[$icont]['iflag']==0)
+                      {
+                        $aalert[$icont]['iflag']=1;
+                        echo "Alarma disparada. Valor anterior correcto.";
+                      }
+                      else
+                      {
+                        $balarm=false;
+                        echo "Alarma disparada. Valor anterior ALARMA. No enviar nuevo correo.";
+                      }
+                  }
+                  else
+                  {
+                      if($aalert[$icont]['iflag']==1)
+                      {
+                          $aalert[$icont]['iflag']=0;
+                          $balarm=true;
+                          echo "Alarma finalizada. Valor anterior de alarma activa.";
+                      }
+                      else
+                      {
+                          echo "Valor dentro de rango permitido. Sin notificación.";
                       }
                   }
                   // Si hay que enviar mail
-                  if($bmail) {
-                      // Array con string keys.
-                      $aalert[$icont]['idusuario']=$rowalert['idusuario'];
-                      $aalert[$icont]['idparametro']=$rowalert['idparametro'];
-                      $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
-                      IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
-                      $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
-                      $aalert[$icont]['VALOR']=$valorcal;
-                      $aalert[$icont]['valory']=$rowalert['valor'];
-                      $aalert[$icont]['operacion']=$rowalert['operacion'];
-                      $aalert[$icont]['vporcent']="";
-                      $icont++;
+                  if($balarm) {
+                    // Array con string keys.
+                    $aalert[$icont]['idusuario']=$rowalert['idusuario'];
+                    $aalert[$icont]['idparametro']=$rowalert['idparametro'];
+                    $aalert[$icont]['TEXTOALERTA']=$rowalert['textalert'];
+                    IF(empty($aalert[$icont]['TEXTOALERTA'])){$aalert[$icont]['TEXTOALERTA']=$rowdb['NOMBREP'];}
+                    $aalert[$icont]['PREFIJO']=$rowdb['PREFIJO'];
+                    $aalert[$icont]['VALOR']=$valorcal;
+                    $aalert[$icont]['valory']=$rowalert['valor'];
+                    $aalert[$icont]['vporcent']="";
+                    // Madar siempre array con 1 fila
+                    /////////////////////////////////////////// Envio de mail
+                    ///print_r($aalert[0]);
+                    $this->mailalert($aalert);
+                    // Llamar a función de actualización de iflag
+                    // print_r($aalert);
+                    if ($this->ActFlagAlarm($aalert[$icont]['idalert'],$aalert[$icont]['iflag'])<0) return -1;
                   }
-                  //print_r($aalert[0]);
+                  //////print_r($aalert[0]);
               }
           }
-          //print_r($aalert);
-          // Llamar a la función
-          if ($bmail) {
-              $this->mailalert($aalert,1);
-          }else{
-             // echo "No existen filas a tratar.";
-          }
         }
+    
     // Datos de la tabla de estimación
     public function checkstimate($idparametro = NULL)
         {
@@ -471,13 +603,14 @@ class AlertClass {
                         $aalert[$icont]['operacion']=$rowalert['operacion'];
                         $aalert[$icont]['poralert']=$rowalert['poralert'];
                         $aalert[$icont]['vdif']=$porcentreal;
-                        $icont++;
+                        $aalert[$icont]['iflag']=1;
+                        echo $icont;
                     }
                 }
             }
             // Llamar a la función
             if (sizeof($aalert) > 0) {
-                $this->mailalert($aalert,0);
+                $this->mailalert($aalert);
             }else{
                // echo "No existen filas a tratar.";
             }
@@ -499,7 +632,7 @@ class AlertClass {
         $phpmailer->setFrom($phpmailer->Username,"Alarmas automaticas.");
         return $phpmailer;
     }
-    private function mailalert($aalert, $checkmailday = 0)
+    private function mailalert($aalert)
     {
         // Se el pasa $rowvalor: Datos del dia/mes. $row los datos de la alerta.
         // Coger los datos de la instalación.
@@ -526,19 +659,14 @@ class AlertClass {
         $simageninstall="";
         $toemail ="";
         $subject="";
+        $idparametro="";
         $message="";
         $headers="";
         foreach ($aalert as $vfila) {
-            // Check 1 mail de alertas/ día
-            if($checkmail==1)
-            {
-              //Comprobar si es el primer mail. Sólo generar 1 mail
-              $checkmail=checkmailday($aalert[0]['idparametro']);
-            }
             if($iduser <> $vfila['idusuario'])
             {
                 // Si icont > 0 mandar correo del usuario anterior. Y procede envio
-                if($icont > 0 and $checkmail==0 )
+                if($icont > 0)
                 {
                     // Final tabla
                     $message .='<tr></tr></table>
@@ -553,14 +681,13 @@ class AlertClass {
                     $phpmailer->Send();
                     $phpmailer=$this->newPHPMailer();
                     // Log de mail enviado.
-                    $this->logmail($toemail,$subject,$vfila['idparametro'],$vfila['VALOR'],1);
-                }
-                else
-                {
-                    // Log de mail enviado.
-                    $this->logmail($toemail,$subject,$vfila['idparametro'],$vfila['VALOR'],0);                    
+                    $this->logmail($toemail,$subject,$idparametro,$vfila['VALOR'],$vfila['iflag']);
                 }
                 $iduser = $vfila['idusuario'];
+                // Datos logmail;
+                $idparametro=$vfila['idparametro'];
+                $intvalor=$vfila['VALOR'];
+                // Cargar datos para mail
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
                 from instalacion i,server_instalacion s, usuarios u
                 where i.idinstalacion = s.idinstalacion
@@ -572,6 +699,15 @@ class AlertClass {
                 // Datos del correo.
                 $toemail = $row['email'];
                 $subject = "Alertas automáticas instalación ".$row["nombre"].".Servidor ".$row['nombreserver'];
+                // Imagen logo
+                $simagenlogo='/var/www/html/riegosolar/imagenes/RIEGOSOLAR_Blanco.png';
+                //Pegar full path de imagen
+                if (!file_exists($simagenlogo)) {
+                    //Old servers
+                    $simagenlogo= '/var/www/riegosolar/imagenes/RIEGOSOLAR_Blanco.png';
+                    //echo "The file $simageninstall exists";
+                }
+                $phpmailer->AddEmbeddedImage($simagenlogo,'imagenlogo','RIEGOSOLAR_Blanco.png');
                 // Check apache path
                 $simageninstall= '/var/www/html/riegosolar/'.$row["imagen"];   
                 //Pegar full path de imagen
@@ -592,27 +728,41 @@ class AlertClass {
                 <head>
                 <title>'.$subject.'</title>
                 </head>
-                <body>
-                <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
-                <hr style="color: #3A72A5;" />';
-                // Cabecera del mensaje
-                $message .='<p/>Listado de alertas instalación<p/>';
-                // Recorrer todas las lineas de detalle
-                $message .='<img src="cid:imginstall" width="300" style="background-color:#3A72A5;>';
+                <body>';
+                $message .='<img src="cid:imagenlogo" style="background-color:#3A72A5;>';
                 $message .='<hr style="color: #3A72A5;" />';
+                // Cabecera del mensaje
+                $message .='<p>Listado de alertas instalación<p/>';
+                $message .='<hr style="color: #3A72A5;" />';
+
                 $message .='<table>
                 <tr><td>Instalación: </td><td>'.$row["nombre"].'</td></tr>
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
-                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
+                <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>';
+                $message .='<tr></tr></table>';
+                $message .='<img src="cid:imginstall" width="300" style="background-color:#3A72A5;>';
+                
+                $message .='<p>Detalles de alarma<p/>';
+                $message .='<hr style="color: #3A72A5;" />';
+
+                // Recorrer todas las lineas de detalle
+                $message .='<table>
                 <tr></tr><tr></tr>
-                <tr><td>Fecha</td><td>Alerta</td><td>Periodo</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td></tr>';                 
+                <tr><td>Fecha</td><td>Alerta</td><td>Periodo</td><td>Valor Real</td><td>Valor Esperado</td><td>Calculo</td><td>Motivo Mail</td></tr>';                 
             }
             // Pintar detalles de cada fila
+            // Control de iFlag: 1 Activada 0 restablecida
+            $sflag="Activada";
+            if($vfila['iflag']==0)
+            {
+               $sflag="Corregida"; 
+            }
             $message .='<tr>';
-            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td>'.$vfila['desctipo'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['poralert'].$vfila['operacion'].'</td>';
+            $message .='<td>'.date("d/m/Y").'</td><td>'.$vfila['TEXTOALERTA'].'</td><td>'.$vfila['desctipo'].'</td><td ALIGN=RIGHT>'.$vfila['VALOR'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['valory'].$vfila['PREFIJO'].'</td><td ALIGN=RIGHT>'.$vfila['poralert'].$vfila['operacion'].'</td>'.'<td ALIGN=LEFT>'.$sflag.'</td>';
             $message .='</tr>';   
             // Más filas
             $icont ++;
+            ////echo "Valor icont función mail:".$icont;
         }
         // Mandar mail de último usuario
         // Final tabla
@@ -622,20 +772,14 @@ class AlertClass {
         </body>
         </html>';
         // Sólo si la alerta se tiene que mandar
-        if($checkmail==0 )
-        {
-            //echo $message;
-            $phpmailer->AddAddress($toemail); // recipients email
-            $phpmailer->Subject = $subject;	
-            $phpmailer->Body .= $message;
-            $phpmailer->CharSet = 'UTF-8';
-            $phpmailer->Send();
-            $this->logmail($toemail,$subject,$parametro,$intvalor,1);
-        }
-        else
-        {
-            $this->logmail($toemail,$subject,$parametro,$intvalor,0);
-        }
+        //echo $message;
+        $phpmailer->AddAddress($toemail); // recipients email
+        $phpmailer->Subject = $subject;	
+        $phpmailer->Body .= $message;
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->Send();
+        $this->logmail($toemail,$subject,$idparametro,$intvalor,$vfila['iflag']);
+            
         return 1;
     }
  
@@ -718,7 +862,6 @@ class AlertClass {
                     $phpmailer->AddAddress($toemail); // recipients email
                     $phpmailer->Subject = $subject;	
                     $phpmailer->Body .= $message;
-                    $phpmailer->CharSet = 'UTF-8';
                     $phpmailer->Send();
                     // Log de mail enviado.
                     $this->logmail($toemail,$subject,0,0,1);
@@ -737,12 +880,6 @@ class AlertClass {
                 // Datos del correo.
                 $toemail = $row['email'];
                 $subject = "Resumen instalación ".$row["nombre"].".Servidor ".$row['nombreserver']."(".date('d/m/Y H:i:s').")";
-                
-                
-                // Always set content-type when sending HTML email
-                $headers = 'From: <alertas@riegosolar.net>' . "\r\n";
-                //$headers .= 'Cc: myboss@example.com' . "\r\n";
-                $headers .= "MIME-Version: 1.0"."\r\n"."Content-type: text/html; charset=UTF-8"."\r\n";
                 ///<meta charset="UTF-8">
                 $message = '
                 <html>
@@ -794,10 +931,9 @@ class AlertClass {
         $phpmailer->AddAddress($toemail); // recipients email
         $phpmailer->Subject = $subject;	
         $phpmailer->Body .= $message;
-        $phpmailer->CharSet = 'UTF-8';
         $phpmailer->Send();
        
-        $this->logmail($toemail,$subject);
+        $this->logmail($toemail,$subject,0,0,1);
         return 1;
     }
     
@@ -860,31 +996,8 @@ class AlertClass {
             // Retorna un array.
             return $rowvalor;
         }
-    // Check mail by day
-    private function checkmailday($parametro)
-    {
-        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
-        if ($mysqli->connect_errno)
-        {
-            echo $mysqli->host_info."\n";
-            return -1;
-        }
-        // Importante juego de caracteres
-        //printf("Conjunto de caracteres inicial: %s\n", mysqli_character_set_name($mysqli));
-        if (!mysqli_set_charset($mysqli, "utf8")) {
-            printf("Error cargando el conjunto de caracteres deutf8: %s\n", mysqli_error($mysqli));
-            exit();
-        }
-        $vfecha =date('Y-m-d'); 
-        $vdesde = date("Y-m-d H:i:s", strtotime('-1 days', strtotime($vfecha)));
-        $sql = "select count(1) countp from alertserverlog where falta > '".date($vdesde)."' and idparametro=".$parametro;
-        
-        $result = $mysqli->query($sql) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-        $row = mysqli_fetch_array($result); 
-        return $row['countp'];
-    }
     // Log de mail en mysql
-    private function logmail($toemail,$subject,$parametro,$intvalor,$bmailday)
+    private function logmail($toemail,$subject,$parametro,$intvalor,$iflag)
     {
         $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
         if ($mysqli->connect_errno)
@@ -899,8 +1012,9 @@ class AlertClass {
             exit();
         }
         
-        $sinsert = "INSERT INTO alertserverlog (toemail,subject,idparametro,intvalor,mailday) VALUES ('".$toemail."','".$subject."',".$parametro.",".$intvalor.",".$bmailday.")";
-        //echo $sinsert;
+        $sinsert = "INSERT INTO alertserverlog (toemail,subject,idparametro,intvalor,iflag) VALUES ('".$toemail."','".$subject."','".$parametro."',".$intvalor.",".$iflag.")";
+        //////echo $sinsert;
+        /////return 0;  /////////////////////////////// <---------------- QUITAR
         if ($mysqli->query($sinsert) === TRUE)
         {
             //echo "Nuevo bitname creado.";
