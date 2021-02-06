@@ -858,7 +858,8 @@ class AlertClass {
                     <hr style="color: #3A72A5;" />
                     <p>Final de resumen instalación.</p>
                     </body>
-                    </html>';				
+                    </html>';
+                    $phpmailer->CharSet = 'UTF-8';
                     $phpmailer->AddAddress($toemail); // recipients email
                     $phpmailer->Subject = $subject;	
                     $phpmailer->Body .= $message;
@@ -881,14 +882,23 @@ class AlertClass {
                 $toemail = $row['email'];
                 $subject = "Resumen instalación ".$row["nombre"].".Servidor ".$row['nombreserver']."(".date('d/m/Y H:i:s').")";
                 ///<meta charset="UTF-8">
+                // Imagen logo
+                $simagenlogo='/var/www/html/riegosolar/imagenes/RIEGOSOLAR_Blanco.png';
+                //Pegar full path de imagen
+                if (!file_exists($simagenlogo)) {
+                    //Old servers
+                    $simagenlogo= '/var/www/riegosolar/imagenes/RIEGOSOLAR_Blanco.png';
+                    //echo "The file $simageninstall exists";
+                }
+                $phpmailer->AddEmbeddedImage($simagenlogo,'imagenlogo','RIEGOSOLAR_Blanco.png');
                 $message = '
                 <html>
                 <head>
                 <title>'.$subject.'</title>
                 </head>
-                <body>
-                <img src="http://www.riegosolar.net/wp-content/uploads/2016/01/RIEGOSOLAR_LOGO-3.png" alt="Logo RiegoSolar" style="background-color:#3A72A5;">
-                <hr style="color: #3A72A5;" />';
+                <body>';
+                $message .='<img src="cid:imagenlogo" style="background-color:#3A72A5;>';
+                $message .='<hr style="color: #3A72A5;" />';
                 // Cabecera del mensaje
                 $message .='<p/>Resumen diario instalación<p/>';
                 // Recorrer todas las lineas de detalle
@@ -928,6 +938,7 @@ class AlertClass {
         </body>
         </html>';
 	//echo $message;
+        $phpmailer->CharSet = 'UTF-8';
         $phpmailer->AddAddress($toemail); // recipients email
         $phpmailer->Subject = $subject;	
         $phpmailer->Body .= $message;
