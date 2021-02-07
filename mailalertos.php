@@ -11,6 +11,7 @@ $_SESSION['pag'] = "mailalertos.php";
 //User and password passed by arg.
 $userapp = $argv[1];
 $passapp = $argv[2];
+$itipo = $argv[3];
 $phost = "localhost";
 if(isset($argv[3]))
 {
@@ -18,6 +19,6 @@ if(isset($argv[3]))
 }
 checkuserdb($userapp,$passapp,$phost);
 
-$ClassAlert = new AlertClass();
+$ClassAlert = new AlertClass($itipo);
 $ClassAlert->checkalert();
 
