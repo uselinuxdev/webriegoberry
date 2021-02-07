@@ -19,6 +19,6 @@ if(isset($argv[3]))
 }
 checkuserdb($userapp,$passapp,$phost);
 
-$ClassAlert = new AlertClass($itipo);
-$ClassAlert->checkalert();
+$ClassAlert = new AlertClass();
+$ClassAlert->checkalert($itipo);
 

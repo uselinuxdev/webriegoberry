@@ -23,6 +23,6 @@ checkuserdb($userapp,$passapp,$phost);
 $Classresprod = new riegoresumenClass();
 $Classresprod->cargarClase('resumenprod'); 
 $asumaryprod = $Classresprod->calcsumaryprod();
-$ClassAlert = new AlertClass($itipo);
+$ClassAlert = new AlertClass();
 $ClassAlert->mailsumary($asumaryprod);
 
