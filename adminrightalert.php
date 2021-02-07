@@ -55,7 +55,7 @@ mysqli_set_charset($cndb, "utf8");
         }
         if(isset($_POST['check_alert']))
         {
-            $ClassAlert->checkalert();
+            $ClassAlert->checkalertAll();
         }
         if(isset($_POST['check_email']))
         {

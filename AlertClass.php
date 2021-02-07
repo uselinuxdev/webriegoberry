@@ -282,7 +282,15 @@ class AlertClass {
     
     }
     // Funcion publica, recorre las alertas por tipo: 0 última,1 diaria,2 mensual y 3 anual
-    public function checkalert()
+    public function checkalertAll()
+    {
+        for($itipo=0;$itipo<4;$itipo++)
+        {
+            $this->checkalert($itipo);
+        }
+    }
+    // La función será llamada por eventos por lo tanto no filtrar fechas.
+    public function checkalert($itipo)
         {
          // Conexiones
           $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
@@ -299,7 +307,7 @@ class AlertClass {
           // Array con datos a funcion mail
           $aalert = array();
           $icont=0;
-          $sselect ="select * from alertserver where estado=1 order by idparametro";
+          $sselect ="select * from alertserver where estado=1 and tipo=".$itipo." order by idparametro";
           //printf($sselect);
           $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
           while($rowalert = mysqli_fetch_array($result)) {
@@ -322,43 +330,18 @@ class AlertClass {
                     // Fecha del día anterior
                     $vnow = date("H:i:s"); // 17:16:18 
                     //echo $vnow;
-                    if ($vnow > '08:00:00' and $vnow < '08:05:00')
-                    //if ($vnow > '08:00:00' and $vnow < '23:05:00')
-                    {
-                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
-                        $aalert[$icont]['desctipo'] = 'Diaria';
-                    } else
-                    {
-                       unset($rowdb);
-                    }
+                    $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    $aalert[$icont]['desctipo'] = 'Diaria';
                     break;
                   case 2:
                     // Fecha del mes anterior
-                    $vnow = date("d H:i:s"); // 17:16:18
-                    //echo $vnow;
-                    if ($vnow > '01 09:00:00' and $vnow < '01 09:05:00')
-                    //if ($vnow > '29 09:00:00' and $vnow < '30 09:05:00')
-                    {
-                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
-                        $aalert[$icont]['desctipo'] = 'Mensual';
-                    } else
-                    {
-                       unset($rowdb);
-                    }
+                    $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    $aalert[$icont]['desctipo'] = 'Mensual';
                     break;
                   case 3:
                     // Fecha del año anterior
-                    $vnow = date("m-d H:i:s"); // 17:16:18
-                    //echo $vnow;
-                    //if ($vnow > '11-29 10:00:00' or $vnow < '11-29 22:05:00')
-                    if ($vnow > '01-01 10:00:00' and $vnow < '01-01 10:05:00')
-                    {
-                        $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
-                        $aalert[$icont]['desctipo'] = 'Anual';
-                    } else
-                    {
-                       unset($rowdb);
-                    }
+                    $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
+                    $aalert[$icont]['desctipo'] = 'Anual';
                     break;
               }
               //print_r($aalert);
@@ -457,8 +440,11 @@ class AlertClass {
                       }
                       else
                       {
-                        $balarm=false;
-                        echo "Alarma disparada. Valor anterior ALARMA. No enviar nuevo correo.";
+                        if($rowalert['tipo']<>1)
+                        {
+                            $balarm=false;
+                            echo "Alarma disparada. Valor anterior ALARMA. No enviar nuevo correo.";
+                        }
                       }
                   }
                   else
