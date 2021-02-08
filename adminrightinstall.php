@@ -51,7 +51,7 @@ and open the template in the editor.
             if ($dbhandle->connect_error) {
                exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
             }
-            $sql = "select cif,titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador,imagen,idinstalacion "
+            $sql = "select cif,titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador,imagen,idinstalacion,iflagmail "
                         . "from instalacion "
                         . "where estado = 1";
             // Execute the query, or else return the error message.
@@ -98,6 +98,7 @@ and open the template in the editor.
         <div id="install">
             <h4 style="color:#3A72A5;">Administración datos instalación</h4>
             <?php
+            ////////////echo 'Valor iflagmail:'.$row['iflagmail'];
             echo '<form action="" method="POST" enctype="multipart/form-data">';
             echo '<img src="'.$row[8].'" alt="IMGINSTALL" style="width:400px;" align="middle"/>';
             echo '<input type="hidden" name="idinstalacion[]" value="'.$row['idinstalacion'].'">';
@@ -141,7 +142,20 @@ and open the template in the editor.
                     echo '<td align="left"><strong>','Variador','</strong></td>';
                     echo '<td><input type="text" name="variador[]" size="90" value="'.$row[7].'" required="required" /> </td>';
                     echo '</tr>';
-                echo '</table>';
+                    echo '<tr>';
+                    echo '<td align="left"><strong>','Mail ','</strong></td>';
+                    echo '<td>';
+                    echo '<select name = "iflagmail[]" style="width: 12em;">';
+                    echo '<option value="1"';
+                    if($row['iflagmail'] == 1) {echo " SELECTED ";}
+                    echo '">Mail resumen</option>';
+                    echo '<option value="0"';
+                    if($row['iflagmail'] == 0) {echo " SELECTED ";}
+                    echo '">Sin mail resumen</option>';
+                    echo '</select>';
+                    echo '</td>';    
+                    echo '</tr>';
+                    echo '</table>';
                 echo '<input type="submit" name="update_install" value="Actualizar"/>';
                 echo '<input type="submit" name="mail_install" value="Mail resumen"/>';
                 echo '<input type="submit" name="testdb" value="Check DB Ver."/>';

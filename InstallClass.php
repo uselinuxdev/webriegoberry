@@ -41,10 +41,11 @@ class InstallClass {
                 ubicacion = ?,
                 pico = ?,
                 modulos = ?,
-                inversor = ?
+                inversor = ?,
+                iflagmail =?
                 WHERE idinstalacion = ?");
             //echo "stmt preparado correctamente.";
-            $stmt->bind_param('ssssssssi',
+            $stmt->bind_param('ssssssssii',
                 $_POST['nombre'][$i],
                 $_POST['titular'][$i],
                 $_POST['cif'][$i],
@@ -53,6 +54,7 @@ class InstallClass {
                 $_POST['pico'][$i],
                 $_POST['modulos'][$i],
                 $_POST['variador'][$i],
+                $_POST['iflagmail'][$i],
                 $_POST['idinstalacion'][$i]);
             //echo "stmt bind_param correcto.";
             // Ejecutar

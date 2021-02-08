@@ -62,7 +62,16 @@ mysqli_set_charset($cndb, "utf8");
             $ClassAlert->checkMail();
         }
         ?>
-    </head>
+        
+        <script>
+        $("estado[]").change(function () {
+        var res = this.value;
+        alert(res);
+        //OR
+        alert(this.value);
+        });
+        </script>
+        </head>
     <body>
         <h4 style="color:#3A72A5;">Administración alertas</h4>
         <form name="alert" method="post">
