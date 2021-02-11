@@ -61,6 +61,7 @@ class InstallClass {
             $stmt->execute();
             // Finalizar
             $stmt->close();
+            $this->EventMail($_POST['iflagmail'][$i]);
         }
     }
     public function updateimagen()
@@ -342,6 +343,39 @@ class InstallClass {
             return 0;
         } 
         //Bien
+        return 1;
+    }
+    
+    private function EventMail($iflagmail) 
+    {
+        if($iflagmail==0)
+        {
+            $sql ="DROP EVENT IF EXISTS MAILSUMARY";
+            if ($mysqli->query($sql) === FALSE) {
+                echo "Error al actualizar B.D. " . $mysqli->error;
+                return 0;
+            } 
+        }
+        else
+        {
+            // Comprobar path de binarios
+            $sbin='/var/www/html/riegosolar/mailsumaryos.php';
+            //Pegar full path de imagen
+            if (!file_exists($sbin)) {
+                //Old servers
+                $sbin='/var/www/riegosolar/mailsumaryos.php';
+                echo "The file $sbin exists";
+            }
+            $sql = "CREATE OR REPLACE EVENT MAILSUMARY ON SCHEDULE EVERY '1' DAY ";
+            $sql.= "STARTS '".date('d/m/Y H:i:s')."' ON COMPLETATION PRESERVER ENABLE ";
+            $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
+            echo $sql;
+            if ($mysqli->query($sql) === FALSE) {
+                echo "Error al actualizar B.D. " . $mysqli->error;
+                return 0;
+            } 
+        }
+        // Bien
         return 1;
     }
     
