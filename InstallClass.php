@@ -348,6 +348,12 @@ class InstallClass {
     
     private function EventMail($iflagmail) 
     {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
         if($iflagmail==0)
         {
             $sql ="DROP EVENT IF EXISTS MAILSUMARY";
@@ -367,14 +373,14 @@ class InstallClass {
                 echo "The file $sbin exists";
             }
             $sql = "CREATE OR REPLACE EVENT MAILSUMARY ON SCHEDULE EVERY '1' DAY ";
-            $sql.= "STARTS '".date('d/m/Y H:i:s')."' ON COMPLETATION PRESERVER ENABLE ";
+            $sql.= "STARTS '".date('Y-m-d H:i:s')."' ON COMPLETION PRESERVE ENABLE ";
             $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
-            echo $sql;
             if ($mysqli->query($sql) === FALSE) {
                 echo "Error al actualizar B.D. " . $mysqli->error;
                 return 0;
             } 
         }
+        // echo $sql;
         // Bien
         return 1;
     }

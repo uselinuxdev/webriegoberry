@@ -72,6 +72,8 @@ class AlertClass {
             $stmt->execute();
             // Finalizar
             $stmt->close();
+            // Crear el evento
+            $this->EventMailType($_POST['tipo'][$i]);
         }
     }
     public function deletealert()
@@ -1075,5 +1077,49 @@ class AlertClass {
         // Retorna valor sin tocar o con la division
         return $valor;           
     }
+    
+    private function EventMailType($tipolectura) 
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+
+        // Comprobar path de binarios
+        $sbin='/var/www/html/riegosolar/mailalertos.php';
+        //Pegar full path de imagen
+        if (!file_exists($sbin)) {
+            //Old servers
+            $sbin='/var/www/riegosolar/mailalertos.php';
+            echo "The file $sbin exists";
+        }
+        // Crear evento
+        $sql = "CREATE OR REPLACE EVENT ";
+        switch ($tipolectura) {
+        case 0: // 5 Min
+            $sql .= "MAILALERT ON SCHEDULE EVERY 5 MINUTE STARTS '".date('Y-m-d H:i:s')."' ON COMPLETION PRESERVE ENABLE ";
+            break;
+        case 1: // DAY
+            $sql .= "MAILALERTDAY ON SCHEDULE EVERY 1 DAY STARTS '".date('Y-m-d')." 08:10:00' ON COMPLETION PRESERVE ENABLE ";
+            break;
+        case 2: // MONTH
+            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 MONTH STARTS '".date('Y-m')."-01 09:00:00' ON COMPLETION PRESERVE ENABLE ";
+            break;            
+        case 3: // YEAR
+            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 DAY STARTS '".date('Y')."-01-01 10:00:00' ON COMPLETION PRESERVE ENABLE ";
+            break;  
+        }
+        $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']." ".$tipolectura."')";
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error al actualizar B.D. " . $mysqli->error;
+            return 0;
+        } 
+        ///echo $sql;
+        // Bien
+        return 1;
+    }
+    
     // End of class
 }
