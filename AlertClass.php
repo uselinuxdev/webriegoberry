@@ -65,8 +65,8 @@ class AlertClass {
             $_POST['horamaxbit'][$i],
             $_POST['iflag'][$i],
             $_POST['idalert'][$i]);  // La alarma se restablece iflag = 0
-            //print_r($_POST);
-            
+            //
+            ///print_r($_POST);    
             //echo "stmt bind_param correcto.";
             // Ejecutar
             $stmt->execute();
@@ -228,6 +228,49 @@ class AlertClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
+        
+    public function cargarcombobit($name,$idparametro,$posact)
+    {
+        $cndb=mysqli_connect($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if (!$cndb) {
+            echo "Error: No se pudo conectar a MySQL." . PHP_EOL;
+            echo "errno de depuración: " . mysqli_connect_errno() . PHP_EOL;
+            echo "error de depuración: " . mysqli_connect_error() . PHP_EOL;
+            exit;
+        }
+        mysqli_set_charset($cndb, "utf8");
+        $sql = "select posicion,nombrebit from parametros_bitname ";
+        // Controlar si es para exportar
+        $sql.=" WHERE idparametro = ".$idparametro;
+        $sql.=" order by posicion";
+        //echo $sql;
+        //return 0;
+        // Pintar combo
+        echo '<select name="'.$name.'" style="width: 160px;">'; 
+        // Sin valor
+        $vcombo = "<option value=-1";
+        // Controlar array
+        if(!$posact) {$vcombo = $vcombo. " SELECTED ";}
+        $vcombo = $vcombo.">";
+        $vcombo = $vcombo." Selección de bit </option>"; 
+        echo $vcombo;
+        // No definido
+        $resbit = mysqli_query($cndb,$sql); 
+        // Parametros de la select
+        ///echo "Posición actual:".$posact;
+        while($row = mysqli_fetch_array($resbit,MYSQLI_ASSOC)) { //Iniciamos un ciclo para recorrer la variable $resparametros que tiene la consulta previamente hecha 
+            $pos = $row["posicion"] ; //Asignamos el id del campo que quieras mostrar
+            $vnombre = substr($row["nombrebit"],0,55); // Asignamos el nombre del campo que quieras mostrar
+            //echo "<option value=".$id.">".$vparametro."</option>"; //Llenamos el option con su value que sera lo que se lleve al archivo registrar.php y que sera el id de tu campo y luego concatenamos tbn el nombre que se mostrara en el combo 
+            $vcombo = "<option value=".$pos;
+            // Controlar array
+            if($posact===$pos) {$vcombo = $vcombo. " SELECTED ";}
+            $vcombo = $vcombo.">";
+            $vcombo = $vcombo.$vnombre."</option>"; 
+            echo $vcombo;
+        } //Cerramos el ciclo 
+        echo '</select>';
+    }
     // Test mail funtion
     public function checkMail()
     {
@@ -608,7 +651,8 @@ class AlertClass {
     {
         $phpmailer = new PHPMailer();
         $phpmailer->Username = "alarmas@riegosolar.net";
-        $phpmailer->Password = "Riegosolar77_";
+        ///$phpmailer->Password = "Riegosolar77_";  // Old
+        $phpmailer->Password = "Riegosolar_77";
         //$phpmailer->SMTPDebug = 1;
         $phpmailer->Host = "smtp.riegosolar.net";
         $phpmailer->Port = '587';

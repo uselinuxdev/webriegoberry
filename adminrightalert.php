@@ -97,8 +97,9 @@ mysqli_set_charset($cndb, "utf8");
         <tbody>
            <?php
            $result = mysqli_query($cndb,"SELECT idalert,idparametro,idusuario,estado,tipo,operacion,valor,textalert,nbit,horaminbit,horamaxbit,falta,iflag from alertserver where idserver=".$_SESSION['idserver']." order by idusuario,idparametro");  
-
+            
            while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
+           //print_r($row);
            ?>
            <input type="hidden" name="idalert[]" value="<?php echo $row['idalert'];?>">
            <tr>
@@ -141,8 +142,13 @@ mysqli_set_charset($cndb, "utf8");
                     <option value=">" <?php if($row['operacion'] == '>') {echo " SELECTED ";} echo">"; ?>Mayor</option>
                 </select>
               </td>
-              <td><input type="number" name="valor[]" style="width: 70px;" value="<?php echo $row['valor'];?>" required="required" /> </td>
-              <td><input type="number" name="nbit[]" min="0" max="31" style="width: 40px;" value="<?php echo $row['nbit'];?>" /> </td>
+              <td><input type="number" name="valor[]" style="width: 70px;" value="<?php echo $row['valor'];?>" required="required" /> </td>            
+              <td>
+                  <?php
+                    $ClassAlert->cargarcombobit("nbit[]",$row['idparametro'],$row['nbit']);
+                  ?>
+              </td>
+              
               <td><?php echo date("d/m/Y", strtotime($row['falta']));?></td>
               <form name="fdeletealert" method="post">
               <input type="hidden" name="idalertdelete" value="<?php echo $row['idalert'];?>" />
