@@ -1139,20 +1139,31 @@ class AlertClass {
             $sbin='/var/www/riegosolar/mailalertos.php';
             ///echo "The file $sbin exists";
         }
-        // Crear evento
+        // Crear evento  date('Y-m-d H:i:s', strtotime('+1 day')) 
         $sql = "CREATE OR REPLACE EVENT ";
+        $date=date('Y-m-d H:i:s');
         switch ($tipolectura) {
         case 0: // 5 Min
-            $sql .= "MAILALERT ON SCHEDULE EVERY 5 MINUTE STARTS '".date('Y-m-d H:i:s')."' ON COMPLETION PRESERVE ENABLE ";
+            $newtimestamp = strtotime($date. ' + 5 minute');
+            $newdate = date('Y-m-d H:i:s', $newtimestamp);
+            $sql .= "MAILALERT ON SCHEDULE EVERY 5 MINUTE STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
             break;
         case 1: // DAY
-            $sql .= "MAILALERTDAY ON SCHEDULE EVERY 1 DAY STARTS '".date('Y-m-d')." 08:10:00' ON COMPLETION PRESERVE ENABLE ";
+            $newtimestamp = strtotime($date. '+1 day');
+            $newdate = date('Y-m-d', $newtimestamp);
+            $sql .= "MAILALERTDAY ON SCHEDULE EVERY 1 DAY STARTS '".$newdate." 08:10:00' ON COMPLETION PRESERVE ENABLE ";
             break;
         case 2: // MONTH
-            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 MONTH STARTS '".date('Y-m')."-01 09:00:00' ON COMPLETION PRESERVE ENABLE ";
+            $date=date('Y-m').'-01';
+            $newtimestamp = strtotime($date. '+1 month');
+            $newdate = date('Y-m-d', $newtimestamp)." 09:00:00";
+            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 MONTH STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
             break;            
         case 3: // YEAR
-            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 DAY STARTS '".date('Y')."-01-01 10:00:00' ON COMPLETION PRESERVE ENABLE ";
+            $date=date('Y').'-01-01';
+            $newtimestamp = strtotime($date. '+1 year');
+            $newdate = date('Y-m-d', $newtimestamp)." 10:00:00";
+            $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 YEAR STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
             break;  
         }
         $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']." ".$tipolectura."')";
