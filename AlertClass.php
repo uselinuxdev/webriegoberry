@@ -1137,7 +1137,7 @@ class AlertClass {
         if (!file_exists($sbin)) {
             //Old servers
             $sbin='/var/www/riegosolar/mailalertos.php';
-            echo "The file $sbin exists";
+            ///echo "The file $sbin exists";
         }
         // Crear evento
         $sql = "CREATE OR REPLACE EVENT ";
