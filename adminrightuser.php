@@ -66,6 +66,7 @@ mysqli_set_charset($cndb, "utf8");
              <th>Usuario</th>
              <th>Password</th>
              <th>Email</th>
+             <th>Teléfono</th>
              <th>Clase</th>
              <th>Comentario</th>
              <th>Alta</th>
@@ -74,7 +75,7 @@ mysqli_set_charset($cndb, "utf8");
         </thead>
         <tbody>
            <?php
-           $result = mysqli_query($cndb,"SELECT idusuario,usuario,password,email,nivel,descripcion,falta,idserver from usuarios order by usuario");  
+           $result = mysqli_query($cndb,"SELECT idusuario,usuario,password,email,telephone,nivel,descripcion,falta,idserver from usuarios order by usuario");  
            while( $row = mysqli_fetch_array($result,MYSQLI_ASSOC) ){
            ?>
            <input type="hidden" name="idusuario[]" value="<?php echo $row['idusuario'];?>">
@@ -84,6 +85,7 @@ mysqli_set_charset($cndb, "utf8");
               <!--La password se actualiza si se escribe-->
               <td><input type="password" name="password[]" style="width: 100px;" value=""/> </td>
               <td><input type="email" name="email[]" style="width: 210px;" value="<?php echo $row['email'];?>"/> </td>
+              <td><input type="number" name="telephone[]" style="width: 100px;" value="<?php echo $row['telephone'];?>"/> </td>
               <td>
                 <select name = "nivel[]" style="width: 7em;">
                     <option value="1" <?php if($row['nivel'] == 1) {echo " SELECTED ";} echo">"; ?>Admin</option>

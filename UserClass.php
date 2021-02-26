@@ -32,18 +32,19 @@ class UserClass {
             // Control password si hay valor actalizar
             $spreparate = "";
             $spassmd5 = "";
-            $sbind ="ssisii";
+            $sbind ="ssiisii";
             if (strlen($_POST['password'][$i])>0)
             {
                //echo 'Cambio password.';
                $spassmd5 = md5($_POST['password'][$i]); 
                $spreparate ="password = ?,";
-               $sbind ="sssisii";
+               $sbind ="sssiisii";
             }
             // Controlar password si tiene datos se pinta
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE usuarios SET usuario = ?,".$spreparate." 
                 email = ?, 
+                telephone = ?,
                 nivel = ?,  
                 descripcion = ?,
                 idserver = ?
@@ -54,6 +55,7 @@ class UserClass {
                 $_POST['usuario'][$i],
                 $spassmd5,
                 $_POST['email'][$i],
+                $_POST['telephone'][$i],
                 $_POST['nivel'][$i],
                 $_POST['descripcion'][$i],
                 $_POST['idserver'][$i],
@@ -63,6 +65,7 @@ class UserClass {
                 $stmt->bind_param($sbind,
                 $_POST['usuario'][$i],
                 $_POST['email'][$i],
+                $_POST['telephone'][$i],
                 $_POST['nivel'][$i],
                 $_POST['descripcion'][$i],
                 $_POST['idserver'][$i],
@@ -74,6 +77,11 @@ class UserClass {
             $stmt->execute();
             // Finalizar
             $stmt->close();
+            // Usuario telegram
+         ///   if ($this->admintelegram($_POST['usuario'][$i],$_POST['telephone'][$i]) < 0)
+          ///  {
+          ///      return 0;
+          ///  }
         }
     }
     public function deleteuser()
@@ -163,6 +171,29 @@ class UserClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
+    // Crear usuario telegram
+    private function admintelegram($username,$telephone)
+    {
+        // Si el usuario tiene telefono añadir a la lista telegram
+        if(!isset($telephone))
+        {
+            return 0;
+        }
+        // Borrar y volver a crear
+       // $sql= "SELECT sys_exec('telegram-cli -W -e \"del_contact '$username'\"')";
+        echo $sql;
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error al borrar usuario telegram " . $mysqli->error;
+            return 0;
+        }
+        
+       // $sql= "SELECT sys_exec('telegram-cli -W -e \"add_contact +34'$telephone' '$username' ''\"')";
+        echo $sql;
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error al borrar usuario telegram " . $mysqli->error;
+            return 0;
+        }        
+    }
 
 //End of class
 }

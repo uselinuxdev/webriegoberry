@@ -13,9 +13,9 @@ $userapp = $argv[1];
 $passapp = $argv[2];
 $itipo = $argv[3];
 $phost = "localhost";
-if(isset($argv[3]))
+if(isset($argv[4]))
 {
-    $phost = $argv[3];
+    $phost = $argv[4];
 }
 checkuserdb($userapp,$passapp,$phost);
 
