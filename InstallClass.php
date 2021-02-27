@@ -365,11 +365,11 @@ class InstallClass {
         else
         {
             // Comprobar path de binarios
-            $sbin='/var/www/html/riegosolar/mailsumaryos.php';
+            $sbin='php /var/www/html/riegosolar/mailsumaryos.php';
             //Pegar full path de imagen
             if (!file_exists($sbin)) {
                 //Old servers
-                $sbin='/var/www/riegosolar/mailsumaryos.php';
+                $sbin='php /var/www/riegosolar/mailsumaryos.php';
                 echo "The file $sbin exists";
             }
             $sql = "CREATE OR REPLACE EVENT MAILSUMARY ON SCHEDULE EVERY '1' DAY ";

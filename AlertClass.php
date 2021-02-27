@@ -1132,11 +1132,11 @@ class AlertClass {
         }
 
         // Comprobar path de binarios
-        $sbin='/var/www/html/riegosolar/mailalertos.php';
+        $sbin='php /var/www/html/riegosolar/mailalertos.php';
         //Pegar full path de imagen
         if (!file_exists($sbin)) {
             //Old servers
-            $sbin='/var/www/riegosolar/mailalertos.php';
+            $sbin='php /var/www/riegosolar/mailalertos.php';
             ///echo "The file $sbin exists";
         }
         // Crear evento  date('Y-m-d H:i:s', strtotime('+1 day')) 
