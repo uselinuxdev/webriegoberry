@@ -1189,8 +1189,12 @@ class AlertClass {
             //print_r($row);
             // Control de valores
             if(!isset($row['telephone'])) return 0;
-            if(!isset($row['tokenbot'])) return 0;
-            $telegrambot=$row['tokenbot'];
+            if(!isset($row['tokenbot']))
+            {
+                $telegrambot="1673994063:AAE-DSTVgkowMduh3llR58mewEX8gidu6PA";
+            }else{
+                $telegrambot=$row['tokenbot'];
+            }
             $telegramchatid=$row['telephone'];
             if($telegramchatid>0) $telegramchatid=$telegramchatid*(-1);
             // Control de FLAG
