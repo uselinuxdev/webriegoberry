@@ -155,6 +155,7 @@ class InstallClass {
             $row = mysqli_fetch_array($consulta,MYSQLI_ASSOC); 
             echo "Versión de base de datos: ".$row['version']."\n";
             $this->syncDbMaster($row['version']);
+            $this->EventCheckDB();
         }
         return 1;
     }
@@ -381,6 +382,35 @@ class InstallClass {
             } 
         }
         // echo $sql;
+        // Bien
+        return 1;
+    }
+    // Event CheckDB
+    private function EventCheckDB() 
+    {
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            return -1;
+        }
+        // Comprobar path de binarios
+        $sbin='php /var/www/html/riegosolar/checkdbos.php';
+        //Pegar full path de imagen
+        if (!file_exists($sbin)) {
+            //Old servers
+            $sbin='php /var/www/riegosolar/checkdbos.php';
+            echo "The file $sbin exists";
+        }
+        $sql = "CREATE OR REPLACE EVENT CHECKDBVER ON SCHEDULE EVERY '1' DAY ";
+        $sql.= "STARTS '".date('Y-m-d H:i:s')."' ON COMPLETION PRESERVE ENABLE ";
+        $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
+        if ($mysqli->query($sql) === FALSE) {
+            echo "Error al actualizar B.D. " . $mysqli->error;
+            return 0;
+        } 
+        // echo $sql;
+        echo "Evento de comprobación de versión de Base de datos creado diariamente.";
         // Bien
         return 1;
     }

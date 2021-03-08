@@ -78,10 +78,10 @@ class UserClass {
             // Finalizar
             $stmt->close();
             // Usuario telegram
-         ///   if ($this->admintelegram($_POST['usuario'][$i],$_POST['telephone'][$i]) < 0)
-          ///  {
-          ///      return 0;
-          ///  }
+            if ($this->admintelegram($_POST['usuario'][$i],$_POST['telephone'][$i],$mysqli) < 0)
+            {
+                return 0;
+            }
         }
     }
     public function deleteuser()
@@ -171,28 +171,39 @@ class UserClass {
             } //Cerramos el ciclo 
             echo '</select>';
         }
-    // Crear usuario telegram
-    private function admintelegram($username,$telephone)
+    // Crear usuario telegram. Telephone es el chatID
+    private function admintelegram($username,$telephone,$mysqli)
     {
         // Si el usuario tiene telefono añadir a la lista telegram
         if(!isset($telephone))
         {
             return 0;
         }
-        // Borrar y volver a crear
-       // $sql= "SELECT sys_exec('telegram-cli -W -e \"del_contact '$username'\"')";
-        echo $sql;
-        if ($mysqli->query($sql) === FALSE) {
-            echo "Error al borrar usuario telegram " . $mysqli->error;
-            return 0;
-        }
-        
-       // $sql= "SELECT sys_exec('telegram-cli -W -e \"add_contact +34'$telephone' '$username' ''\"')";
-        echo $sql;
-        if ($mysqli->query($sql) === FALSE) {
-            echo "Error al borrar usuario telegram " . $mysqli->error;
-            return 0;
-        }        
+        // Cargar datos de instalacion
+        $sql = "SELECT nombre,tokenbot from instalacion ";
+        $result = $mysqli->query($sql) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        $row = mysqli_fetch_assoc($result);
+        // Set your Bot ID and Chat ID.
+        $telegramchatid=$telephone;
+        if($telegramchatid>0) $telegramchatid=$telegramchatid*(-1);
+        $telegrambot=$row["tokenbot"];
+        $installname=$row["nombre"];
+        // Function call with your own text or variable
+        $stext="Telegram activado en Raspberry $installname !!";
+        $this->telegram($telegrambot,$telegramchatid,$stext);
+    }
+    
+    //// Temporal funtions TELEGRAM
+    
+    // Telegram function which you can call
+    private function telegram($telegrambot,$telegramchatid,$msg) {
+        $url='https://api.telegram.org/bot'.$telegrambot.'/sendMessage';$data=array('chat_id'=>$telegramchatid,'text'=>$msg);
+        //echo $url;
+        //return 0;
+        $options=array('http'=>array('method'=>'POST','header'=>"Content-Type:application/x-www-form-urlencoded\r\n",'content'=>http_build_query($data),),);
+        $context=stream_context_create($options);
+        $result=file_get_contents($url,false,$context);
+        return $result;
     }
 
 //End of class

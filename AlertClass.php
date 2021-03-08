@@ -412,7 +412,7 @@ class AlertClass {
                   if($valorop=='=')
                   {
                       $aalert[$icont][operacion]='Igual';
-                      if($valorcal == $rowalert[valor])
+                      if($valorcal == $rowalert['valor'])
                       {
                           $balarm = true;
                       }
@@ -420,7 +420,7 @@ class AlertClass {
                   if($valorop=='!=')
                   {
                     $aalert[$icont][operacion]='Distinto';
-                    if($valorcal != $rowalert[valor])
+                    if($valorcal != $rowalert['valor'])
                       {
                           $balarm = true;
                       }
@@ -429,7 +429,7 @@ class AlertClass {
                   if($valorop=='>=')
                   {
                     $aalert[$icont]['operacion']='Mayor o igual';
-                    if($valorcal >= $rowalert[valor])
+                    if($valorcal >= $rowalert['valor'])
                     {
                         $balarm = true;
                     }
@@ -438,7 +438,7 @@ class AlertClass {
                   if($valorop=='<=')
                   {
                     $aalert[$icont]['operacion']='Menor o igual';
-                    if($valorcal <= $rowalert[valor])
+                    if($valorcal <= $rowalert['valor'])
                     {
                         $balarm = true;
                     }
@@ -447,7 +447,7 @@ class AlertClass {
                   if($valorop=='>')
                   {
                     $aalert[$icont][operacion]='Mayor';
-                    if($valorcal > $rowalert[valor])
+                    if($valorcal > $rowalert['valor'])
                     {
                         $balarm = true;
                     }
@@ -455,7 +455,7 @@ class AlertClass {
                   if($valorop=='<')
                   {
                     $aalert[$icont][operacion]='Menor';
-                    if($valorcal < $rowalert[valor])
+                    if($valorcal < $rowalert['valor'])
                     {
                         $balarm = true;
                     }
@@ -518,8 +518,10 @@ class AlertClass {
                     $aalert[$icont]['vporcent']="";
                     // Madar siempre array con 1 fila
                     /////////////////////////////////////////// Envio de mail
-                    ///print_r($aalert[0]);
+                    //print_r($aalert[0]);
                     $this->mailalert($aalert);
+                    // Mandar por telegram si está configurado.
+                    $this->AlertTelegram($aalert, $mysqli);
                     // Llamar a función de actualización de iflag
                     // print_r($aalert);
                     if ($this->ActFlagAlarm($aalert[$icont]['idalert'],$aalert[$icont]['iflag'])<0) return -1;
@@ -719,6 +721,7 @@ class AlertClass {
                 // Datos logmail;
                 $idparametro=$vfila['idparametro'];
                 $intvalor=$vfila['VALOR'];
+                if(empty($intvalor)) $intvalor=0;
                 // Cargar datos para mail
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
                 from instalacion i,server_instalacion s, usuarios u
@@ -1056,7 +1059,7 @@ class AlertClass {
         }
         
         $sinsert = "INSERT INTO alertserverlog (toemail,subject,idparametro,intvalor,iflag) VALUES ('".$toemail."','".$subject."','".$parametro."',".$intvalor.",".$iflag.")";
-        //////echo $sinsert;
+        //echo $sinsert;
         /////return 0;  /////////////////////////////// <---------------- QUITAR
         if ($mysqli->query($sinsert) === TRUE)
         {
@@ -1175,6 +1178,56 @@ class AlertClass {
         // Bien
         return 1;
     }
-    
+    private function AlertTelegram($aalert,$mysqli) 
+    {
+        // Recorrer al array de alertas
+        //echo "AlertTelegram funtion.";
+        foreach ($aalert as $vfila) {
+            $sselect = "select usuarios.usuario,usuarios.telephone,instalacion.nombre,instalacion.tokenbot from usuarios,instalacion where idusuario=".$vfila['idusuario'];
+            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+            $row = mysqli_fetch_assoc($result);
+            //print_r($row);
+            // Control de valores
+            if(!isset($row['telephone'])) return 0;
+            if(!isset($row['tokenbot'])) return 0;
+            $telegrambot=$row['tokenbot'];
+            $telegramchatid=$row['telephone'];
+            if($telegramchatid>0) $telegramchatid=$telegramchatid*(-1);
+            // Control de FLAG
+            if($vfila['iflag']==1)
+            {
+                $msg="@".$row['usuario'].'. Se ha producido la siguiente alarma en '.$row['nombre'].".";
+            }else
+            {
+                $msg="@".$row['usuario'].'.Información, alarma restablecida en '.$row['nombre'].".";
+            }
+            //echo $msg;
+            $this->telegram($telegrambot,$telegramchatid,$msg);
+            //Descrip alarma
+            $msg="Descripción alarma: ".$vfila['TEXTOALERTA'];
+            $this->telegram($telegrambot,$telegramchatid,$msg);
+            $msg="El tipo de alarma es: ".$vfila['desctipo'];
+            $this->telegram($telegrambot,$telegramchatid,$msg);
+            // Control de FLAG
+            if($vfila['iflag']==1)
+            {
+                $msg="El último valor ".$vfila['VALOR'].$vfila['PREFIJO']." es ".$vfila['operacion']." que ".$vfila['valory'].$vfila['PREFIJO'].".";
+            }else{
+                $msg="El último valor ".$vfila['VALOR'].$vfila['PREFIJO']." ya no es ".$vfila['operacion']." que ".$vfila['valory'].$vfila['PREFIJO'].".";
+            }
+            $this->telegram($telegrambot,$telegramchatid,$msg);    
+        }
+
+    }
+    // Telegram function which you can call
+    private function telegram($telegrambot,$telegramchatid,$msg) {
+        $url='https://api.telegram.org/bot'.$telegrambot.'/sendMessage';$data=array('chat_id'=>$telegramchatid,'text'=>$msg);
+        //echo $url;
+        //return 0;
+        $options=array('http'=>array('method'=>'POST','header'=>"Content-Type:application/x-www-form-urlencoded\r\n",'content'=>http_build_query($data),),);
+        $context=stream_context_create($options);
+        $result=file_get_contents($url,false,$context);
+        return $result;
+    }
     // End of class
 }

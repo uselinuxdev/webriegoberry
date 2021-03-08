@@ -66,7 +66,7 @@ mysqli_set_charset($cndb, "utf8");
              <th>Usuario</th>
              <th>Password</th>
              <th>Email</th>
-             <th>Teléfono</th>
+             <th>Telegram_CHAT</th>
              <th>Clase</th>
              <th>Comentario</th>
              <th>Alta</th>
