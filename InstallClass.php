@@ -33,6 +33,11 @@ class InstallClass {
         for($i =0;$i <count($_POST['idinstalacion']);$i++)
         {
             //printf("Conjunto de caracteres actual: %s\n", mysqli_character_set_name($mysqli));
+            // Control password si hay valor actalizar
+            //echo 'Cambio password.';
+            $sbind ="ssssssssissi";
+            //echo "La password ".$_POST['passmail'][$i]." será almacenada en MD5: ".$spassmd5;
+         
             // Preparar sentencia
             $stmt = $mysqli->prepare("UPDATE instalacion SET nombre = ?,
                 titular = ?, 
@@ -42,10 +47,12 @@ class InstallClass {
                 pico = ?,
                 modulos = ?,
                 inversor = ?,
-                iflagmail =?
-                WHERE idinstalacion = ?");
+                iflagmail =?,
+                tokenbot =?,
+                passmail = ? WHERE idinstalacion = ?");
             //echo "stmt preparado correctamente.";
-            $stmt->bind_param('ssssssssii',
+            //print_r($stmt);
+            $stmt->bind_param($sbind,
                 $_POST['nombre'][$i],
                 $_POST['titular'][$i],
                 $_POST['cif'][$i],
@@ -55,6 +62,8 @@ class InstallClass {
                 $_POST['modulos'][$i],
                 $_POST['variador'][$i],
                 $_POST['iflagmail'][$i],
+                $_POST['tokenbot'][$i],
+                $_POST['passmail'][$i],
                 $_POST['idinstalacion'][$i]);
             //echo "stmt bind_param correcto.";
             // Ejecutar

@@ -651,10 +651,30 @@ class AlertClass {
         }
     private function newPHPMailer()
     {
+        // Coger los datos de la instalación.
+        $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
+        if ($mysqli->connect_errno)
+        {
+            echo $mysqli->host_info."\n";
+            exit();
+        }
+        // Importante juego de caracteres
+        if (!mysqli_set_charset($mysqli, "utf8")) {
+            printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
+            exit();
+        }
+        $sql = "select passmail "
+                    . "from instalacion "
+                    . "where estado = 1";
+        // Execute the query, or else return the error message.
+        $result = $mysqli->query($sql) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
+        $row = mysqli_fetch_array($result);
         $phpmailer = new PHPMailer();
         $phpmailer->Username = "alarmas@riegosolar.net";
         ///$phpmailer->Password = "Riegosolar77_";  // Old
-        $phpmailer->Password = "Riegosolar_77";
+        $phpmailer->Password = $row['passmail'];
+        //echo "Password de mail en tabla instalación:".$phpmailer->Password;
+        if(!isset($row['passmail'])) $phpmailer->Password = "Riegosolar_77";
         //$phpmailer->SMTPDebug = 1;
         $phpmailer->Host = "smtp.riegosolar.net";
         $phpmailer->Port = '587';

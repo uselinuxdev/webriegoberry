@@ -51,7 +51,7 @@ and open the template in the editor.
             if ($dbhandle->connect_error) {
                exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
             }
-            $sql = "select cif,titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador,imagen,idinstalacion,iflagmail "
+            $sql = "select cif,titular,falta as farranque,nombre as instalacion,ubicacion,pico,modulos,inversor as variador,imagen,idinstalacion,iflagmail,tokenbot,passmail "
                         . "from instalacion "
                         . "where estado = 1";
             // Execute the query, or else return the error message.
@@ -153,7 +153,14 @@ and open the template in the editor.
                     if($row['iflagmail'] == 0) {echo " SELECTED ";}
                     echo '">Sin mail resumen</option>';
                     echo '</select>';
-                    echo '</td>';    
+                    echo '</td>';
+                    echo '<td align="left"><strong>','Password ','</strong></td>';
+                    //<!--La password se actualiza si se escribe-->
+                    echo '<td><input type="password" name="passmail[]" size="15" value="'.$row['passmail'].'" /> </td>';
+                    echo '</tr>';
+                    echo '<tr>';
+                    echo '<td align="left"><strong>','Token Telegram','</strong></td>';
+                    echo '<td><input type="text" name="tokenbot[]" size="90" value="'.$row['tokenbot'].'" required="required" /> </td>';
                     echo '</tr>';
                     echo '</table>';
                 echo '<input type="submit" name="update_install" value="Actualizar"/>';
