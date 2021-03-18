@@ -1049,10 +1049,11 @@ class AlertClass {
                 break;
             default:
                 // Valor diario
-                $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_dias ";
+                $sselect = "SELECT NOMBREP,COLOR,PREFIJO,POSDECIMAL,SUM(VALOR) AS VALOR FROM vgrafica_horas ";
                 $sselect.="WHERE idparametro = ".$vparam;
                 $sselect.= $sdate;
-                //echo $sselect;
+                $sselect.= " group by idparametro,DATE_FORMAT(flectura,'%Y-%m-%d') order by idparametro,flectura"; 
+               //echo $sselect;
             }
             // Recuperar array
             //echo $sselect;
