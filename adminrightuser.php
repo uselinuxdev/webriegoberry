@@ -85,7 +85,7 @@ mysqli_set_charset($cndb, "utf8");
               <!--La password se actualiza si se escribe-->
               <td><input type="password" name="password[]" style="width: 100px;" value=""/> </td>
               <td><input type="email" name="email[]" style="width: 210px;" value="<?php echo $row['email'];?>"/> </td>
-              <td><input type="number" name="telephone[]" style="width: 100px;" value="<?php echo $row['telephone'];?>"/> </td>
+              <td><input type="number" name="telephone[]" style="width: 120px;" value="<?php echo $row['telephone'];?>"/> </td>
               <td>
                 <select name = "nivel[]" style="width: 7em;">
                     <option value="1" <?php if($row['nivel'] == 1) {echo " SELECTED ";} echo">"; ?>Admin</option>

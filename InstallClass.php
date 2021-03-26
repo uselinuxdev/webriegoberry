@@ -382,8 +382,11 @@ class InstallClass {
                 $sbin='php /var/www/riegosolar/mailsumaryos.php';
                 echo "The file $sbin exists";
             }
+            $date=date('Y-m-d H:i:s');
+            $newtimestamp = strtotime($date. '+1 day');
+            $newdate = date('Y-m-d', $newtimestamp);
             $sql = "CREATE OR REPLACE EVENT MAILSUMARY ON SCHEDULE EVERY '1' DAY ";
-            $sql.= "STARTS '".date('Y-m-d H:i:s')."' ON COMPLETION PRESERVE ENABLE ";
+            $sql.= "STARTS '".$newdate." 08:00:00' ON COMPLETION PRESERVE ENABLE ";
             $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
             if ($mysqli->query($sql) === FALSE) {
                 echo "Error al actualizar B.D. " . $mysqli->error;
@@ -415,7 +418,7 @@ class InstallClass {
         $newtimestamp = strtotime($date. '+1 day');
         $newdate = date('Y-m-d', $newtimestamp);
         $sql = "CREATE OR REPLACE EVENT CHECKDBVER ON SCHEDULE EVERY '1' DAY ";
-        $sql.= "STARTS '".$newdate." 08:00:00' ON COMPLETION PRESERVE ENABLE ";
+        $sql.= "STARTS '".$newdate." 07:00:00' ON COMPLETION PRESERVE ENABLE ";
         $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al actualizar B.D. " . $mysqli->error;
