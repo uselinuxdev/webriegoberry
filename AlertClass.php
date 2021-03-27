@@ -19,6 +19,9 @@ use PHPMailer\PHPMailer\Exception;
 require dirname(__FILE__).'/PHPMailer/src/Exception.php';
 require dirname(__FILE__).'/PHPMailer/src/PHPMailer.php';
 require dirname(__FILE__).'/PHPMailer/src/SMTP.php';
+
+// Clase Telegram
+require("TelegramClass.php");
 class AlertClass {
     // Actualizar Usuarios
     public function updatealert()
@@ -349,6 +352,8 @@ class AlertClass {
               printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
               exit();
           } 
+          // Crear Clase Telegram
+          $ClassTelegram = new TelegramClass();
           // Array con datos a funcion mail
           $aalert = array();
           $icont=0;
@@ -521,7 +526,7 @@ class AlertClass {
                     //print_r($aalert[0]);
                     $this->mailalert($aalert);
                     // Mandar por telegram si está configurado.
-                    $this->AlertTelegram($aalert, $mysqli);
+                    $ClassTelegram->AlertTelegram($aalert,$mysqli);
                     // Llamar a función de actualización de iflag
                     // print_r($aalert);
                     if ($this->ActFlagAlarm($aalert[$icont]['idalert'],$aalert[$icont]['iflag'])<0) return -1;
@@ -887,6 +892,8 @@ class AlertClass {
             printf("Error cargando el conjunto de caracteres utf8: %s\n", mysqli_error($mysqli));
             exit();
         }
+        // Crear Clase Telegram
+        $ClassTelegram = new TelegramClass();
         // Mail setting
         $phpmailer=$this->newPHPMailer();
 		
@@ -923,6 +930,8 @@ class AlertClass {
                     $this->logmail($toemail,$subject,0,0,1);
                     // Create new mail for the next user
                     $phpmailer=$this->newPHPMailer();
+                    //Send telegram
+                    $ClassTelegram->SummaryTelegram($vfila['idusuario'],$subject,$asumaryprod,$mysqli);                   
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
@@ -935,7 +944,7 @@ class AlertClass {
                 $row = mysqli_fetch_array($result);
                 // Datos del correo.
                 $toemail = $row['email'];
-                $subject = "Resumen instalación ".$row["nombre"].".Servidor ".$row['nombreserver']."(".date('d/m/Y H:i:s').")";
+                $subject = "Resumen diario instalación ".$row["nombre"].".Servidor ".$row['nombreserver']."(".date('d/m/Y H:i:s').")";
                 ///<meta charset="UTF-8">
                 // Imagen logo
                 $simagenlogo='/var/www/html/riegosolar/imagenes/RIEGOSOLAR_Blanco.png';
@@ -1000,6 +1009,8 @@ class AlertClass {
         $phpmailer->Send();
        
         $this->logmail($toemail,$subject,0,0,1);
+        //Send telegram
+        $ClassTelegram->SummaryTelegram($iduser,$subject,$asumaryprod,$mysqli);
         return 1;
     }
     
@@ -1198,61 +1209,6 @@ class AlertClass {
         ///echo $sql;
         // Bien
         return 1;
-    }
-    private function AlertTelegram($aalert,$mysqli) 
-    {
-        // Recorrer al array de alertas
-        //echo "AlertTelegram funtion.";
-        foreach ($aalert as $vfila) {
-            $sselect = "select usuarios.usuario,usuarios.telephone,instalacion.nombre,instalacion.tokenbot from usuarios,instalacion where idusuario=".$vfila['idusuario'];
-            $result = $mysqli->query($sselect) or exit("Codigo de error ({$mysqli->errno}): {$mysqli->error}");
-            $row = mysqli_fetch_assoc($result);
-            //print_r($row);
-            // Control de valores
-            if(!isset($row['telephone'])) return 0;
-            if(!isset($row['tokenbot']))
-            {
-                $telegrambot="1673994063:AAE-DSTVgkowMduh3llR58mewEX8gidu6PA";
-            }else{
-                $telegrambot=$row['tokenbot'];
-            }
-            $telegramchatid=$row['telephone'];
-            if($telegramchatid>0) $telegramchatid=$telegramchatid*(-1);
-            // Control de FLAG
-            if($vfila['iflag']==1)
-            {
-                $msg="@".$row['usuario'].'. Se ha producido la siguiente alarma en '.$row['nombre'].".";
-            }else
-            {
-                $msg="@".$row['usuario'].'.Información, alarma restablecida en '.$row['nombre'].".";
-            }
-            //echo $msg;
-            $this->telegram($telegrambot,$telegramchatid,$msg);
-            //Descrip alarma
-            $msg="Descripción alarma: ".$vfila['TEXTOALERTA'];
-            $this->telegram($telegrambot,$telegramchatid,$msg);
-            $msg="El tipo de alarma es: ".$vfila['desctipo'];
-            $this->telegram($telegrambot,$telegramchatid,$msg);
-            // Control de FLAG
-            if($vfila['iflag']==1)
-            {
-                $msg="El último valor ".$vfila['VALOR'].$vfila['PREFIJO']." es ".$vfila['operacion']." que ".$vfila['valory'].$vfila['PREFIJO'].".";
-            }else{
-                $msg="El último valor ".$vfila['VALOR'].$vfila['PREFIJO']." ya no es ".$vfila['operacion']." que ".$vfila['valory'].$vfila['PREFIJO'].".";
-            }
-            $this->telegram($telegrambot,$telegramchatid,$msg);    
-        }
-
-    }
-    // Telegram function which you can call
-    private function telegram($telegrambot,$telegramchatid,$msg) {
-        $url='https://api.telegram.org/bot'.$telegrambot.'/sendMessage';$data=array('chat_id'=>$telegramchatid,'text'=>$msg);
-        //echo $url;
-        //return 0;
-        $options=array('http'=>array('method'=>'POST','header'=>"Content-Type:application/x-www-form-urlencoded\r\n",'content'=>http_build_query($data),),);
-        $context=stream_context_create($options);
-        $result=file_get_contents($url,false,$context);
-        return $result;
     }
     // End of class
 }
