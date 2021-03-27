@@ -67,6 +67,7 @@ class TelegramClass {
         //print_r($row);
         // Control de valores
         if(!isset($row['telephone'])) return 0;
+        if(($row['telephone'])==0) return 0;
         if(!isset($row['tokenbot']))
         {
             $telegrambot="1673994063:AAH2xoLkvydPiIk89p1sEWxQw0LgI-aYQ24";
@@ -93,12 +94,13 @@ class TelegramClass {
     }
     // Telegram function which you can call
     private function telegram($telegrambot,$telegramchatid,$msg) {
-        $url='https://api.telegram.org/bot'.$telegrambot.'/sendMessage';$data=array('chat_id'=>$telegramchatid,'text'=>$msg);
+        $url='https://api.telegram.org/bot'.$telegrambot.'/sendMessage?';
+        $data = ['chat_id' => $telegramchatid,
+                'text' => $msg
+                ];
         //echo $url;
         //return 0;
-        $options=array('http'=>array('method'=>'POST','header'=>"Content-Type:application/x-www-form-urlencoded\r\n",'content'=>http_build_query($data),),);
-        $context=stream_context_create($options);
-        $result=file_get_contents($url,false,$context);
+        $result = file_get_contents("$url" . http_build_query($data) );
         return $result;
     }
 }
