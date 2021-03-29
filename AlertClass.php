@@ -931,7 +931,7 @@ class AlertClass {
                     // Create new mail for the next user
                     $phpmailer=$this->newPHPMailer();
                     //Send telegram
-                    $ClassTelegram->SummaryTelegram($vfila['idusuario'],$subject,$asumaryprod,$mysqli);                   
+                    $ClassTelegram->SummaryTelegram($iduser,$subject,$asumaryprod,$mysqli);                   
                 }
                 $iduser = $vfila['idusuario'];
                 $sselect ="SELECT i.nombre,i.titular,i.ubicacion,i.imagen,s.nombreserver,s.falta,u.email 
