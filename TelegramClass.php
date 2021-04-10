@@ -10,6 +10,7 @@
  * Description of TelegramClass
  *
  * @author use
+ * https://api.telegram.org/bot1673994063:AAH2xoLkvydPiIk89p1sEWxQw0LgI-aYQ24/getUpdates
  */
 class TelegramClass {
     public function AlertTelegram($aalert,$mysqli) 
