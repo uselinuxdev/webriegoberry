@@ -82,7 +82,7 @@ mysqli_set_charset($cndb, "utf8");
                 $Classresumen->insertestimacion();
             }
         }
-        // Lanzar el correo del parametro del combo
+        // Lanzar el correo del parametro del combo. Hacer desde alertas
         if(isset($_POST['check_estimacion']))
         {
             if(!empty($_POST['comboestimado']))
@@ -226,7 +226,7 @@ mysqli_set_charset($cndb, "utf8");
         </div>
         <input type="submit" name="update_estimacion" value="Actualizar" />
         <input type="submit" name="insert_estimacion" value="Insertar" />
-        <input type="submit" name="check_estimacion" value="Check Alerta" />
+        --<!-- <input type="submit" name="check_estimacion" value="Check Alerta" /> -->
         </form>
     </body>
 </html>

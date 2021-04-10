@@ -332,7 +332,7 @@ class AlertClass {
     // Funcion publica, recorre las alertas por tipo: 0 última,1 diaria,2 mensual y 3 anual
     public function checkalertAll()
     {
-        for($itipo=0;$itipo<4;$itipo++)
+        for($itipo=0;$itipo<5;$itipo++)
         {
             $this->checkalert($itipo);
         }
@@ -393,6 +393,10 @@ class AlertClass {
                     $rowdb = $this->valorbd($rowalert['idparametro'],$rowalert['tipo']);
                     $aalert[$icont]['desctipo'] = 'Anual';
                     break;
+                  case 4:
+                    // El tipo de alerta es estimación mensual
+                      return $this->checkstimate($rowalert['idparametro']);
+                      break;
               }
               //print_r($aalert);
               // Calcular el valor descontando decimales  
@@ -539,6 +543,8 @@ class AlertClass {
     // Datos de la tabla de estimación
     public function checkstimate($idparametro = NULL)
         {
+            // TEST
+            echo "Función checkstimate llamada.";
             // Conexiones
             $mysqli = new mysqli($_SESSION['serverdb'],$_SESSION['dbuser'],$_SESSION['dbpass'],$_SESSION['dbname'],$_SESSION['dbport']);
             if ($mysqli->connect_errno)
@@ -553,7 +559,8 @@ class AlertClass {
             }
             // Array con datos a funcion mail
             $aalert = array();
-
+            // Crear Clase Telegram
+            $ClassTelegram = new TelegramClass();
             // Coger la fecha actual
             $vmes = (int)date('m', strtotime('-1 month') );
             // Todas las lineas del mes pasado
@@ -649,6 +656,8 @@ class AlertClass {
             // Llamar a la función
             if (sizeof($aalert) > 0) {
                 $this->mailalert($aalert);
+                // Mandar por telegram si está configurado.
+                $ClassTelegram->AlertTelegram($aalert,$mysqli);
             }else{
                // echo "No existen filas a tratar.";
             }
@@ -1199,6 +1208,12 @@ class AlertClass {
             $newtimestamp = strtotime($date. '+1 year');
             $newdate = date('Y-m-d', $newtimestamp)." 10:00:00";
             $sql .= "MAILALERTMES ON SCHEDULE EVERY 1 YEAR STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
+            break;
+        case 4: // ESTIMATE MONTH
+            $date=date('Y-m').'-01';
+            $newtimestamp = strtotime($date. '+1 month');
+            $newdate = date('Y-m-d', $newtimestamp)." 11:00:00";
+            $sql .= "MAILALERTMESEST ON SCHEDULE EVERY 1 MONTH STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
             break;  
         }
         $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']." ".$tipolectura."')";

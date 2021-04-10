@@ -55,6 +55,7 @@ mysqli_set_charset($cndb, "utf8");
         }
         if(isset($_POST['check_alert']))
         {
+            // Check si es de tipo 4
             $ClassAlert->checkalertAll();
         }
         if(isset($_POST['check_email']))
@@ -130,10 +131,11 @@ mysqli_set_charset($cndb, "utf8");
               </td>
               <td>
                 <select name = "tipo[]" style="width: 7em;">
-                    <option value="0" <?php if($row['tipo'] == 0) {echo " SELECTED ";} echo">"; ?>Ultima</option>
-                    <option value="1" <?php if($row['tipo'] == 1) {echo " SELECTED ";} echo">"; ?>Diaria</option>
-                    <option value="2" <?php if($row['tipo'] == 2) {echo " SELECTED ";} echo">"; ?>Mensual</option>
-                    <option value="3" <?php if($row['tipo'] == 3) {echo " SELECTED ";} echo">"; ?>Anual</option>
+                    <option value="0" <?php if($row['tipo'] == 0) {echo " SELECTED ";}; ?>>Ultima</option>
+                    <option value="1" <?php if($row['tipo'] == 1) {echo " SELECTED ";}; ?>>Diaria</option>
+                    <option value="2" <?php if($row['tipo'] == 2) {echo " SELECTED ";}; ?>>Mensual</option>
+                    <option value="3" <?php if($row['tipo'] == 3) {echo " SELECTED ";}; ?>>Anual</option>
+                    <option value="4" <?php if($row['tipo'] == 4) {echo " SELECTED ";}; ?>>Estimación mes</option>
                 </select>
               </td>
               <td>
