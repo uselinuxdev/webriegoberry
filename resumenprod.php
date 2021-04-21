@@ -13,7 +13,8 @@ and open the template in the editor.
         <?php
             $Classresprod = new riegoresumenClass();
             $Classresprod->cargarClase('resumenprod'); 
-            $asumaryprod = $Classresprod->calcsumaryprod();
+            $vfecha =date('Y-m-d'); 
+            $asumaryprod = $Classresprod->calcsumaryprod($vfecha);
            // print_r($asumaryprod);
         ?>
     </head>

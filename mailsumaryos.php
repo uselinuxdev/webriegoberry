@@ -22,7 +22,9 @@ checkuserdb($userapp,$passapp,$phost);
 
 $Classresprod = new riegoresumenClass();
 $Classresprod->cargarClase('resumenprod'); 
-$asumaryprod = $Classresprod->calcsumaryprod();
+$vfecha =date('Y-m-d'); 
+$vfecha = date("Y-m-d H:i:s", strtotime('-1 days',strtotime($vfecha)));
+$asumaryprod = $Classresprod->calcsumaryprod($vfecha);
 $ClassAlert = new AlertClass();
 $ClassAlert->mailsumary($asumaryprod);
 

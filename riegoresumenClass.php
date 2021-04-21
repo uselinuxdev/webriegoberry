@@ -446,7 +446,7 @@ class riegoresumenClass
         return $sqldate;
     }
     
-    public function calcsumaryprod() 
+    public function calcsumaryprod($vfecha) 
     {
         $aparamf = $this->verParam();
         // Establish a connection to the database
@@ -459,13 +459,17 @@ class riegoresumenClass
         if ($dbhandle->connect_error) {
            exit("No se ha podido conectar a la Base de Datos: ".$dbhandle->connect_error);
         }
-        
+        // Control de fecha pasada (Ayer o hoy).
+        $vdesde = date("Y-m-d H:i:s", strtotime('+0 days', strtotime($vfecha)));
+        $vhasta = date("Y-m-d H:i:s", strtotime('+1 days',strtotime($vfecha)));
+        $sqldate = " AND l.flectura >= '".date($vdesde)."'";
+        $sqldate.=" AND l.flectura < '".date($vhasta)."';";
         // Cargar los datos de hoy ,año y hasta año.
         $ssql = "select Coalesce(max(l.intvalor)-min(l.intvalor),0) AS hoy,p.parametro,p.prefijonum As unidades,p.posdecimal As posdecimal" 
          . " from lectura_parametros l,parametros_server p"
          . " where l.idparametro = ".$aparamf[0]['idparametroa']
-         . " and l.idparametro = p.idparametro"
-         . " and l.flectura > CURDATE();";
+         . " and l.idparametro = p.idparametro";
+        $ssql= $ssql.$sqldate;
         $result = $dbhandle->query($ssql) or exit("Codigo de error ({$dbhandle->errno}): {$dbhandle->error}");
         $rowhoy = mysqli_fetch_array($result);
         // Mes actual
