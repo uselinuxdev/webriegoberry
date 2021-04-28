@@ -993,7 +993,7 @@ class AlertClass {
                 <tr><td>Titular: </td><td>'.$row["titular"].'</td></tr>
                 <tr><td>Ubicación: </td><td>'.$row["ubicacion"].'</td></tr>
                 <tr></tr><tr></tr>
-                <tr><td>Hoy</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
+                <tr><td>Ayer</td><td>Mes actual</td><td>Año '.date('Y').'</td><td>Hasta '.date('Y').'</td></tr>';
                 $message .='<tr>
                             <td align="left">'.$asumaryprod[0]['hoy'].'</td>
                             <td align="left">'.$asumaryprod[0]['month'].'</td>
@@ -1176,11 +1176,11 @@ class AlertClass {
         }
 
         // Comprobar path de binarios
-        $sbin='php /var/www/html/riegosolar/mailalertos.php';
+        $sbin='/var/www/html/riegosolar/mailalertos.php';
         //Pegar full path de imagen
         if (!file_exists($sbin)) {
             //Old servers
-            $sbin='php /var/www/riegosolar/mailalertos.php';
+            $sbin='/var/www/riegosolar/mailalertos.php';
             ///echo "The file $sbin exists";
         }
         // Crear evento  date('Y-m-d H:i:s', strtotime('+1 day')) 
@@ -1216,7 +1216,7 @@ class AlertClass {
             $sql .= "MAILALERTMESEST ON SCHEDULE EVERY 1 MONTH STARTS '".$newdate."' ON COMPLETION PRESERVE ENABLE ";
             break;  
         }
-        $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']." ".$tipolectura."')";
+        $sql.= "DO SELECT sys_exec('php ".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']." ".$tipolectura."')";
         if ($mysqli->query($sql) === FALSE) {
             echo "Error al actualizar B.D. " . $mysqli->error;
             return 0;

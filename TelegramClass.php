@@ -84,7 +84,7 @@ class TelegramClass {
         $msg=$subject;
         $this->telegram($telegrambot,$telegramchatid,$msg);
         // Detalles resumen
-        $msg="Hoy : ".$asumaryprod[0]['hoy'];
+        $msg="Ayer : ".$asumaryprod[0]['hoy'];
         $this->telegram($telegrambot,$telegramchatid,$msg);
         $msg="Mes actual : ".$asumaryprod[0]['month'];
         $this->telegram($telegrambot,$telegramchatid,$msg);

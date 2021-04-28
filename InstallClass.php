@@ -375,11 +375,11 @@ class InstallClass {
         else
         {
             // Comprobar path de binarios
-            $sbin='php /var/www/html/riegosolar/mailsumaryos.php';
+            $sbin='/var/www/html/riegosolar/mailsumaryos.php';
             //Pegar full path de imagen
             if (!file_exists($sbin)) {
                 //Old servers
-                $sbin='php /var/www/riegosolar/mailsumaryos.php';
+                $sbin='/var/www/riegosolar/mailsumaryos.php';
                 echo "The file $sbin exists";
             }
             $date=date('Y-m-d H:i:s');
@@ -387,7 +387,7 @@ class InstallClass {
             $newdate = date('Y-m-d', $newtimestamp);
             $sql = "CREATE OR REPLACE EVENT MAILSUMARY ON SCHEDULE EVERY '1' DAY ";
             $sql.= "STARTS '".$newdate." 08:00:00' ON COMPLETION PRESERVE ENABLE ";
-            $sql.= "DO SELECT sys_exec('".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
+            $sql.= "DO SELECT sys_exec('php ".$sbin." ".$_SESSION['usuario']." ".$_SESSION['passap']."')";
             if ($mysqli->query($sql) === FALSE) {
                 echo "Error al actualizar B.D. " . $mysqli->error;
                 return 0;
