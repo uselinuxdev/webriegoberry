@@ -21,7 +21,7 @@ function checktab() {
     if (!empty($_POST['update_install']) or !empty($_POST['mail_install']) or !empty($_POST['testdb']) ) {
         $_SESSION['stabindex'] = 0;
     }
-    if (!empty($_POST['update_p']) or !empty($_POST['insert_p']) or !empty($_POST['delete_p']) or !empty($_POST['update_bitname']) or !empty($_POST['delete_bit'])  or !empty($_POST['insert_bitname']) ) {
+    if (!empty($_POST['update_p']) or !empty($_POST['insert_p']) or !empty($_POST['delete_p']) or !empty($_POST['update_bitname']) or !empty($_POST['delete_bit'])  or !empty($_POST['insert_bitname']) or !empty($_POST['cargabit']) ) {
         $_SESSION['stabindex'] = 1;
     }
     // Control resumen
